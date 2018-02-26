@@ -45,6 +45,19 @@ body {
     width:100%;
 }
 
+.top-nav {
+}
+
+html, body {
+	height:100%;
+	width:100%;
+}
+
+.main-pane iframe, .main-pane {
+	width:99%;
+	height:96%;
+}
+
 /* Portrait layout (default) */
 .app {
 //    background:url(../img/logo.png) no-repeat center top; /* 170px x 200px */
