@@ -71,21 +71,26 @@ $(function(){
 		method:"GET",
 		dataType:"json",
 		success:function(accounts){
-			alert("got accounts: \r\n"+JSON.stringify(accounts));
 			$.ajax({
 				url:"resources/accountTransactions.json",
 				method:"GET",
 				datatype:"json",
 				success:function(accountTransactions){
-					alert("got transactions: \r\n"+JSON.stringify(accountTransactions));
 					var trans = _.groupBy(accountTransactions,function(trans){return trans.account;});
+					alert("transTotal: "+JSON.stringify(trans));
 					var accountData = _.map(accounts,function(account){
 						var transForThisAccount = trans[account.number];
+						alert("trans: "+JSON.stringify(transForThisAccount));
 						var orderedTrans = _.sortBy(transForThisAccount,function(trans){return trans.timestamp;});
+						alert("orderedTrans: "+JSON.stringify(orderedTrans));
 						if (transForThisAccount !== undefined && transForThisAccount.length){
-							var latestActivity = _.head(_.reverse(orderedTrans)).timestamp;
+							var latestItem = _.head(_.reverse(orderedTrans));
+							var latestActivity = latestItem.timestamp;
+							alert("latestActivity: "+JSON.stringify(latestItem));
 							var totalBalance = _.reduce(orderedTrans,function(acc,item){return acc + item.adjustment;},0);
 							account.balance = _.round(totalBalance,2);
+							alert("accountBalance: "+totalBalance);
+							alert("account: "+ JSON.stringify(account));
 							account.lastActivity = latestActivity;
 						}
 						return account;
