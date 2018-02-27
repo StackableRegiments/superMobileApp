@@ -90,8 +90,9 @@ $(function(){
 	$.ajax({
 		url:"resources/accounts.json",
 		method:"GET",
-		dataType:"json",
-		success:function(accounts){
+		dataType:"text",
+		success:function(accountsRaw){
+			var accounts = JSON.parse(accountsRaw);
 			var account = _.find(accounts,function(acc){return acc.number == parseInt(accountNumber);});
 			console.log("thisAccount",accountNumber,account);
 			$("#accountName").text(account.name);
@@ -100,8 +101,9 @@ $(function(){
 				$.ajax({
 					url:"resources/accountTransactions.json",
 					method:"GET",
-					datatype:"json",
-					success:function(accountTransactions){
+					datatype:"text",
+					success:function(accountTransactionsRaw){
+						var accountTransactions = JSON.parse(accountTransactionsRaw);
 						var trans = _.groupBy(accountTransactions,function(trans){return trans.account;});
 
 						var transForThisAccount = trans[account.number];
@@ -132,13 +134,13 @@ $(function(){
 							$(".tabPane").hide();
 							$("#"+id+"Pane").show();
 						});
-						$("#transactionGraph").click();
+						$("#transactionListing").click();
 
 
 						// create the transactions listing
 						$("#transactionsGrid").jsGrid({
 							width:"100%",
-							height:"100%",
+							height:"60%",
 							inserting:false,
 							editing:false,
 							sorting:true,
@@ -150,12 +152,7 @@ $(function(){
 								{ name: "description", type: "text"},
 								{ title: "$", name: "adjustment", type: "currency", width:20},
 								{ title: "total", name:"total", type:"currency" }
-							],
-							rowClick:function(evt){
-								var account = evt.item;
-								var accountNumber = account.number;
-								window.location="account.html?number="+accountNumber;
-							}
+							]
 						});
 			
 						//create the transactions graph

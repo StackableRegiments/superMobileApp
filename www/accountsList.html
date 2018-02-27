@@ -69,29 +69,24 @@ $(function(){
 	$.ajax({
 		url:"resources/accounts.json",
 		method:"GET",
-		dataType:"json",
-		success:function(accounts){
+		dataType:"text",
+		success:function(accountsRaw){
+			var accounts = JSON.parse(accountsRaw);
 			$.ajax({
 				url:"resources/accountTransactions.json",
 				method:"GET",
-				datatype:"json",
-				success:function(accountTransactions){
-					alert("accountTrans: "+JSON.stringify(trans));
+				datatype:"text",
+				success:function(accountTransactionsRaw){
+					var accountTransactions = JSON.parse(accountTransactionsRaw);
 					var trans = _.groupBy(accountTransactions,function(t){return t.account;});
-					alert("transTotal: "+JSON.stringify(trans));
 					var accountData = _.map(accounts,function(account){
 						var transForThisAccount = trans[account.number];
-						alert("trans: "+JSON.stringify(transForThisAccount));
 						var orderedTrans = _.sortBy(transForThisAccount,function(trans){return trans.timestamp;});
-						alert("orderedTrans: "+JSON.stringify(orderedTrans));
 						if (transForThisAccount !== undefined && transForThisAccount.length){
 							var latestItem = _.head(_.reverse(orderedTrans));
 							var latestActivity = latestItem.timestamp;
-							alert("latestActivity: "+JSON.stringify(latestItem));
 							var totalBalance = _.reduce(orderedTrans,function(acc,item){return acc + item.adjustment;},0);
 							account.balance = _.round(totalBalance,2);
-							alert("accountBalance: "+totalBalance);
-							alert("account: "+ JSON.stringify(account));
 							account.lastActivity = latestActivity;
 						}
 						return account;
@@ -109,7 +104,7 @@ $(function(){
 								{ name: "name", type: "text"},
 								{ title: "T",name: "type", type: "text", width:20},
 								{ title: "S",name: "status", type: "text", width:20},
-								{ title: "$",name: "balance", type: "number" },
+								{ title: "$",name: "balance", type: "currency" },
 								{ title: "when",name: "lastActivity", type: "date",  }
 							],
 							rowClick:function(evt){

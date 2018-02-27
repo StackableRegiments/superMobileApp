@@ -51,7 +51,7 @@ var app = (function(){
 			var findUserSelect = "select * from users where username = ?";
 			tx.executeSql(findUserSelect,[u],function(tx,results){
 				var userObj = results.rows.item(0);
-				if (userObj.username == u && userObj.password == p){
+				if (userObj.username.trim().toLowerCase() == u && userObj.password.trim().toLowerCase() == p){
 					successFunc(userObj);
 				}
 				else {
@@ -113,7 +113,9 @@ $(function(){
 			return cash1 - cash2;
 		},
 		itemTemplate: function(cash){
-			return "$"+_.round(cash,2);
+			return $("<span/>",{
+				text:"$"+_.round(cash,2).toString()
+			});
 		}
 	});
 	jsGrid.fields.currency = MyCurrencyField;

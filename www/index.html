@@ -70,7 +70,7 @@
 				});
 				var validatePassword = function(onSuccess,onFailure){
 					if ("app" in window && "login" in window.app && un !== undefined && pw !== undefined){
-						app.login(un,pw,onSuccess,onFailure);
+						app.login(un.trim().toLowerCase(),pw.trim().toLowerCase(),onSuccess,onFailure);
 					} else {
 						onFailure();
 					}
