@@ -71,11 +71,13 @@ $(function(){
 		method:"GET",
 		dataType:"json",
 		success:function(accounts){
+			alert("got accounts: \r\n"+JSON.stringify(accounts));
 			$.ajax({
 				url:"resources/accountTransactions.json",
 				method:"GET",
 				datatype:"json",
 				success:function(accountTransactions){
+					alert("got transactions: \r\n"+JSON.stringify(accountTransactions));
 					var trans = _.groupBy(accountTransactions,function(trans){return trans.account;});
 					var accountData = _.map(accounts,function(account){
 						var transForThisAccount = trans[account.number];
