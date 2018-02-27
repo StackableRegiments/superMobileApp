@@ -48,6 +48,19 @@ body {
 .top-nav {
 }
 
+.transactionsGraphSvg {
+	width:100%;
+}
+
+.activeTab {
+	background:yellow;
+}
+
+.loginItem {
+	display:block;
+	margin:1em;
+}
+
 html, body {
 	height:100%;
 	width:100%;

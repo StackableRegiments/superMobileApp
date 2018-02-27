@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+
+	<head>
+			<meta charset="utf-8" />
+			<meta name="format-detection" content="telephone=no" />
+			<meta name="msapplication-tap-highlight" content="no" />
+			<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+			<!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+			<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+			<!-- Good default declaration:
+			* gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+			* https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+			* Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+					* Enable inline JS: add 'unsafe-inline' to default-src
+					* Enable eval(): add 'unsafe-eval' to default-src
+			* Create your own at http://cspisawesome.com
+			-->
+			<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+
+			<link rel="stylesheet" type="text/css" href="css/index.css" />
+			<link href="web-fonts-with-css/css/fontawesome-all.min.css"rel="stylesheet"/>
+			<script type="text/javascript" src="js/d3/d3.min.js"></script>
+			<script type="text/javascript" src="js/lodash/lodash.js"></script>
+			<script type="text/javascript" src="cordova.js"></script>
+			<script type="text/javascript" src="js/jquery/jquery.js"></script>
+			<script type="text/javascript" src="js/index.js"></script>
+			<script type="text/javascript" src="js/jsgrid/jsgrid.min.js"></script>
+			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid.min.css"></link>
+			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid-theme.min.css"></link>
+			<script type="text/javascript">
+					app.initialize();
+			</script>
+			<title>Super Member Account</title>
+	</head>
+
+	<body>
+		<div class="main-pane">
+			<div id="accountName"></div>
+			<div id="accountHolderName"></div>
+			<div class="tabController">
+				<div class="tabHeaders">
+					<button id="transactionListing" class="tabHeaderButton transactionListingHeader">transactions</button>
+					<button id="transactionGraph" class="tabHeaderButton transactionGraphHeader">graph</button>
+					<button id="investmentOptions" class="tabHeaderButton investmentOptionsHeader">investments</button>
+					<button id="insuranceDetails" class="tabHeaderButton insuranceDetailsHeader">insurance</button>
+				</div>
+				<div class="tabs">
+					<div id="transactionListingPane" class="tabPane transactionListing">
+						<div id="transactionsGrid"></div>
+					</div>
+					<div id="transactionGraphPane" class="tabPane transactionGraph">
+						<div id="transactionsGraph">
+							<svg class="transactionsGraphSvg"></svg>
+						</div>
+					</div>
+					<div id="investmentOptionsPane" class="tabPane investmentOptions">
+						<div id="investmentsPerformance"></div>
+					</div>
+					<div id="insuranceDetailsPane" class="tabPane insuranceDetails">
+						<div id="insuranceDetails"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+$(function(){
+	var accountNumber = QueryParams.get("number");
+	$.ajax({
+		url:"resources/accounts.json",
+		method:"GET",
+		dataType:"json",
+		success:function(accounts){
+			var account = _.find(accounts,function(acc){return acc.number == parseInt(accountNumber);});
+			console.log("thisAccount",accountNumber,account);
+			$("#accountName").text(account.name);
+			$("#accountHolderName").text(account.accountHolder);
+			if (account !== undefined){
+				$.ajax({
+					url:"resources/accountTransactions.json",
+					method:"GET",
+					datatype:"json",
+					success:function(accountTransactions){
+						var trans = _.groupBy(accountTransactions,function(trans){return trans.account;});
+
+						var transForThisAccount = trans[account.number];
+
+						var transInOrder = _.sortBy(transForThisAccount,function(trans){return trans.timestamp;})
+						var orderedTrans = _.reduce(transInOrder,function(acc,item){
+							var balance = acc.sofar + item.adjustment;
+							item.total = balance;
+							acc.sofar = balance;
+						 	acc.items.push(item);	
+							return acc;
+						},{sofar:0,items:[]}).items;
+
+						if (transForThisAccount === undefined){
+							transForThisAccount = [];
+						}
+
+						console.log("account",account,transForThisAccount);
+
+						//create the tabbed interface
+
+						$(".tabPane").hide();
+						$(".tabHeaderButton").on("click",function(evt){
+							var headerButton = $(this);
+							$(".tabHeaderButton").removeClass("activeTab");
+							headerButton.addClass("activeTab");
+							var id = headerButton.attr("id");
+							$(".tabPane").hide();
+							$("#"+id+"Pane").show();
+						});
+						$("#transactionGraph").click();
+
+
+						// create the transactions listing
+						$("#transactionsGrid").jsGrid({
+							width:"100%",
+							height:"100%",
+							inserting:false,
+							editing:false,
+							sorting:true,
+							paging:true,
+							data:_.reverse(orderedTrans),
+							fields:[
+								{ title: "when",name: "timestamp", type: "date" },
+								{ title: "T",name: "type", type: "text", width:40},
+								{ name: "description", type: "text"},
+								{ title: "$", name: "adjustment", type: "currency", width:20},
+								{ title: "total", name:"total", type:"currency" }
+							],
+							rowClick:function(evt){
+								var account = evt.item;
+								var accountNumber = account.number;
+								window.location="account.html?number="+accountNumber;
+							}
+						});
+			
+						//create the transactions graph
+
+						var svg = d3.select("#transactionsGraph svg"),	
+
+							margin = {top: 20, right: 20, bottom: 90, left: 50},
+							width = 640 - margin.left - margin.right,
+							height = 480 - margin.top - margin.bottom,
+							g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+						svg.attr("viewBox","0 0 640 480");
+
+						var parseTime = d3.timeParse("%d-%b-%y");
+							
+						var x = d3.scaleTime().rangeRound([0, width]);
+
+						var y = d3.scaleLinear().rangeRound([height, 0]);
+
+						var line = d3.line()
+							.x(function(d) { return x(d.timestamp); })
+							.y(function(d) { return y(d.total); });
+						
+						var data = orderedTrans;
+
+							x.domain(d3.extent(data, function(d) { return d.timestamp; }));
+							y.domain(d3.extent(data, function(d) { return d.total; }));
+
+							g.append("g")
+									.attr("transform", "translate(0," + height + ")")
+									.call(d3.axisBottom(x).ticks(d3.timeMonth.every(1))).selectAll("text")	
+										.style("text-anchor", "end")
+										.attr("dx", "-.8em")
+										.attr("dy", ".15em")
+										.attr("transform", "rotate(-65)");
+
+							g.append("g")
+									.call(d3.axisLeft(y))
+								.append("text")
+									.attr("fill", "#000")
+									.attr("transform", "rotate(-90)")
+									.attr("y", 6)
+									.attr("dy", "0.71em")
+									.attr("text-anchor", "end")
+									.text("($)");
+
+							g.append("path")
+									.datum(data)
+									.attr("fill", "none")
+									.attr("stroke", "steelblue")
+									.attr("stroke-linejoin", "round")
+									.attr("stroke-linecap", "round")
+									.attr("stroke-width", 1.5)
+									.attr("d", line);
+
+					},
+					error:function(err){
+						console.log("failure to fetch transactions",err);
+						alert("could not fetch transactions");
+					}
+				});
+			}
+		},
+		error:function(err){
+			console.log("failure to fetch accounts",err);
+			alert("Failed to get data.  Please try again later");
+		}
+	});
+});
+	</script>
+</html>
