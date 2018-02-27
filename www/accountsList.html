@@ -44,44 +44,84 @@
 			<script type="text/javascript" src="js/lodash/lodash.js"></script>
 			<script type="text/javascript" src="cordova.js"></script>
 			<script type="text/javascript" src="js/jquery/jquery.js"></script>
+			<script type="text/javascript" src="js/jsgrid/jsgrid.min.js"></script>
 			<script type="text/javascript" src="js/index.js"></script>
+			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid.min.css"></link>
+			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid-theme.min.css"></link>
 			<script type="text/javascript">
 					app.initialize();
 			</script>
-			<title>Super Member Login</title>
+			<title>Super Member Account Listing</title>
 	</head>
 
 	<body>
+				<div id="accountListing"></div>
 			<div class="app">
-				<input class="loginItem" type="text" id="loginUsername"></input>
-				<input class="loginItem" type="password" id="loginPassword"></input>
-				<input class="loginItem" type="button" value="login" id="loginButton"></input>
 			</div>
 	</body>
 	<script type="text/javascript">
-		$(function(){
-				var pw = undefined;
-				var un = undefined;
-				$("#loginUsername").on("change",function(text){
-					un = $(this).val();
-				});
-				$("#loginPassword").on("change",function(text){
-					pw = $(this).val();
-				});
-				var validatePassword = function(onSuccess,onFailure){
-					if ("app" in window && "login" in window.app && un !== undefined && pw !== undefined){
-						app.login(un,pw,onSuccess,onFailure);
-					} else {
-						onFailure();
-					}
-				};
-				$("#loginButton").on("click",function(){
-					validatePassword(function(){
-						window.location="accountsList.html";	
-					},function(){
-						alert("please enter your username and password");
+$(function(){
+
+	var accountListing = $("#accountListing");
+	var accountTemplate = accountListing.find(".account").clone();
+	accountListing.html("Loading...");
+
+	$.ajax({
+		url:"resources/accounts.json",
+		method:"GET",
+		dataType:"json",
+		success:function(accounts){
+			$.ajax({
+				url:"resources/accountTransactions.json",
+				method:"GET",
+				datatype:"json",
+				success:function(accountTransactions){
+					var trans = _.groupBy(accountTransactions,function(trans){return trans.account;});
+					var accountData = _.map(accounts,function(account){
+						var transForThisAccount = trans[account.number];
+						var orderedTrans = _.sortBy(transForThisAccount,function(trans){return trans.timestamp;});
+						if (transForThisAccount !== undefined && transForThisAccount.length){
+							var latestActivity = _.head(_.reverse(orderedTrans)).timestamp;
+							var totalBalance = _.reduce(orderedTrans,function(acc,item){return acc + item.adjustment;},0);
+							account.balance = _.round(totalBalance,2);
+							account.lastActivity = latestActivity;
+						}
+						return account;
 					});
-				});
-		});
+					$("#accountListing").jsGrid({
+							width:"100%",
+							height:"100%",
+							inserting:false,
+							editing:false,
+							sorting:true,
+							paging:true,
+							data:accountData,
+							fields:[
+								{ title: "#", name: "number", type: "number", width:20},
+								{ name: "name", type: "text"},
+								{ title: "T",name: "type", type: "text", width:20},
+								{ title: "S",name: "status", type: "text", width:20},
+								{ title: "$",name: "balance", type: "number" },
+								{ title: "when",name: "lastActivity", type: "date",  }
+							],
+							rowClick:function(evt){
+								var account = evt.item;
+								var accountNumber = account.number;
+								window.location="account.html?number="+accountNumber;
+							}
+					});
+				},
+				error:function(err){
+					console.log("failure to fetch transactions",err);
+					alert("could not fetch transactions");
+				}
+			});
+		},
+		error:function(err){
+			console.log("failure to fetch accounts",err);
+			alert("Failed to get data.  Please try again later");
+		}
+	});
+});
 	</script>
 </html>
