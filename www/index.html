@@ -65,10 +65,31 @@
 				var un = undefined;
 				$("#loginUsername").on("change",function(text){
 					un = $(this).val();
+				}).on("keyup",function(evt){
+					onEnter(evt,attemptLogin);
 				});
+				var onEnter = function(evt,action){
+					if (_.isObject(evt) && "keyCode" in evt){
+						var keycode = evt.keyCode;
+						if (keycode == 13){
+							action();
+						}
+					}
+				}
 				$("#loginPassword").on("change",function(text){
 					pw = $(this).val();
+				}).on("keyup",function(evt){
+					onEnter(evt,attemptLogin);
 				});
+				
+				var attemptLogin = function(){
+					validatePassword(function(){
+						window.location="accountsList.html";	
+					},function(){
+						alert("please enter your username and password");
+					});
+				};
+
 				var validatePassword = function(onSuccess,onFailure){
 					if ("app" in window && "login" in window.app && un !== undefined && pw !== undefined){
 						app.login(un.trim().toLowerCase(),pw.trim().toLowerCase(),onSuccess,onFailure);
@@ -76,13 +97,7 @@
 						onFailure();
 					}
 				};
-				$("#loginButton").on("click",function(){
-					validatePassword(function(){
-						window.location="accountsList.html";	
-					},function(){
-						alert("please enter your username and password");
-					});
-				});
+				$("#loginButton").on("click",attemptLogin);
 				$(".tryFingerprint").on("click",function(){
 					if ("Fingerprint" in window){
 						Fingerprint.isAvailable(function(result){
