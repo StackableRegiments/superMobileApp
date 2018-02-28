@@ -11,7 +11,8 @@
     <preference name="android-minSdkVersion" value="14" />
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="StatusBarBackgroundColor" value="#ee6e73" />
-    <preference name="StatusBarStyle" value="blacktranslucent" />
+		<preference name="StatusBarStyle" value="blacktranslucent" />
+		<plugin name="cordova-plugin-fingerprint-aio" source="npm"/>
     <plugin name="cordova-plugin-statusbar" source="npm" spec="~2.1.3" />
     <plugin name="cordova-plugin-console" source="npm" spec="~1.0.3" />
     <plugin name="cordova-plugin-dialogs" source="npm" spec="~1.2.1" />

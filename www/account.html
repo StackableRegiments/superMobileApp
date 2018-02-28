@@ -43,6 +43,7 @@
 			<script type="text/javascript" src="js/d3/d3.min.js"></script>
 			<script type="text/javascript" src="js/lodash/lodash.js"></script>
 			<script type="text/javascript" src="cordova.js"></script>
+			<!--		<script type="text/javascript" src="plugins/cordova-plugin-fingerprint-aio/www/Fingerprint.js"></script> -->
 			<script type="text/javascript" src="js/jquery/jquery.js"></script>
 			<script type="text/javascript" src="js/index.js"></script>
 			<script type="text/javascript" src="js/jsgrid/jsgrid.min.js"></script>
@@ -57,9 +58,9 @@
 	<body>
 		<div class="main-pane">
 			<div id="accountName"></div>
-			<div id="accountHolderName"></div>
 			<div class="tabController">
 				<div class="tabHeaders">
+					<span id="profile" class="tabHeaderButton profileHeader"><i class="fa fa-user" text="profile"></i></span>
 					<span id="transactionListing" class="tabHeaderButton transactionListingHeader"><i class="fa fa-dollar-sign" text="transactions"></i></span>
 					<span id="transactionGraph" class="tabHeaderButton transactionGraphHeader"><i class="fa fa-chart-line" text="graph"></i></span>
 					<span id="investmentOptions" class="tabHeaderButton investmentOptionsHeader"><i class="fa fa-balance-scale" text="investments"></i></span>
@@ -67,6 +68,17 @@
 					<span id="news" class="tabHeaderButton newsHeader"><i class="fa fa-newspaper" text="news"></i></span>
 				</div>
 				<div class="tabs">
+					<div id="profilePane" class="tabPane profile">
+						<div class="profileAccountNumber"></div>
+						<div class="profileUserDetails">
+							<div id="accountHolderName"></div>
+							<button class="changeAccountDetails">Change details</button>
+						</div>
+						<div class="profileEmployerDetails">
+							<div id="employerName"></div>
+							<button class="changeEmployerDetails">Change employer</button>
+						</div>
+					</div>
 					<div id="transactionListingPane" class="tabPane transactionListing">
 						<div id="transactionsGrid"></div>
 					</div>
@@ -263,6 +275,7 @@ $(function(){
 			alert("Failed to get data.  Please try again later");
 		}
 	});
+
 });
 	</script>
 </html>

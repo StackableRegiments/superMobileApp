@@ -1,0 +1,6 @@
+*.swp
+*.swo
+hooks
+node_modules
+platforms
+plugins

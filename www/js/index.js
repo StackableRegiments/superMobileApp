@@ -72,6 +72,16 @@ var app = (function(){
 		var ev = this;
 		var db = getDb();
 		console.log('Received Device Ready Event',device,ev,db);
+		if ("Fingerprint" in window){
+			Fingerprint.isAvailable(function(s){
+				console.log("fingerprint success:",s);
+				alert("fingerprint available");
+			},function(err){
+				console.log("fingerprint error:",err);
+				alert("fingerprint not available");
+			});
+		}
+
 	};
 	var onLoad = function(device) {
 		var ev = this;
