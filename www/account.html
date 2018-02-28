@@ -197,8 +197,17 @@ $(function(){
 							.attr("viewBox","0 0 640 480")
 							.call(zoom)
 							.append("g")
-								.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-							
+								.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+						svg.append("clipPath")
+							.attr("id","graphClip")
+							.append("rect")
+								.attr("width",width)
+								.attr("height",height)
+								.attr("x",margin.left)
+								.attr("y",margin.y);
+
+						
 						var gy = svg.append("g")
 							.attr("transform", "translate("+margin.left +"," + margin.top + ")")
 							.call(yAxis);
@@ -225,7 +234,11 @@ $(function(){
 							.x(function(d) { return x(d.timestamp); })
 							.y(function(d) { return y(d.total); });
 
-						svg.append("g")
+						var g = svg.append("g")
+							.attr("class","chartContiner")
+							.attr("clip-path","url(#graphClip)");
+
+						g.append("g")
 							.attr("class","charts")
 							.append("path")
 								.datum(data)
