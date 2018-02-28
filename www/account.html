@@ -181,10 +181,12 @@ $(function(){
 									}
 									var groupedData = _.flatMap(ipData,function(value,index){
 										if ("performance" in value && _.isArray(value.performance)){
-											return _.reduce(value.performance,function(acc,item){
-												var balance = acc.sofar * (1 + item.adjustment);
+											return _.reduce(_.sortBy(value.performance,function(d){return d.timestamp;}),function(acc,item){
+												var balance = acc.sofar * (1 + (_.isNaN(item.adjustment)? 0 : item.adjustment));
+												console.log(item,balance);
 												acc.sofar = balance;
 												acc.items.push({scheme:value.name,timestamp:item.timestamp,adjustment:item.adjustment,balance:balance});
+												console.log(acc.sofar);
 												return acc;
 											},{sofar:1.0,items:[]}).items;
 										} else {
