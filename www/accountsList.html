@@ -75,7 +75,7 @@ $(function(){
 			$.ajax({
 				url:"resources/accountTransactions.json",
 				method:"GET",
-				datatype:"text",
+				dataType:"text",
 				success:function(accountTransactionsRaw){
 					var accountTransactions = [];
 					if (_.isArray(accountTransactionsRaw)){
