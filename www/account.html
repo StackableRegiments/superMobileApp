@@ -103,7 +103,12 @@ $(function(){
 					method:"GET",
 					datatype:"text",
 					success:function(accountTransactionsRaw){
-						var accountTransactions = JSON.parse(accountTransactionsRaw);
+						var accountTransactions = [];
+						if (_.isArray(accountTransactionsRaw)){
+							accountTransactions = accountTransactionsRaw;
+						}	else {
+							accountTransactions = JSON.parse(accountTransactionsRaw);
+						}
 						var trans = _.groupBy(accountTransactions,function(trans){return trans.account;});
 
 						var transForThisAccount = trans[account.number];
@@ -156,57 +161,81 @@ $(function(){
 						});
 			
 						//create the transactions graph
+						var data = orderedTrans;
 
-						var svg = d3.select("#transactionsGraph svg"),	
-
-							margin = {top: 20, right: 20, bottom: 90, left: 50},
-							width = 640 - margin.left - margin.right,
-							height = 480 - margin.top - margin.bottom,
-							g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-						svg.attr("viewBox","0 0 640 480");
+						var margin = {top: 0, right: 0, bottom: 90, left: 50};
+						var	width = 640 - margin.left - margin.right;
+						var	height = 480 - margin.top - margin.bottom;
 
 						var parseTime = d3.timeParse("%d-%b-%y");
-							
-						var x = d3.scaleTime().rangeRound([0, width]);
 
-						var y = d3.scaleLinear().rangeRound([height, 0]);
+						var x = d3.scaleTime()
+							.rangeRound([0, width]);
+						x.domain(d3.extent(data, function(d) { return d.timestamp; }));
+						var xAxis = d3.axisBottom(x);
+
+						var y = d3.scaleLinear()
+							.rangeRound([height, 0]);
+						y.domain(d3.extent(data, function(d) { return d.total; }));
+						var yAxis = d3.axisLeft(y); 
+
+						var zoomed = function(){
+							console.log("zooming",d3.event.transform);
+							svg.selectAll(".charts")
+								.attr("transform",d3.event.transform);
+							d3.selectAll(".line")
+								.style("stroke-width",2/d3.event.transform.k);
+							gx.call(xAxis.scale(d3.event.transform.rescaleX(x)));							
+							gy.call(yAxis.scale(d3.event.transform.rescaleY(y)));							
+						}
+
+						var zoom = d3.zoom()
+							.scaleExtent([1,30])
+							.on("zoom",zoomed);
+
+						var svg = d3.select("#transactionsGraph svg")
+							.attr("viewBox","0 0 640 480")
+							.call(zoom)
+							.append("g")
+								.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+							
+						var gy = svg.append("g")
+							.attr("transform", "translate("+margin.left +"," + margin.top + ")")
+							.call(yAxis);
+
+						gy.selectAll("text")	
+									.style("text-anchor", "end")
+									.attr("dx", "-.8em")
+									.attr("dy", ".15em")
+									.attr("transform", "rotate(-65)");
+
+						var gx = svg.append("g")
+								.attr("transform", "translate("+margin.left+","+height + ")")
+								.call(xAxis);
+
+						gx.append("text")
+								.attr("fill", "#000")
+								.attr("transform", "translate("+margin.left+","+height + ") rotate(-90)")
+								.attr("y", 6)
+								.attr("dy", "0.71em")
+								.attr("text-anchor", "end")
+								.text("($)");
 
 						var line = d3.line()
 							.x(function(d) { return x(d.timestamp); })
 							.y(function(d) { return y(d.total); });
-						
-						var data = orderedTrans;
 
-							x.domain(d3.extent(data, function(d) { return d.timestamp; }));
-							y.domain(d3.extent(data, function(d) { return d.total; }));
-
-							g.append("g")
-									.attr("transform", "translate(0," + height + ")")
-									.call(d3.axisBottom(x).ticks(d3.timeMonth.every(1))).selectAll("text")	
-										.style("text-anchor", "end")
-										.attr("dx", "-.8em")
-										.attr("dy", ".15em")
-										.attr("transform", "rotate(-65)");
-
-							g.append("g")
-									.call(d3.axisLeft(y))
-								.append("text")
-									.attr("fill", "#000")
-									.attr("transform", "rotate(-90)")
-									.attr("y", 6)
-									.attr("dy", "0.71em")
-									.attr("text-anchor", "end")
-									.text("($)");
-
-							g.append("path")
-									.datum(data)
-									.attr("fill", "none")
-									.attr("stroke", "steelblue")
-									.attr("stroke-linejoin", "round")
-									.attr("stroke-linecap", "round")
-									.attr("stroke-width", 1.5)
-									.attr("d", line);
+						svg.append("g")
+							.attr("class","charts")
+							.append("path")
+								.datum(data)
+								.attr("class","line")
+								.attr("fill", "none")
+								.attr("stroke", "steelblue")
+								.attr("stroke-linejoin", "round")
+								.attr("stroke-linecap", "round")
+								.attr("stroke-width", 1.5)
+								.attr("d", line);
 
 					},
 					error:function(err){
