@@ -76,6 +76,9 @@
 					</div>
 					<div id="investmentOptionsPane" class="tabPane investmentOptions">
 						<div id="investmentsPerformance">
+							<div class="investmentOptionsChooser">
+								<span class="investmentOptionChoice"></span>
+							</div>
 							<svg class="investmentPerformanceGraphSvg"></svg>
 						</div>
 					</div>
@@ -128,8 +131,6 @@ $(function(){
 							transForThisAccount = [];
 						}
 
-						console.log("account",account,transForThisAccount);
-
 						//create the tabbed interface
 
 						$(".tabPane").hide();
@@ -167,12 +168,15 @@ $(function(){
 
 						zoomableGraph("#transactionsGraph svg",data,function(d){return d.timestamp;},function(d){return d.total;},function(d){return "balance";},"","$");
 
+
+						//create the investments view
+
+						$(".investmentOptionChoice").text(account.investmentOption);
 						$.ajax({
 								url:"resources/accounts/"+accountNumber+"/investmentOptions.json",
 								method:"GET",
 								dataType:"text",
 								success:function(rawPerformance){
-
 									var ipData = [];
 									if (_.isArray(rawPerformance)){
 										ipData = rawPerformance;
@@ -183,17 +187,14 @@ $(function(){
 										if ("performance" in value && _.isArray(value.performance)){
 											return _.reduce(_.sortBy(value.performance,function(d){return d.timestamp;}),function(acc,item){
 												var balance = acc.sofar * (1 + (_.isNaN(item.adjustment)? 0 : item.adjustment));
-												console.log(item,balance);
 												acc.sofar = balance;
 												acc.items.push({scheme:value.name,timestamp:item.timestamp,adjustment:item.adjustment,balance:balance});
-												console.log(acc.sofar);
 												return acc;
 											},{sofar:1.0,items:[]}).items;
 										} else {
 											return [];
 										}
 									});
-									console.log("inv:",groupedData);
 									zoomableGraph("#investmentsPerformance svg",groupedData,function(d){return d.timestamp;},function(d){return d.balance;},function(d){return d.scheme;},"","$");
 								},
 								error:function(err){

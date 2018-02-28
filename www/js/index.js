@@ -93,9 +93,9 @@ var app = (function(){
 	};
 	return {
     // Application Constructor
-    initialize: function() {
+    initialize: _.once(function() {
         bindEvents();
-    },
+    }),
 		login:loginFunc,
 		getUser: getUserFunc
 	};
@@ -146,11 +146,8 @@ var QueryParams = (function(){
 		var items = p.split('=');
 		var key = _.head(items);
 		var value = _.tail(items).join("=");
-		console.log("item",p,items,key,value);
 		parts[key] = value;
 	});
-
-	console.log("qp",search,parts);
 	var getFunc = function(key){
 		return parts[key];
 	};	
@@ -258,5 +255,5 @@ var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLab
 				.attr("stroke-width", 1.5)
 				.attr("d", line);
 		})
-
+	return svg;
 };

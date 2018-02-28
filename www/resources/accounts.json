@@ -4,20 +4,23 @@
 		"accountHolder":"Dave Testerson",	
 		"status":"A",
 		"type":"P",
-		"number":0
+		"number":0,
+		"investmentOption":"balanced"
 	},
 	{
 		"name":"Post Retirement Paper Route",
 		"accountHolder":"Dave Testerson",	
 		"status":"A",
 		"type":"C",
-		"number":1	
+		"number":1,
+		"investmentOption":"aggressive"	
 	},
 	{
 		"name":"Lifetime Service",
 		"accountHolder":"Dave Testerson",	
 		"status":"C",
 		"type":"C",
-		"number":2	
+		"number":2,
+		"investmentOption":"conservative"	
 	}
 ]
