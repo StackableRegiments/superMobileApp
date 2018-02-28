@@ -60,10 +60,11 @@
 			<div id="accountHolderName"></div>
 			<div class="tabController">
 				<div class="tabHeaders">
-					<button id="transactionListing" class="tabHeaderButton transactionListingHeader">transactions</button>
-					<button id="transactionGraph" class="tabHeaderButton transactionGraphHeader">graph</button>
-					<button id="investmentOptions" class="tabHeaderButton investmentOptionsHeader">investments</button>
-					<button id="insuranceDetails" class="tabHeaderButton insuranceDetailsHeader">insurance</button>
+					<span id="transactionListing" class="tabHeaderButton transactionListingHeader"><i class="fa fa-dollar-sign" text="transactions"></i></span>
+					<span id="transactionGraph" class="tabHeaderButton transactionGraphHeader"><i class="fa fa-chart-line" text="graph"></i></span>
+					<span id="investmentOptions" class="tabHeaderButton investmentOptionsHeader"><i class="fa fa-balance-scale" text="investments"></i></span>
+					<span id="insuranceDetails" class="tabHeaderButton insuranceDetailsHeader"><i class="fa fa-heartbeat" text="insurance"></i></span>
+					<span id="news" class="tabHeaderButton newsHeader"><i class="fa fa-newspaper" text="news"></i></span>
 				</div>
 				<div class="tabs">
 					<div id="transactionListingPane" class="tabPane transactionListing">
@@ -75,10 +76,31 @@
 						</div>
 					</div>
 					<div id="investmentOptionsPane" class="tabPane investmentOptions">
-						<div id="investmentsPerformance"></div>
+						<div id="investmentsPerformance">
+							<div class="investmentOptionsChooser">
+								<span class="investmentOptionChoice"></span>
+							</div>
+							<svg class="investmentPerformanceGraphSvg"></svg>
+						</div>
 					</div>
 					<div id="insuranceDetailsPane" class="tabPane insuranceDetails">
 						<div id="insuranceDetails"></div>
+					</div>
+					<div id="newsPane" class="tabPane news">
+						<div id="newsHeader">News</div>
+						<div id="newsItemContainer">
+							<div class="newsItem">
+									<div class="newsItemHeader"></div>
+									<div class="newsItemTimestamp"></div>
+									<div class="newsBody">
+										<img class="newsItemImage"</img>
+										<span class="newsItemSummary"></span>
+									</div>
+								<a class="newsItemLink">
+									<div class="moreInfoLink">Read more...</div>
+								</a>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -101,9 +123,14 @@ $(function(){
 				$.ajax({
 					url:"resources/accountTransactions.json",
 					method:"GET",
-					datatype:"text",
+					dataType:"text",
 					success:function(accountTransactionsRaw){
-						var accountTransactions = JSON.parse(accountTransactionsRaw);
+						var accountTransactions = [];
+						if (_.isArray(accountTransactionsRaw)){
+							accountTransactions = accountTransactionsRaw;
+						}	else {
+							accountTransactions = JSON.parse(accountTransactionsRaw);
+						}
 						var trans = _.groupBy(accountTransactions,function(trans){return trans.account;});
 
 						var transForThisAccount = trans[account.number];
@@ -120,8 +147,6 @@ $(function(){
 						if (transForThisAccount === undefined){
 							transForThisAccount = [];
 						}
-
-						console.log("account",account,transForThisAccount);
 
 						//create the tabbed interface
 
@@ -156,57 +181,74 @@ $(function(){
 						});
 			
 						//create the transactions graph
-
-						var svg = d3.select("#transactionsGraph svg"),	
-
-							margin = {top: 20, right: 20, bottom: 90, left: 50},
-							width = 640 - margin.left - margin.right,
-							height = 480 - margin.top - margin.bottom,
-							g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-						svg.attr("viewBox","0 0 640 480");
-
-						var parseTime = d3.timeParse("%d-%b-%y");
-							
-						var x = d3.scaleTime().rangeRound([0, width]);
-
-						var y = d3.scaleLinear().rangeRound([height, 0]);
-
-						var line = d3.line()
-							.x(function(d) { return x(d.timestamp); })
-							.y(function(d) { return y(d.total); });
-						
 						var data = orderedTrans;
 
-							x.domain(d3.extent(data, function(d) { return d.timestamp; }));
-							y.domain(d3.extent(data, function(d) { return d.total; }));
+						zoomableGraph("#transactionsGraph svg",data,function(d){return d.timestamp;},function(d){return d.total;},function(d){return "balance";},"","$");
 
-							g.append("g")
-									.attr("transform", "translate(0," + height + ")")
-									.call(d3.axisBottom(x).ticks(d3.timeMonth.every(1))).selectAll("text")	
-										.style("text-anchor", "end")
-										.attr("dx", "-.8em")
-										.attr("dy", ".15em")
-										.attr("transform", "rotate(-65)");
 
-							g.append("g")
-									.call(d3.axisLeft(y))
-								.append("text")
-									.attr("fill", "#000")
-									.attr("transform", "rotate(-90)")
-									.attr("y", 6)
-									.attr("dy", "0.71em")
-									.attr("text-anchor", "end")
-									.text("($)");
+						//create the investments view
 
-							g.append("path")
-									.datum(data)
-									.attr("fill", "none")
-									.attr("stroke", "steelblue")
-									.attr("stroke-linejoin", "round")
-									.attr("stroke-linecap", "round")
-									.attr("stroke-width", 1.5)
-									.attr("d", line);
+						$(".investmentOptionChoice").text(account.investmentOption);
+						$.ajax({
+								url:"resources/accounts/"+accountNumber+"/investmentOptions.json",
+								method:"GET",
+								dataType:"json",
+								success:function(rawPerformance){
+									var ipData = [];
+									if (_.isArray(rawPerformance)){
+										ipData = rawPerformance;
+									} else {
+										ipData = JSON.parse(rawPerformance);
+									}
+									var groupedData = _.flatMap(ipData,function(value,index){
+										if ("performance" in value && _.isArray(value.performance)){
+											return _.reduce(_.sortBy(value.performance,function(d){return d.timestamp;}),function(acc,item){
+												var balance = acc.sofar * (1 + (_.isNaN(item.adjustment)? 0 : item.adjustment));
+												acc.sofar = balance;
+												acc.items.push({scheme:value.name,timestamp:item.timestamp,adjustment:item.adjustment,balance:balance});
+												return acc;
+											},{sofar:1.0,items:[]}).items;
+										} else {
+											return [];
+										}
+									});
+									zoomableGraph("#investmentsPerformance svg",groupedData,function(d){return d.timestamp;},function(d){return d.balance;},function(d){return d.scheme;},"","$");
+								},
+								error:function(err){
+								}
+						});
+					
+						var newsContainer = $("#newsItemContainer");
+						var newsTemplate = newsContainer.find(".newsItem").clone();
+						newsContainer.empty();
+
+						//create the news
+						$.ajax({
+								url:"resources/accounts/"+accountNumber+"/news.json",
+								method:"GET",
+								dataType:"text",
+								success:function(newsItems){
+									var newsData = [];
+									if (_.isArray(newsItems)){
+										newsData = newsItems;
+									} else {
+										newsData = JSON.parse(newsItems);
+									}
+									newsContainer.html(_.map(newsData,function(newsItem){
+											var elem = newsTemplate.clone();
+											elem.find(".newsItemLink").attr("href",newsItem.url);
+											elem.find(".newsItemTimestamp").text(new Date(newsItem.timestamp));
+											elem.find(".newsItemHeader").text(newsItem.heading);
+											elem.find(".newsItemSummary").text(newsItem.summary);
+											elem.find(".newsItemImage").attr("src",newsItem.image);
+											return elem;
+									}));
+
+								},
+								error:function(err){
+
+								}
+						});
 
 					},
 					error:function(err){

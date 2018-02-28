@@ -60,42 +60,42 @@ var app = (function(){
 			});
 		});	
 	};
-	return {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
     // Bind Event Listeners
     //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-				document.addEventListener('load', this.onLoad, false);
-				document.addEventListener('offline', this.onOffline, false);
-				document.addEventListener('online', this.onOnline, false);
-    },
-    // deviceready Event Handler
+		//    // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function(device) {
-			var ev = this;
-			var db = getDb();
-			console.log('Received Device Ready Event',device,ev,db);
-    },
-    onLoad: function(device) {
-			var ev = this;
-        console.log('Received Load Event',device,ev);
-    },
-    onOffline: function(device) {
-			var ev = this;
-        console.log('Received Offline Event',device,ev);
-    },
-    onOnline: function(device) {
-			var ev = this;
-        console.log('Received Online Event',device,ev);
-    },
+	var onDeviceReady = function(device) {
+		var ev = this;
+		var db = getDb();
+		console.log('Received Device Ready Event',device,ev,db);
+	};
+	var onLoad = function(device) {
+		var ev = this;
+			console.log('Received Load Event',device,ev);
+	};
+	var onOffline = function(device) {
+		var ev = this;
+			console.log('Received Offline Event',device,ev);
+	};
+	var onOnline = function(device) {
+		var ev = this;
+			console.log('Received Online Event',device,ev);
+	};
+  var bindEvents = function() {
+		document.addEventListener('deviceready', onDeviceReady, false);
+		document.addEventListener('load', onLoad, false);
+		document.addEventListener('offline', onOffline, false);
+		document.addEventListener('online', onOnline, false);
+	};
+	return {
+    // Application Constructor
+    initialize: _.once(function() {
+        bindEvents();
+    }),
 		login:loginFunc,
 		getUser: getUserFunc
 	};
@@ -146,11 +146,8 @@ var QueryParams = (function(){
 		var items = p.split('=');
 		var key = _.head(items);
 		var value = _.tail(items).join("=");
-		console.log("item",p,items,key,value);
 		parts[key] = value;
 	});
-
-	console.log("qp",search,parts);
 	var getFunc = function(key){
 		return parts[key];
 	};	
@@ -158,3 +155,105 @@ var QueryParams = (function(){
 		get:getFunc
 	};
 })();
+
+var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel){
+//data is a jsonArray of datum
+//selector is a jquery selector
+//xFunc is the extractor from datum to provide the xValue
+//yFunc is the extractor from datum to provide the yValue
+//lineSelectorFunc is a function which partitions the data into separate lines, with names
+//
+//
+	var margin = {top: 0, right: 0, bottom: 90, left: 50};
+	var	width = 640 - margin.left - margin.right;
+	var	height = 480 - margin.top - margin.bottom;
+
+	var parseTime = d3.timeParse("%d-%b-%y");
+
+	var x = d3.scaleTime()
+		.rangeRound([0, width]);
+	x.domain(d3.extent(data, xFunc));
+	var xAxis = d3.axisBottom(x);
+
+	var y = d3.scaleLinear()
+		.rangeRound([height, 0]);
+	y.domain(d3.extent(data, yFunc));
+	var yAxis = d3.axisLeft(y); 
+
+	var zoomed = function(){
+		svg.selectAll(".charts")
+			.attr("transform",d3.event.transform);
+		d3.selectAll(".line")
+			.style("stroke-width",2/d3.event.transform.k);
+		gx.call(xAxis.scale(d3.event.transform.rescaleX(x)));							
+		gy.call(yAxis.scale(d3.event.transform.rescaleY(y)));							
+	}
+
+	var zoom = d3.zoom()
+		.scaleExtent([1,30])
+		.on("zoom",zoomed);
+
+	var svg = d3.select(selector)
+		.attr("viewBox","0 0 640 480")
+		.call(zoom)
+		.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	var graphClipId = "graphClip_"+_.uniqueId().toString();
+
+	svg.append("clipPath")
+		.attr("id",graphClipId)
+		.append("rect")
+			.attr("width",width)
+			.attr("height",height)
+			.attr("x",margin.left)
+			.attr("y",margin.y);
+
+	
+	var gy = svg.append("g")
+		.attr("transform", "translate("+margin.left +"," + margin.top + ")")
+		.call(yAxis);
+
+	gy.selectAll("text")	
+				.style("text-anchor", "end")
+				.attr("dx", "-.8em")
+				.attr("dy", ".15em")
+				.text(yAxisLabel ? yAxisLabel : "");
+
+	var gx = svg.append("g")
+			.attr("transform", "translate("+margin.left+","+height + ")")
+			.call(xAxis);
+
+	gx.append("text")
+			.attr("fill", "#000")
+			.attr("transform", "translate("+margin.left+","+height + ") rotate(-90)")
+			.attr("y", 6)
+			.attr("dy", "0.71em")
+			.attr("text-anchor", "end")
+			.text(xAxisLabel ? xAxisLabel : "");
+
+	var line = d3.line()
+		.x(function(d) { return x(xFunc(d)); })
+		.y(function(d) { return y(yFunc(d)); });
+
+	var g = svg.append("g")
+		.attr("class","chartContiner")
+		.attr("clip-path","url(#"+graphClipId+")");
+
+	var charts = g.append("g")
+		.attr("class","charts")
+
+		var groupedData = _.groupBy(data,lineSelectorFunc);
+		_.forEach(groupedData,function(values,key){
+			charts.append("path")
+				.datum(values)
+				.attr("class","line")
+				.attr("fill", "none")
+				.attr("stroke", "steelblue") //select a colour based on the key perhaps?
+				.attr("stroke-linejoin", "round")
+				.attr("stroke-linecap", "round")
+				.attr("stroke-width", 1.5)
+				.attr("d", line);
+		})
+	return svg;
+};

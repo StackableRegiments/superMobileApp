@@ -75,9 +75,14 @@ $(function(){
 			$.ajax({
 				url:"resources/accountTransactions.json",
 				method:"GET",
-				datatype:"text",
+				dataType:"text",
 				success:function(accountTransactionsRaw){
-					var accountTransactions = JSON.parse(accountTransactionsRaw);
+					var accountTransactions = [];
+					if (_.isArray(accountTransactionsRaw)){
+						accountTransactions = accountTransactionsRaw;
+					}	else {
+						accountTransactions = JSON.parse(accountTransactionsRaw);
+					}
 					var trans = _.groupBy(accountTransactions,function(t){return t.account;});
 					var accountData = _.map(accounts,function(account){
 						var transForThisAccount = trans[account.number];

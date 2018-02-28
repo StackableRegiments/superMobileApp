@@ -41,7 +41,7 @@ body {
     height:100%;
     margin:0px;
     padding:0px;
-    text-transform:uppercase;
+//    text-transform:uppercase;
     width:100%;
 }
 
@@ -55,10 +55,42 @@ body {
 .activeTab {
 	background:yellow;
 }
+.tabHeaders {
+	height:3.5em;
+}
+.tabHeaderButton {
+	height:3em;
+	width:3em;
+	padding:1em;
+}
 
 .loginItem {
 	display:block;
 	margin:1em;
+}
+
+.newsItem {
+	border:1px solid grey;
+	background:white;
+	padding:1em;
+	margin:1em;
+}
+
+.newsItemHeader {
+	font-size:large;	
+}
+.newsItemSummary {
+	font-style:italic;
+}
+.newsItemImage {
+	float:left;
+	max-width:80px;
+	max-height:60px;
+	margin:1em;
+}
+.newsItemTimestamp {
+	font-size:small;
+	font-color:grey;
 }
 
 html, body {
