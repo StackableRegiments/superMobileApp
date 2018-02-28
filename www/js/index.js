@@ -86,10 +86,10 @@ var app = (function(){
 			console.log('Received Online Event',device,ev);
 	};
   var bindEvents = function() {
-		document.addEventListener('deviceready', this.onDeviceReady, false);
-		document.addEventListener('load', this.onLoad, false);
-		document.addEventListener('offline', this.onOffline, false);
-		document.addEventListener('online', this.onOnline, false);
+		document.addEventListener('deviceready', onDeviceReady, false);
+		document.addEventListener('load', onLoad, false);
+		document.addEventListener('offline', onOffline, false);
+		document.addEventListener('online', onOnline, false);
 	};
 	return {
     // Application Constructor
@@ -184,7 +184,6 @@ var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLab
 	var yAxis = d3.axisLeft(y); 
 
 	var zoomed = function(){
-		console.log("zooming",d3.event.transform);
 		svg.selectAll(".charts")
 			.attr("transform",d3.event.transform);
 		d3.selectAll(".line")
@@ -203,8 +202,10 @@ var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLab
 		.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+	var graphClipId = "graphClip_"+_.uniqueId().toString();
+
 	svg.append("clipPath")
-		.attr("id","graphClip")
+		.attr("id",graphClipId)
 		.append("rect")
 			.attr("width",width)
 			.attr("height",height)
@@ -240,7 +241,7 @@ var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLab
 
 	var g = svg.append("g")
 		.attr("class","chartContiner")
-		.attr("clip-path","url(#graphClip)");
+		.attr("clip-path","url(#"+graphClipId+")");
 
 	var charts = g.append("g")
 		.attr("class","charts")

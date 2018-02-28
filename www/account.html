@@ -75,7 +75,9 @@
 						</div>
 					</div>
 					<div id="investmentOptionsPane" class="tabPane investmentOptions">
-						<div id="investmentsPerformance"></div>
+						<div id="investmentsPerformance">
+							<svg class="investmentPerformanceGraphSvg"></svg>
+						</div>
 					</div>
 					<div id="insuranceDetailsPane" class="tabPane insuranceDetails">
 						<div id="insuranceDetails"></div>
@@ -164,6 +166,38 @@ $(function(){
 						var data = orderedTrans;
 
 						zoomableGraph("#transactionsGraph svg",data,function(d){return d.timestamp;},function(d){return d.total;},function(d){return "balance";},"","$");
+
+						$.ajax({
+								url:"resources/accounts/"+accountNumber+"/investmentOptions.json",
+								method:"GET",
+								dataType:"text",
+								success:function(rawPerformance){
+
+									var ipData = [];
+									if (_.isArray(rawPerformance)){
+										ipData = rawPerformance;
+									} else {
+										ipData = JSON.parse(rawPerformance);
+									}
+									var groupedData = _.flatMap(ipData,function(value,index){
+										if ("performance" in value && _.isArray(value.performance)){
+											return _.reduce(value.performance,function(acc,item){
+												var balance = acc.sofar * (1 + item.adjustment);
+												acc.sofar = balance;
+												acc.items.push({scheme:value.name,timestamp:item.timestamp,adjustment:item.adjustment,balance:balance});
+												return acc;
+											},{sofar:1.0,items:[]}).items;
+										} else {
+											return [];
+										}
+									});
+									console.log("inv:",groupedData);
+									zoomableGraph("#investmentsPerformance svg",groupedData,function(d){return d.timestamp;},function(d){return d.balance;},function(d){return d.scheme;},"","$");
+								},
+								error:function(err){
+								}
+						});
+
 					},
 					error:function(err){
 						console.log("failure to fetch transactions",err);
