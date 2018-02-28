@@ -60,10 +60,11 @@
 			<div id="accountHolderName"></div>
 			<div class="tabController">
 				<div class="tabHeaders">
-					<button id="transactionListing" class="tabHeaderButton transactionListingHeader">transactions</button>
-					<button id="transactionGraph" class="tabHeaderButton transactionGraphHeader">graph</button>
-					<button id="investmentOptions" class="tabHeaderButton investmentOptionsHeader">investments</button>
-					<button id="insuranceDetails" class="tabHeaderButton insuranceDetailsHeader">insurance</button>
+					<span id="transactionListing" class="tabHeaderButton transactionListingHeader"><i class="fa fa-dollar-sign" text="transactions"></i></span>
+					<span id="transactionGraph" class="tabHeaderButton transactionGraphHeader"><i class="fa fa-chart-line" text="graph"></i></span>
+					<span id="investmentOptions" class="tabHeaderButton investmentOptionsHeader"><i class="fa fa-balance-scale" text="investments"></i></span>
+					<span id="insuranceDetails" class="tabHeaderButton insuranceDetailsHeader"><i class="fa fa-heartbeat" text="insurance"></i></span>
+					<span id="news" class="tabHeaderButton newsHeader"><i class="fa fa-newspaper" text="news"></i></span>
 				</div>
 				<div class="tabs">
 					<div id="transactionListingPane" class="tabPane transactionListing">
@@ -84,6 +85,22 @@
 					</div>
 					<div id="insuranceDetailsPane" class="tabPane insuranceDetails">
 						<div id="insuranceDetails"></div>
+					</div>
+					<div id="newsPane" class="tabPane news">
+						<div id="newsHeader">News</div>
+						<div id="newsItemContainer">
+							<div class="newsItem">
+									<div class="newsItemHeader"></div>
+									<div class="newsItemTimestamp"></div>
+									<div class="newsBody">
+										<img class="newsItemImage"</img>
+										<span class="newsItemSummary"></span>
+									</div>
+								<a class="newsItemLink">
+									<div class="moreInfoLink">Read more...</div>
+								</a>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -198,6 +215,38 @@ $(function(){
 									zoomableGraph("#investmentsPerformance svg",groupedData,function(d){return d.timestamp;},function(d){return d.balance;},function(d){return d.scheme;},"","$");
 								},
 								error:function(err){
+								}
+						});
+					
+						var newsContainer = $("#newsItemContainer");
+						var newsTemplate = newsContainer.find(".newsItem").clone();
+						newsContainer.empty();
+
+						//create the news
+						$.ajax({
+								url:"resources/accounts/"+accountNumber+"/news.json",
+								method:"GET",
+								dataType:"text",
+								success:function(newsItems){
+									var newsData = [];
+									if (_.isArray(newsItems)){
+										newsData = newsItems;
+									} else {
+										newsData = JSON.parse(newsItems);
+									}
+									newsContainer.html(_.map(newsData,function(newsItem){
+											var elem = newsTemplate.clone();
+											elem.find(".newsItemLink").attr("href",newsItem.url);
+											elem.find(".newsItemTimestamp").text(new Date(newsItem.timestamp));
+											elem.find(".newsItemHeader").text(newsItem.heading);
+											elem.find(".newsItemSummary").text(newsItem.summary);
+											elem.find(".newsItemImage").attr("src",newsItem.image);
+											return elem;
+									}));
+
+								},
+								error:function(err){
+
 								}
 						});
 
