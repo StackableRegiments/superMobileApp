@@ -72,6 +72,7 @@ var app = (function(){
 		var ev = this;
 		var db = getDb();
 		console.log('Received Device Ready Event',device,ev,db);
+		JsGridHelpers.initialize();
 	};
 	var onLoad = function(device) {
 		var ev = this;
@@ -101,40 +102,45 @@ var app = (function(){
 	};
 })();
 
-$(function(){
-	var MyCurrencyField = function(config){
-		jsGrid.Field.call(this,config);
-	};
+var JsGridHelpers = (function(){
+	var initFunc = function(){
+		var MyCurrencyField = function(config){
+			jsGrid.Field.call(this,config);
+		};
 
-	MyCurrencyField.prototype = new jsGrid.Field({
-		css: "currency-field",
-		align: "right",
-		sorter: function(cash1,cash2){
-			return cash1 - cash2;
-		},
-		itemTemplate: function(cash){
-			return $("<span/>",{
-				text:"$"+_.round(cash,2).toString()
-			});
-		}
-	});
-	jsGrid.fields.currency = MyCurrencyField;
-	//add a date field to jsgrid
-	var MyDateField = function(config) {
-		jsGrid.Field.call(this, config);
+		MyCurrencyField.prototype = new jsGrid.Field({
+			css: "currency-field",
+			align: "right",
+			sorter: function(cash1,cash2){
+				return cash1 - cash2;
+			},
+			itemTemplate: function(cash){
+				return $("<span/>",{
+					text:"$"+_.round(cash,2).toString()
+				});
+			}
+		});
+		jsGrid.fields.currency = MyCurrencyField;
+		//add a date field to jsgrid
+		var MyDateField = function(config) {
+			jsGrid.Field.call(this, config);
+		};
+		MyDateField.prototype = new jsGrid.Field({
+			css: "date-field",            // redefine general property 'css'
+			align: "center",              // redefine general property 'align'
+			sorter: function(date1, date2) {
+					return new Date(date1) - new Date(date2);
+			},
+			itemTemplate: function(value) {
+					return new Date(value).toDateString();
+			}
+		});
+		jsGrid.fields.date = MyDateField;
+	}
+	return {
+		initialize:initFunc
 	};
-	MyDateField.prototype = new jsGrid.Field({
-		css: "date-field",            // redefine general property 'css'
-		align: "center",              // redefine general property 'align'
-		sorter: function(date1, date2) {
-				return new Date(date1) - new Date(date2);
-		},
-		itemTemplate: function(value) {
-				return new Date(value).toDateString();
-		}
-	});
-	jsGrid.fields.date = MyDateField;
-});
+})();
 
 var QueryParams = (function(){
 	var search = window.location.search;
