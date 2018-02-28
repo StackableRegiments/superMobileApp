@@ -56,6 +56,7 @@
 				<input class="loginItem" type="text" id="loginUsername"></input>
 				<input class="loginItem" type="password" id="loginPassword"></input>
 				<input class="loginItem" type="button" value="login" id="loginButton"></input>
+				<button class="tryFingerprint">DeviceAuth</button>
 			</div>
 	</body>
 	<script type="text/javascript">
@@ -81,6 +82,24 @@
 					},function(){
 						alert("please enter your username and password");
 					});
+				});
+				$(".tryFingerprint").on("click",function(){
+					if ("Fingerprint" in window){
+						Fingerprint.isAvailable(function(result){
+							console.log("fingerprint success:",result);
+							Fingerprint.show({
+								clientId:"Fingerprint-Demo",
+								clientSecret:"password"
+							},function(success){
+								window.location="accountsList.html";
+							},function(error){
+								alert("failed to authenticate with device capabilities");
+							});
+						},function(err){
+							console.log("fingerprint error:",err);
+							alert("fingerprint not available");
+						});
+					}
 				});
 		});
 	</script>
