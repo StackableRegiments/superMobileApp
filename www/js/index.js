@@ -252,19 +252,32 @@ var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLab
 		.attr("clip-path","url(#"+graphClipId+")");
 
 	var charts = g.append("g")
-		.attr("class","charts")
+		.attr("class","charts");
 
-		var groupedData = _.groupBy(data,lineSelectorFunc);
-		_.forEach(groupedData,function(values,key){
-			charts.append("path")
-				.datum(values)
-				.attr("class","line")
-				.attr("fill", "none")
-				.attr("stroke", "steelblue") //select a colour based on the key perhaps?
-				.attr("stroke-linejoin", "round")
-				.attr("stroke-linecap", "round")
-				.attr("stroke-width", 1.5)
-				.attr("d", line);
-		})
+	var colours = [
+		"steelblue",
+		"blueviolet",
+		"coral",
+		"forestgreen",
+		"magenta",
+		"yellow",
+		"springgreen",
+		"red"
+	];
+	var colourIndex = 0;
+	var groupedData = _.groupBy(data,lineSelectorFunc);
+	_.forEach(groupedData,function(values,key){
+		var colour = colours[colourIndex];
+		charts.append("path")
+			.datum(values)
+			.attr("class","line")
+			.attr("fill", "none")
+			.attr("stroke", colour)
+			.attr("stroke-linejoin", "round")
+			.attr("stroke-linecap", "round")
+			.attr("stroke-width", 1.5)
+			.attr("d", line);
+		colourIndex++;
+	});
 	return svg;
 };
