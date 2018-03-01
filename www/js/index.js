@@ -265,6 +265,11 @@ var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLab
 		"red"
 	];
 	var colourIndex = 0;
+	var legends = svg.append("g")
+		.attr("class","legend")
+		.attr("x",25 + margin.left)
+		.attr("y",25 + margin.top)
+		.attr("transform","translate("+( 25+margin.left )+","+( 25+margin.top )+")");
 	var groupedData = _.groupBy(data,lineSelectorFunc);
 	_.forEach(groupedData,function(values,key){
 		var colour = colours[colourIndex];
@@ -277,6 +282,20 @@ var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLab
 			.attr("stroke-linecap", "round")
 			.attr("stroke-width", 1.5)
 			.attr("d", line);
+		legends.append("circle")
+			.attr("r",10)
+			.attr("stroke","black")
+			.attr("fill",colour)
+			.attr("cx",0)
+			.attr("cy",25*colourIndex);
+		legends.append("text")
+				.attr("y",((25*colourIndex) + margin.top).toString())
+				.attr("x",(25).toString())
+				.attr("fill","black")
+				.attr("text-anchor","start")
+				.attr("font-family","Verdana")
+				.attr("font-size","12")
+				.text(key);
 		colourIndex++;
 	});
 	return svg;
