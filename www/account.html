@@ -49,10 +49,6 @@
 			<script type="text/javascript" src="cordova.js"></script>
 			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid.min.css"></link>
 			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid-theme.min.css"></link>
-			<script type="text/javascript">
-					app.initialize();
-					JsGridHelpers.initialize();
-			</script>
 			<title>Super Member Account</title>
 	</head>
 
@@ -124,7 +120,9 @@
 		</div>
 	</body>
 	<script type="text/javascript">
-$(function(){
+app.initialize();
+JsGridHelpers.initialize();
+app.onReadyAndLoaded(function(){
 	var accountNumber = QueryParams.get("number");
 	$.ajax({
 		url:"resources/accounts.json",
