@@ -68,14 +68,56 @@ var app = (function(){
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
-	var onDeviceReady = function(device) {
+	var ready = false;
+	var preReady = [];
+	var loaded = false;
+	var preLoaded = [];
+	var device = undefined;
+	var onDeviceReadyEvent = undefined;
+	var onDeviceReady = function(dev) {
+		device = dev;
+		ready = true;
 		var ev = this;
+		onDeviceReadyEvent = ev;
 		var db = getDb();
 		console.log('Received Device Ready Event',device,ev,db);
+		_.forEach(preReady,function(action){
+			if (_.isFunction(action)){
+				action(ev,device);
+			}
+		});
+		preReady = [];
+		$(function(){
+			loaded = true;
+			_.forEach(preLoaded,function(action){
+				if (_.isFunction(action)){
+					action(ev,device);
+				}
+			});
+			preLoad = [];
+		});
 	};
+	var onReadyFunc = function(action){
+		if (_.isFunction(action)){
+			if (ready){
+				action(onDeviceReadyEvent,device);
+			} else {
+				preReady.push(action);
+			}
+		}
+	};
+	var onReadyAndLoadedFunc = function(action){
+		if (_.isFunction(action)){
+			if (loaded){
+				action(onDeviceReadyEvent,device);
+			} else {
+				preLoaded.push(action);
+			}
+		}
+	}
 	var onLoad = function(device) {
 		var ev = this;
-			console.log('Received Load Event',device,ev);
+		console.log('Received Load Event',device,ev);
 	};
 	var onOffline = function(device) {
 		var ev = this;
@@ -91,12 +133,16 @@ var app = (function(){
 		document.addEventListener('offline', onOffline, false);
 		document.addEventListener('online', onOnline, false);
 	};
+
+
 	return {
     // Application Constructor
     initialize: _.once(function() {
         bindEvents();
     }),
 		login:loginFunc,
+		onReady:onReadyFunc,
+		onReadyAndLoaded:onReadyAndLoadedFunc,
 		getUser: getUserFunc
 	};
 })();

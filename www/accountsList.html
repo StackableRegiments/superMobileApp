@@ -48,10 +48,6 @@
 			<script type="text/javascript" src="js/index.js"></script>
 			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid.min.css"></link>
 			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid-theme.min.css"></link>
-			<script type="text/javascript">
-					app.initialize();
-					JsGridHelpers.initialize();
-			</script>
 			<title>Super Member Account Listing</title>
 	</head>
 
@@ -62,7 +58,9 @@
 		</div>
 	</body>
 	<script type="text/javascript">
-$(function(){
+app.initialize();
+app.onReadyAndLoaded(function(){
+	JsGridHelpers.initialize();
 	$.ajax({
 		url:"resources/accounts.json",
 		method:"GET",
