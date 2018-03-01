@@ -99,31 +99,43 @@
 					}
 				};
 				$("#loginButton").on("click",attemptLogin);
-				$(".tryFingerprint").on("click",function(){
-					if ("Fingerprint" in window){
-						Fingerprint.isAvailable(function(result){
-							console.log("fingerprint success:",result);
+				if ("Fingerprint" in window){
+					Fingerprint.isAvailable(function(result){
+						$(".tryFingerprint").on("click",function(){
 							Fingerprint.show({
 								clientId:"Fingerprint-Demo",
 								clientSecret:"password"
 							},function(success){
-							var successMsg = "";
-							try {
-								successMsg = JSON.stringify(success);
-								alert("authenticated:"+successMsg);
-								} catch(ex){
-								alert("authenticated error:"+JSON.stringify(ex) +", "+success.toString());
+								var authenticated = false;
+								if (_.isObject(success)){
+									if ("withFingerprint" in success){
+										authenticated = true;
+									} else if ("withFace" in success){
+										authenticated = true;
+									} else if ("withPattern" in success){
+										authenticated = true;
+									} else if ("withPassword" in success){
+										authenticated = true;
+									} else {
+										authenticated = true;
+									}
 								}
-								window.location="accountsList.html";
+
+								if (authenticated){
+									window.location="accountsList.html";
+								} else {
+									alert("failed to authenticate with device capabilities");
+								}
 							},function(error){
 								alert("failed to authenticate with device capabilities");
 							});
-						},function(err){
-							console.log("fingerprint error:",err);
-							alert("fingerprint not available");
 						});
-					}
-				});
+					},function(err){
+						$(".tryFingerprint").remove();
+					});
+				} else {
+					$(".tryFingerprint").remove();
+				}
 		});
 	</script>
 </html>

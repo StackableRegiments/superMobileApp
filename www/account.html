@@ -44,19 +44,20 @@
 			<script type="text/javascript" src="js/lodash/lodash.js"></script>
 			<script type="text/javascript" src="js/jquery/jquery.js"></script>
 			<script type="text/javascript" src="js/jsgrid/jsgrid.min.js"></script>
+			<script type="text/javascript" src="js/jsGridHelper.js"></script>
 			<script type="text/javascript" src="js/index.js"></script>
 			<script type="text/javascript" src="cordova.js"></script>
 			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid.min.css"></link>
 			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid-theme.min.css"></link>
 			<script type="text/javascript">
 					app.initialize();
+					JsGridHelpers.initialize();
 			</script>
 			<title>Super Member Account</title>
 	</head>
 
 	<body>
 		<div class="main-pane">
-			<div id="accountName"></div>
 			<div class="tabController">
 				<div class="tabHeaders">
 					<span id="profile" class="tabHeaderButton profileHeader"><i class="fa fa-user" text="profile"></i></span>
@@ -95,7 +96,12 @@
 						</div>
 					</div>
 					<div id="insuranceDetailsPane" class="tabPane insuranceDetails">
-						<div id="insuranceDetails"></div>
+						<div id="insuranceDetailsContainer">
+							<div class="insuranceType"></div>
+							<div class="insuranceCoverAmount"></div>
+							<div class="insuranceStartDate"></div>
+							<div class="insuranceEndDate"></div>
+						</div>
 					</div>
 					<div id="newsPane" class="tabPane news">
 						<div id="newsHeader">News</div>
@@ -174,28 +180,29 @@ $(function(){
 
 
 						// create the transactions listing
-						$("#transactionsGrid").jsGrid({
-							width:"100%",
-							height:"60%",
-							inserting:false,
-							editing:false,
-							sorting:true,
-							paging:true,
-							data:_.reverse(orderedTrans),
-							fields:[
-								{ title: "when",name: "timestamp", type: "date" },
-								{ title: "T",name: "type", type: "text", width:40},
-								{ name: "description", type: "text"},
-								{ title: "$", name: "adjustment", type: "currency", width:20},
-								{ title: "total", name:"total", type:"currency" }
-							]
-						});
+						JsGridHelpers.readonlyGrid("#transactionsGrid",_.reverse(orderedTrans),[
+							{ title: "when",name: "timestamp", type: "date" },
+							{ title: "T",name: "type", type: "text", width:40},
+							{ name: "description", type: "text"},
+							{ title: "$", name: "adjustment", type: "currency", width:20},
+							{ title: "total", name:"total", type:"currency" }
+						]);
 			
 						//create the transactions graph
 						var data = orderedTrans;
 
 						zoomableGraph("#transactionsGraph svg",data,function(d){return d.timestamp;},function(d){return d.total;},function(d){return "balance";},"","$");
 
+						//create the insurance view
+						var insuranceRoot = $("#insuranceDetailsContainer");
+						if ("insurance" in account){
+							insuranceRoot.find(".insuranceType").text(account.insurance.type);
+							insuranceRoot.find(".insuranceCoverAmount").text(formatCurrency(account.insurance.coverAmount));
+							insuranceRoot.find(".insuranceStartDate").text(formatDate(account.insurance.registrationDate));
+							insuranceRoot.find(".insuranceEndDate").text(formatDate(account.insurance.expirationDate));
+						} else {
+							insuranceRoot.html("no insurance on this account");
+						}
 
 						//create the investments view
 
