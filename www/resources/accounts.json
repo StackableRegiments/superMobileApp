@@ -5,7 +5,13 @@
 		"status":"A",
 		"type":"P",
 		"number":0,
-		"investmentOption":"balanced"
+		"investmentOption":"balanced",
+		"insurance":{
+			"type":"disability",
+			"coverAmount":250000,
+			"expirationDate":1707696000000,
+			"registrationDate":1423699200000
+		}
 	},
 	{
 		"name":"Post Retirement Paper Route",
@@ -13,7 +19,13 @@
 		"status":"A",
 		"type":"C",
 		"number":1,
-		"investmentOption":"aggressive"	
+		"investmentOption":"aggressive",
+		"insurance":{
+			"type":"life",
+			"coverAmount":1000000,
+			"expirationDate":2532729600000,
+			"registrationDate":1333584000000
+		}	
 	},
 	{
 		"name":"Lifetime Service",
@@ -21,6 +33,6 @@
 		"status":"C",
 		"type":"C",
 		"number":2,
-		"investmentOption":"conservative"	
+		"investmentOption":"conservative"
 	}
 ]

@@ -20,7 +20,6 @@
     under the License.
 -->
 <html>
-
 	<head>
 			<meta charset="utf-8" />
 			<meta name="format-detection" content="telephone=no" />
@@ -44,28 +43,26 @@
 			<script type="text/javascript" src="js/lodash/lodash.js"></script>
 			<script type="text/javascript" src="js/jquery/jquery.js"></script>
 			<script type="text/javascript" src="js/jsgrid/jsgrid.min.js"></script>
+			<script type="text/javascript" src="js/jsGridHelper.js"></script>
 			<script type="text/javascript" src="cordova.js"></script>
 			<script type="text/javascript" src="js/index.js"></script>
 			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid.min.css"></link>
 			<link rel="stylesheet" type="text/css" href="js/jsgrid/jsgrid-theme.min.css"></link>
 			<script type="text/javascript">
 					app.initialize();
+					JsGridHelpers.initialize();
 			</script>
 			<title>Super Member Account Listing</title>
 	</head>
 
 	<body>
-				<div id="accountListing"></div>
-			<div class="app">
-			</div>
+		<h2>My accounts</h2>
+		<div class="accountListingContainer">	
+			<div id="accountListing">Loading...</div>
+		</div>
 	</body>
 	<script type="text/javascript">
 $(function(){
-
-	var accountListing = $("#accountListing");
-	var accountTemplate = accountListing.find(".account").clone();
-	accountListing.html("Loading...");
-
 	$.ajax({
 		url:"resources/accounts.json",
 		method:"GET",
@@ -96,28 +93,18 @@ $(function(){
 						}
 						return account;
 					});
-					$("#accountListing").jsGrid({
-							width:"100%",
-							height:"100%",
-							inserting:false,
-							editing:false,
-							sorting:true,
-							paging:true,
-							data:accountData,
-							fields:[
+					JsGridHelpers.readonlyGrid("#accountListing",accountData,[
 								{ title: "#", name: "number", type: "number", width:20},
 								{ name: "name", type: "text"},
 								{ title: "T",name: "type", type: "text", width:20},
 								{ title: "S",name: "status", type: "text", width:20},
 								{ title: "$",name: "balance", type: "currency" },
 								{ title: "when",name: "lastActivity", type: "date",  }
-							],
-							rowClick:function(evt){
+							],function(evt){
 								var account = evt.item;
 								var accountNumber = account.number;
 								window.location="account.html?number="+accountNumber;
-							}
-					});
+							});
 				},
 				error:function(err){
 					console.log("failure to fetch transactions",err);
