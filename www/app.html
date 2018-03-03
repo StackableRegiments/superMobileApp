@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+	<head>
+			<meta charset="utf-8" />
+			<meta name="format-detection" content="telephone=no" />
+			<meta name="msapplication-tap-highlight" content="no" />
+			<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+			<!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+			<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+			<!-- Good default declaration:
+			* gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+			* https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+			* Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+					* Enable inline JS: add 'unsafe-inline' to default-src
+					* Enable eval(): add 'unsafe-eval' to default-src
+			* Create your own at http://cspisawesome.com
+			-->
+			<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+
+			<link rel="stylesheet" type="text/css" href="css/index.css" />
+			<link href="web-fonts-with-css/css/fontawesome-all.min.css"rel="stylesheet"/>
+			<script type="text/javascript" src="js/d3/d3.min.js"></script>
+			<script type="text/javascript" src="js/lodash/lodash.js"></script>
+			<script type="text/javascript" src="js/jquery/jquery.js"></script>
+			<script type="text/javascript" src="js/jsgrid/jsgrid.min.js"></script>
+			<script type="text/javascript" src="cordova.js"></script>
+			<script type="text/javascript" src="js/app.js"></script>
+			<title>Super Member</title>
+	</head>
+	<style>
+#mainPane{
+	position:relative;
+}
+#mainPane .pageTemplate {
+	position:absolute;
+	top:0;
+	left:0;
+}
+	</style>
+	<body>
+		<div id="header">
+			<span class="backToParentButton"><-</span>
+			<span class="headerSection"></span>
+			<span class="chatButton"></span>
+			<span class="newsButton"></span>
+		</div>
+		<div id="mainPane"></div>
+		<div id="footer"></div>
+		<div id="pageTemplates">
+			<div id="login" class="pageTemplate">
+				<div class="accountCredentials">
+					<div>
+						<label for="usernameInput">Username</label><input name="usernameInput" class="username" type="text"></input>
+					</div>
+					<div>
+						<label for="passwordInput">Password</label><input name="passwordInput" class="password" type="password"></input>
+					</div>
+					<div>
+						<button class="submitCredential">Login</button>
+					</div>
+				</div>
+			</div>
+			<div id="accountChooser" class="pageTemplate">
+				<div class="accountList">
+					<div class="accountItem">
+						<div class="accountName"></div>
+					</div>
+				</div>
+				<button class="consolidateButton changePageButton"></button>
+			</div>
+			<div id="consolidate" class"pageTemplate">
+				<div class="otherAccountProvider"></div>
+				<div class="otherAccountIdentifier"></div>
+			</div>
+			<div id="accountSummary" class="pageTemplate">
+				<div class="accountName"></div>
+				<div class="accountNumber"></div>
+				<div class="accountBalance"></div>
+				<div class="concessionaryContributionsTotal"></div>
+				<div class="nonConcessionaryContributionsTotal"></div>
+				<button class="correspondenceButton changePageButton">Correspondence</button>
+				<button class="transactionListButton changePageButton">Transactions List</button>
+				<button class="transactionGraphButton changePageButton">Transactions Graph</button>
+				<button class="investmentsBreakdownButton changePageButton">Investments</button>
+				<button class="adequacyButton changePageButton">Adequacy</button>
+				<button class="changeNominationsButton">Change Nomination</button>
+			</div>
+			<div id="accountTransactionList" class"pageTemplate">
+				<div class="transactionsListGrid"></div>
+			</div>
+			<div id="accountTransactionGraph" class="pageTemplate">
+			</div>
+			<div id="accountInvestmentsBreakdown" class"pageTemplate">
+				<div class="breakdownList"></div>
+				<button class="changeBreakdown"></button>
+			</div>
+			<div id="accountAdequacy" class="pageTemplate">
+			</div>
+			<div id="accountCorrespondence" class="pageTemplate">
+				<div class="correspondenceContainer">
+					<div class="correspondenceItem">
+						<div class="correspondenceItemName"></div>
+						<div class="correspondenceItemDate"></div>
+						<div class="correspondenceItemDownloadLink"></div>
+					</div>
+				</div>
+			</div>
+			<div id="profile" class"pageTemplate">
+				<div class="firstName"></div>
+				<div class="middleNames"></div>
+				<div class="surname"></div>
+				<div class="dateOfBirth"></div>
+				<div class="taxFileNumber"></div>
+				<div class="homeAddress"></div>
+				<div class="homeSuburb"></div>
+				<div class="homeState"></div>
+				<div class="homeCountry"></div>
+				<div class="homePostCode"></div>
+				<div class="mobilePhoneNumber"></div>
+				<div class="emailAddress"></div>
+			</div>
+			<div id="chat" class="pageTemplate">
+				<div class="chatContainer">
+					<div class="chatItem">
+						<div class="chatFrom"></div>
+						<div class="chatMessage"></div>
+					</div>
+				</div>
+				<div class="newMessageContainer">
+					<div class="newMessage"></div>
+					<div class="sendMessage"></div>
+				</div>
+			</div>
+			<div id="news" class="pageTemplate">
+				<div class="newsContainer">
+					<div class="newsItem">
+						<div class="newsItemHeader"></div>
+						<div class="newsItemImage"></div>
+						<div class="newsItemTimestamp"></div>
+						<div class="newsItemSummary"></div>
+						<div class="newsItemLink"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
