@@ -14,13 +14,166 @@ var app = (function(){
 			}
 		});
 	};
-	var withTransactions = function(account,transactionsFunc){
+	var withTransactions = function(accountNumber,transactionsFunc){
+		$.ajax({
+			url:"resources/accounts/"+accountNumber+"/transactions.json",
+			method:"GET",
+			dataType:"json",
+			success:function(transactions){
+				transactionsFunc(transactions);
+			},
+			error:function(err){
+				console.log("error getting transactions",err);
+				transactionsFunc([]);
+			}
+		});
 	};
+
+	var reduceTransactions = function(transactions){
+		return _.reduce(_.sortBy(transactions,function(item){return item.timestamp;}),function(acc,item){
+			if ("adjustment" in item){
+				acc.total += item.adjustment;
+				if ("type" in item){
+					switch (item.type){
+						case "CC":
+							acc.concessional += item.adjustment;
+							break;
+						case "NCC":
+							acc.nonConcessional += item.adjustment;
+							break;
+						default:
+							break;
+					}
+				}
+			}
+			item.subTotal = acc.total;
+			acc.items.push(item);
+			if ("timestamp" in item && item.timestamp >= acc.lastItem.timestamp){
+				acc.lastItem = item;
+			}
+			return acc;
+		},{
+			total:0,
+			nonConcessional:0,
+			concessional:0,
+			lastItem:{
+				timestamp:0
+			},
+			items:[]
+		});
+	};
+	var withCorrespondence = function(accountNumber,correspondenceFunc){
+		$.ajax({
+			url:"resources/accounts/"+accountNumber+"/correspondence.json",
+			method:"GET",
+			dataType:"json",
+			success:function(items){
+				correspondenceFunc(items);
+			},
+			error:function(err){
+				console.log("error getting correspondence",err);
+				correspondenceFunc([]);
+			}
+		});
+	};
+
 	var withInvestmentOptions = function(investmentsFunc){
+		$.ajax({
+			url:"resources/investmentOptions.json",
+			method:"GET",
+			dataType:"json",
+			success:function(invOps){
+				investmentsFunc(invOps);
+			},
+			error:function(err){
+				console.log("error getting investmentOptions",err);
+				investmentsFunc([]);
+			}
+		});
 	};
 	var withNews = function(newsFunc){
-
+		$.ajax({
+			url:"resources/news.json",
+			method:"GET",
+			dataType:"json",
+			success:function(news){
+				newsFunc(news);
+			},
+			error:function(err){
+				console.log("error getting news",err);
+				newsFunc([]);
+			}
+		});
 	};
+
+	var formatCurrency = function(currency){
+		return "$"+_.round(currency,2).toString();
+	};
+
+	var formatDate = function(dateLong){
+		var d = new Date(dateLong);
+		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString();
+	};
+
+	var JsGridHelpers = (function(){
+		var initFunc = function(){
+			var MyCurrencyField = function(config){
+				jsGrid.Field.call(this,config);
+			};
+
+			MyCurrencyField.prototype = new jsGrid.Field({
+				css: "currency-field",
+				align: "right",
+				sorter: function(cash1,cash2){
+					return cash1 - cash2;
+				},
+				itemTemplate: function(cash){
+					return $("<span/>",{
+						text:formatCurrency(cash)
+					});
+				}
+			});
+			jsGrid.fields.currency = MyCurrencyField;
+			//add a date field to jsgrid
+			var MyDateField = function(config) {
+				jsGrid.Field.call(this, config);
+			};
+			MyDateField.prototype = new jsGrid.Field({
+				css: "date-field",            // redefine general property 'css'
+				align: "center",              // redefine general property 'align'
+				sorter: function(date1, date2) {
+						return new Date(date1) - new Date(date2);
+				},
+				itemTemplate: function(value) {
+						return formatDate(value);
+				}
+			});
+			jsGrid.fields.date = MyDateField;
+		}
+		var createReadonlyGrid = function(selector,data,fields,onClick){
+			var grid = selector.jsGrid({
+				width:"100%",
+				inserting:false,
+				editing:false,
+				sorting:true,
+				paging:true,
+				pageSize:10,
+				pageButtonCount:5,
+				data:data,
+				fields:fields,
+				rowClick:function(evt){
+					if (onClick !== undefined && _.isFunction(onClick)){
+						onClick(evt);
+					}
+				}
+			});
+			return grid;
+		}
+		initFunc();
+		return {
+			readonlyGrid:createReadonlyGrid
+		};
+	})();
 
 	var events = {};
 	var bindFunc = function(eventName,subscriberName,func){
@@ -92,37 +245,41 @@ var app = (function(){
 			oldPageContent.fadeOut(400,function(){
 				oldPageContent.remove();
 			});
+			var renderFunc = function(){
+				var backToParentButton = headerContainer.find(".backToParentButton").unbind("click");
+				if ("render" in newPage){
+					var template = templates[pageName];
+					if (template !== undefined){
+						template = template.clone();
+					} else {
+						template = $("<div/>");
+					}
+					var newPageContent = newPage.render(template);
+					newPageContent.hide();
+					mainPaneContainer.append(newPageContent);
+					newPageContent.fadeIn();
+				}
+				if ("header" in newPage && _.isFunction(newPage.header)){
+					var h = newPage.header();
+					if ("name" in h){	
+						headerContainer.find(".headerSection").text(h.name);
+					}
+					if ("parent" in h){
+						backToParentButton.fadeIn().on("click",function(){
+							setPageFunc(h.parent,h.parentArgs);
+						});
+					} else {
+						backToParentButton.fadeOut();
+					}
+				}
+				if ("footer" in newPage){
+					footerContainer.html(newPage.footer());
+				}
+			};
 			if ("activate" in newPage){
-				newPage.activate(args);
-			}
-			if ("render" in newPage){
-				var template = templates[pageName];
-			 	if (template !== undefined){
-					template = template.clone();
-				} else {
-			 		template = $("<div/>");
-				}
-				var newPageContent = newPage.render(template);
-				newPageContent.hide();
-				mainPaneContainer.append(newPageContent);
-				newPageContent.fadeIn();
-			}
-			if ("header" in newPage && _.isFunction(newPage.header)){
-				var h = newPage.header();
-				if ("name" in h){	
-					headerContainer.find(".headerSection").text(h.name);
-				}
-				var backToParentButton = headerContainer.find(".backToParentButton");
-				if ("parent" in h){
-					backToParentButton.fadeIn().on("click",function(){
-						setPageFunc(h.parent);
-					});
-				} else {
-					backToParentButton.fadeOut().unbind("click");
-				}
-			}
-			if ("footer" in newPage){
-				footerContainer.html(newPage.footer());
+				newPage.activate(args,renderFunc);
+			} else {
+				renderFunc();
 			}
 			callFunc("postPageChange",[pageName,args]);
 		}
@@ -178,18 +335,19 @@ var app = (function(){
 		(function(){
 			var accounts = [];
 			return {
-				"name":"accountChooser",
-				"activate":function(args){
+				name:"accountChooser",
+				activate:function(args,afterFunc){
 					withAccounts(function(accs){
 						accounts = accs;
+						afterFunc();
 					});
 				},
-				"header":function(){
+				header:function(){
 					return {
 						name:"accounts"
 					};
 				},
-				"render":function(html){
+				render:function(html){
 					var accountList = html.find(".accountList");
 					var accountItemTemplate = accountList.find(".accountItem").clone();
 					accountList.html(_.map(accounts,function(account){
@@ -200,19 +358,35 @@ var app = (function(){
 						});
 						return elem;
 					}));
+					html.find(".consolidateButton").on("click",function(){
+						setPageFunc("consolidate");
+					});
 					return html;
 				}
 			}
 		})(),
 		{
 			name:"consolidate",
+			render:function(html){
+				return html;
+			},
+			header:function(){
+				return {
+					name:"consolidate",
+					parent:"accountChooser"
+				};
+			}
 		},
 		(function(){
 			var account = {};
-			var transactions = [];
+			var transactions = {};
 			return {
-				activate:function(args){
+				activate:function(args,afterFunc){
 					account = _.head(args);
+					withTransactions(account.number,function(items){
+						transactions = reduceTransactions(items);
+						afterFunc();
+					});
 				},
 				name:"accountSummary",
 				header:function(){
@@ -224,9 +398,10 @@ var app = (function(){
 				render:function(html){
 					html.find(".accountName").text(account.name);
 					html.find(".accountNumber").text(account.number);
-					html.find(".accountBalance").text("$0");
-					html.find(".concessionaryContributionsTotal").text("$0");
-					html.find(".nonConcessionalContributionsTotal").text("$0");
+					html.find(".accountBalance").text(formatCurrency(transactions.total));
+					html.find(".concessionaryContributionsTotal").text(formatCurrency(transactions.concessional));
+					html.find(".nonConcessionalContributionsTotal").text(formatCurrency(transactions.nonConcessional));
+					html.find(".lastTransaction").text(formatDate(transactions.lastItem.timestamp));
 					html.find(".correspondenceButton").on("click",function(){
 						setPageFunc("accountCorrespondence",[account]);
 					});
@@ -251,32 +426,50 @@ var app = (function(){
 		})(),
 		(function(){
 			var account = {};
+			var transactions = {};
 			return {
 				name:"accountTransactionList",
-				activate:function(args){
+				activate:function(args,afterFunc){
 					account = _.head(args);
+					withTransactions(account.number,function(items){
+						transactions = reduceTransactions(items);
+						afterFunc();
+					});
+				},
+				render:function(html){
+					JsGridHelpers.readonlyGrid(html.find("#transactionsListGrid"),transactions.items,[
+						{name:"adjustment",title:"adj",type:"currency"},
+						{name:"timestamp",title:"when",type:"date"},
+						{name:"total",type:"currency"}
+					]);
+					return html;
 				},
 				header:function(){
 					return {
 						name:"transactions",
 						parent:"accountSummary",
-						parentArgs:account
+						parentArgs:[account]
 					};
 				},
 			};
 		})(),
 		(function(){
 			var account = {};
+			var transactions = {};
 			return {
 				name:"accountTransactionGraph",
-				activate:function(args){
+				activate:function(args,afterFunc){
 					account = _.head(args);
+					withTransactions(account.number,function(items){
+						transactions = reduceTransactions(items);
+						afterFunc();
+					});
 				},
 				header:function(){
 					return {
 						name:"transactions graph",
 						parent:"accountSummary",
-						parentArgs:account
+						parentArgs:[account]
 					};
 				},
 			};
@@ -292,7 +485,7 @@ var app = (function(){
 					return {
 						name:"investments",
 						parent:"accountSummary",
-						parentArgs:account
+						parentArgs:[account]
 					};
 				},
 			};
@@ -308,7 +501,7 @@ var app = (function(){
 					return {
 						name:"correspondence",
 						parent:"accountSummary",
-						parentArgs:account
+						parentArgs:[account]
 					};
 				},
 			};
@@ -324,7 +517,7 @@ var app = (function(){
 					return {
 						name:"adequacy",
 						parent:"accountSummary",
-						parentArgs:account
+						parentArgs:[account]
 					};
 				},
 			};
@@ -340,7 +533,7 @@ var app = (function(){
 					return {
 						name:"change nominations",
 						parent:"accountSummary",
-						parentArgs:account
+						parentArgs:[account]
 					};
 				},
 			};

@@ -56,6 +56,46 @@
 	top:0;
 	left:0;
 }
+.accountSummaryPage {
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fefcea+0,f1da36+100;Gold+3D */
+background: #fefcea; /* Old browsers */
+background: -moz-linear-gradient(-45deg, #fefcea 0%, #f1da36 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg, #fefcea 0%,#f1da36 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg, #fefcea 0%,#f1da36 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefcea', endColorstr='#f1da36',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+.accountChooserPage {
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f8ffe8+0,e3f5ab+33,b7df2d+100;Green+3D+%234 */
+background: #f8ffe8; /* Old browsers */
+background: -moz-linear-gradient(-45deg, #f8ffe8 0%, #e3f5ab 33%, #b7df2d 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg, #f8ffe8 0%,#e3f5ab 33%,#b7df2d 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg, #f8ffe8 0%,#e3f5ab 33%,#b7df2d 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8ffe8', endColorstr='#b7df2d',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+.accountTransactionsGridPage {
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f0f9ff+0,cbebff+47,a1dbff+100;Blue+3D+%2313 */
+background: #f0f9ff; /* Old browsers */
+background: -moz-linear-gradient(-45deg, #f0f9ff 0%, #cbebff 47%, #a1dbff 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg, #f0f9ff 0%,#cbebff 47%,#a1dbff 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg, #f0f9ff 0%,#cbebff 47%,#a1dbff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+.newsPage {
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffc578+0,fb9d23+100;Orange+3D+%233 */
+background: #ffc578; /* Old browsers */
+background: -moz-linear-gradient(-45deg, #ffc578 0%, #fb9d23 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg, #ffc578 0%,#fb9d23 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg, #ffc578 0%,#fb9d23 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffc578', endColorstr='#fb9d23',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+.consolidatePage {
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f9f1ff+0,e8cbff+47,d6a1ff+100 */
+background: #f9f1ff; /* Old browsers */
+background: -moz-linear-gradient(-45deg, #f9f1ff 0%, #e8cbff 47%, #d6a1ff 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg, #f9f1ff 0%,#e8cbff 47%,#d6a1ff 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg, #f9f1ff 0%,#e8cbff 47%,#d6a1ff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', endColorstr='#d6a1ff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
 	</style>
 	<body>
 		<div id="header">
@@ -80,24 +120,37 @@
 					</div>
 				</div>
 			</div>
-			<div id="accountChooser" class="pageTemplate">
+			<div id="accountChooser" class="pageTemplate accountChooserPage">
 				<div class="accountList">
 					<div class="accountItem">
 						<div class="accountName"></div>
 					</div>
 				</div>
-				<button class="consolidateButton changePageButton"></button>
+				<button class="consolidateButton changePageButton">Consolidate other account</button>
 			</div>
-			<div id="consolidate" class"pageTemplate">
+			<div id="consolidate" class"pageTemplate consolidatePage">
 				<div class="otherAccountProvider"></div>
 				<div class="otherAccountIdentifier"></div>
 			</div>
-			<div id="accountSummary" class="pageTemplate">
-				<div class="accountName"></div>
-				<div class="accountNumber"></div>
-				<div class="accountBalance"></div>
-				<div class="concessionaryContributionsTotal"></div>
-				<div class="nonConcessionaryContributionsTotal"></div>
+			<div id="accountSummary" class="pageTemplate accountSummaryPage">
+				<div>
+					<span>Account Name</span><span class="accountName"></span>
+				</div>
+				<div>
+					<span>Account Number</span><span class="accountNumber"></span>
+				</div>
+				<div>
+					<span>Balance</span><span	class="accountBalance"></span>
+				</div>
+				<div>
+					<span>Latest activity</span><span	class="lastTransaction"></span>
+				</div>
+				<div>
+					<span>Concessional contributions</span><span class="concessionaryContributionsTotal"></span>
+				</div>
+				<div>
+					<span>Non-concessional contributions</span><span class="nonConcessionalContributionsTotal"></span>
+				</div>
 				<button class="correspondenceButton changePageButton">Correspondence</button>
 				<button class="transactionListButton changePageButton">Transactions List</button>
 				<button class="transactionGraphButton changePageButton">Transactions Graph</button>
