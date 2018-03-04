@@ -51,10 +51,35 @@
 #mainPane{
 	position:relative;
 }
+#header {
+	position:relative;
+	height:5vh;
+	width:100vw;
+	background: red;
+	color:white;
+	font-size:x-large;
+}
+#header .headerSection {
+	position:absolute;
+	//center this text, surely?
+	text-align:center;
+	width: 92vw;
+	left:8vw;
+	top:0vh;
+}
+#header .backToParentButton {
+	position:absolute;
+	top:0vh;
+	left:0vw;
+	right:92vw;
+	width:8vw;
+}
 #mainPane .pageTemplate {
 	position:absolute;
 	top:0;
 	left:0;
+	width:100vw;
+	height:95vh;
 }
 .accountSummaryPage {
 	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fefcea+0,f1da36+100;Gold+3D */
@@ -99,7 +124,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', end
 	</style>
 	<body>
 		<div id="header">
-			<span class="backToParentButton"><-</span>
+			<span class="backToParentButton"><i class="fa fa-arrow-left"></i></span>
 			<span class="headerSection"></span>
 			<span class="chatButton"></span>
 			<span class="newsButton"></span>
@@ -153,7 +178,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', end
 				</div>
 				<button class="correspondenceButton changePageButton">Correspondence</button>
 				<button class="transactionListButton changePageButton">Transactions List</button>
-				<button class="transactionGraphButton changePageButton">Transactions Graph</button>
+				<button class="transactionsGraphButton changePageButton">Transactions Graph</button>
 				<button class="investmentsBreakdownButton changePageButton">Investments</button>
 				<button class="adequacyButton changePageButton">Adequacy</button>
 				<button class="changeNominationsButton">Change Nomination</button>

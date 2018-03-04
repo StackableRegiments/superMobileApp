@@ -430,11 +430,9 @@ var app = (function(){
 			return {
 				name:"accountTransactionList",
 				activate:function(args,afterFunc){
-					account = _.head(args);
-					withTransactions(account.number,function(items){
-						transactions = reduceTransactions(items);
-						afterFunc();
-					});
+					account = args[0];
+					transactions = args[1];
+					afterFunc();
 				},
 				render:function(html){
 					JsGridHelpers.readonlyGrid(html.find("#transactionsListGrid"),transactions.items,[
@@ -457,13 +455,14 @@ var app = (function(){
 			var account = {};
 			var transactions = {};
 			return {
-				name:"accountTransactionGraph",
+				name:"accountTransactionsGraph",
 				activate:function(args,afterFunc){
-					account = _.head(args);
-					withTransactions(account.number,function(items){
-						transactions = reduceTransactions(items);
-						afterFunc();
-					});
+					account = args[0];
+					transactions = args[1];
+					afterFunc();
+				},
+				render:function(html){
+					return html;
 				},
 				header:function(){
 					return {
