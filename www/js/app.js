@@ -435,7 +435,8 @@ var app = (function(){
 					afterFunc();
 				},
 				render:function(html){
-					JsGridHelpers.readonlyGrid(html.find("#transactionsListGrid"),transactions.items,[
+					var gridRoot = html.find(".transactionsListGrid");
+					JsGridHelpers.readonlyGrid(gridRoot,transactions.items,[
 						{name:"adjustment",title:"adj",type:"currency"},
 						{name:"timestamp",title:"when",type:"date"},
 						{name:"total",type:"currency"}
