@@ -350,14 +350,16 @@ var app = (function(){
 	var mainPaneContainer,headerContainer,footerContainer;
 
 	bindFunc("backbutton","navigation",function(){
-		var cand = _.last(pageHistory);
-		while (cand !== undefined){
-			var item = pageHistory.pop();
-			if (item !== undefined && item.name != currentPage.name){
-				setPageFunc(item.name,item.args);
-				cand = undefined;
-			} else {
-				cand = _.last(pageHistory);
+		if (currentPage.name != "login"){
+			var cand = _.last(pageHistory);
+			while (cand !== undefined){
+				var item = pageHistory.pop();
+				if (item !== undefined && item.name != currentPage.name){
+					setPageFunc(item.name,item.args);
+					cand = undefined;
+				} else {
+					cand = _.last(pageHistory);
+				}
 			}
 		}
 	});
@@ -449,17 +451,36 @@ var app = (function(){
 		(function(){
 			var username = undefined;
 			var password = undefined;
+			var lastValidPage = undefined;
+			var logIn = function(){
+				pageHistory = _.filter(pageHistory,function(i){
+					return i.name != "login";
+				});
+				setPageFunc(lastValidPage.name,lastValidPage.args);
+			};
+			var rejectLogin = function(){
+				alert("Authentication failed.  Please try again");
+			};
 			return {
 				"name":"login",
 				"activate":function(args,afterFunc){
+					lastValidPage = _.head(_.filter(_.reverse(pageHistory),function(i){
+						return i.name !== "login";
+					}));
+					if (lastValidPage === undefined){
+						lastValidPage = {
+							name:"accountChooser",
+							args:[]
+						};
+					}
 					afterFunc();
 				},
 				"render":function(html){
 					var attemptLogin = function(){
 						if (username !== undefined && password !== undefined && username == "dave" && password == "test"){
-							setPageFunc("accountChooser",[]);
+							logIn();
 						} else {
-							alert("Authentication failed.  Please try again");
+							rejectLogin();
 						}
 					};
 					var checkKeyUpForSubmit = function(evt){
@@ -500,9 +521,9 @@ var app = (function(){
 										authenticated = true;
 									}
 									if (authenticated){
-										setPageFunc("accountChooser",[]);
+										logIn();
 									} else {
-										alert("failed to authenticate with device capabilities");
+										rejectLogin();
 									}
 								},function(error){
 									alert("failed to authenticate with biometrics");
