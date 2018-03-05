@@ -441,29 +441,90 @@ var app = (function(){
 		//bindFunc("deviceready","reauthentication",reauth);
 
 		bindFunc("deviceready","startup",function(){
-			setPageFunc("accountChooser");
+			setPageFunc("login");
 		});
-		setPageFunc("accountChooser");
+		setPageFunc("login");
 	});
 	var pages = _.mapKeys([
-		{
-			"name":"login",
-			"activate":function(args){
-			},
-			"render":function(html){
-				var accCreds = html.find(".accountCredentials");
-					accCreds.find(".username");
-					accCreds.find(".password");
-				return html;
-			},
-			"header":function(){
-				return {
-					name:"login"
-				};
-			},
-			"footer":function(){
-			}
-		},
+		(function(){
+			var username = undefined;
+			var password = undefined;
+			return {
+				"name":"login",
+				"activate":function(args,afterFunc){
+					afterFunc();
+				},
+				"render":function(html){
+					var attemptLogin = function(){
+						if (username !== undefined && password !== undefined && username == "dave" && password == "test"){
+							setPageFunc("accountChooser",[]);
+						} else {
+							alert("Authentication failed.  Please try again");
+						}
+					};
+					var checkKeyUpForSubmit = function(evt){
+						if ("keyCode" in evt && evt.keyCode == 13){
+							attemptLogin();
+						}
+					};
+					var accCreds = html.find(".accountCredentials");
+					accCreds.find(".username").on("change",function(){
+						var val = $(this).val();
+						username = val;
+					}).on("keyup",checkKeyUpForSubmit);
+					accCreds.find(".password").on("change",function(){
+						var val = $(this).val();
+						password = val;
+					}).on("keyup",checkKeyUpForSubmit);
+					accCreds.find(".submitCredential").on("click",attemptLogin);
+					
+					var deviceAuthContainer = html.find(".deviceAuthContainer");
+					if ("Fingerprint" in window){
+						Fingerprint.isAvailable(function(result){
+							var deviceAuthButton = html.find(".deviceAuth");
+							deviceAuthButton.on("click",function(){
+								Fingerprint.show({
+									clientId:"superMobileApp",
+									clientSecret:"secretPasswordForSuperMobileApp"
+								},function(success){
+									var authenticated = false;
+									if ("withFingerprint" in success){
+										authenticated = true;
+									} else if ("withFace" in success){
+										authenticated = true;
+									} else if ("withPattern" in success){
+										authenticated = true;
+									} else if ("withPassword" in success){
+										authenticated = true;
+									} else {
+										authenticated = true;
+									}
+									if (authenticated){
+										setPageFunc("accountChooser",[]);
+									} else {
+										alert("failed to authenticate with device capabilities");
+									}
+								},function(error){
+									alert("failed to authenticate with biometrics");
+								});
+							});
+						},function(error){
+							deviceAuthContainer.remove();
+						});
+					} else {
+						deviceAuthContainer.remove();	
+					}
+					return html;
+				},
+				"header":function(){
+					return {
+						name:"login"
+					};
+				},
+				"footer":function(){
+				}
+			};
+		})(),
 		(function(){
 			var accounts = [];
 			return {
