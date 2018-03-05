@@ -477,8 +477,12 @@ var app = (function(){
 			var account = {};
 			return {
 				name:"accountInvestmentsBreakdown",
-				activate:function(args){
+				activate:function(args,afterFunc){
 					account = _.head(args);
+					afterFunc();
+				},
+				render:function(html){
+					return html;
 				},
 				header:function(){
 					return {
@@ -493,8 +497,12 @@ var app = (function(){
 			var account = {};
 			return {
 				name:"accountCorrespondence",
-				activate:function(args){
+				activate:function(args,afterFunc){
 					account = _.head(args);
+					afterFunc();
+				},
+				render:function(html){
+					return html;
 				},
 				header:function(){
 					return {
@@ -509,8 +517,12 @@ var app = (function(){
 			var account = {};
 			return {
 				name:"accountAdequacy",
-				activate:function(args){
+				activate:function(args,afterFunc){
 					account = _.head(args);
+					afterFunc();
+				},
+				render:function(html){
+					return html;
 				},
 				header:function(){
 					return {
@@ -524,9 +536,13 @@ var app = (function(){
 		(function(){
 			var account = {};
 			return {
-				name:"accountChangeNominations",
-				activate:function(args){
+				name:"accountChangeNomination",
+				activate:function(args,afterFunc){
 					account = _.head(args);
+					afterFunc();
+				},
+				render:function(html){
+					return html;
 				},
 				header:function(){
 					return {
@@ -537,15 +553,39 @@ var app = (function(){
 				},
 			};
 		})(),
-		{
-			name:"profile"
-		},
-		{
-			name:"chat"
-		},
-		{
-			name:"news"
-		}
+		(function(){
+			return {
+				name:"profile",
+				activate:function(args,afterFunc){
+					afterFunc();
+				},
+				render:function(html){
+					return html;
+				}
+			};
+		})(),
+		(function(){
+			return {
+				name:"chat",
+				activate:function(args,afterFunc){
+					afterFunc();
+				},
+				render:function(html){
+					return html;
+				}
+			};
+		})(),
+		(function(){
+			return {
+				name:"news",
+				activate:function(args,afterFunc){
+					afterFunc();
+				},
+				render:function(html){
+					return html;
+				}
+			};
+		})()
 	],function(page){
 		return page.name;
 	});

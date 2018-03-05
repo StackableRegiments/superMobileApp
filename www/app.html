@@ -55,9 +55,14 @@
 	position:relative;
 	height:5vh;
 	width:100vw;
-	background: red;
 	color:white;
 	font-size:x-large;
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a90329+0,8f0222+65,6d0019+100;Brown+Red+3D */
+	background: #a90329; /* Old browsers */
+	background: -moz-linear-gradient(-45deg, #a90329 0%, #8f0222 65%, #6d0019 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(-45deg, #a90329 0%,#8f0222 65%,#6d0019 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(135deg, #a90329 0%,#8f0222 65%,#6d0019 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a90329', endColorstr='#6d0019',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 #header .headerSection {
 	position:absolute;
@@ -80,6 +85,28 @@
 	left:0;
 	width:100vw;
 	height:95vh;
+	overflow-y:auto;
+//	padding:0.2em 1em;
+}
+.changePageButton {
+	background: -moz-linear-gradient(-45deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	border: solid 1px lightgrey;
+	padding:0.2em 1em;
+	text-align:center;
+	text-decoration:none;
+//	display:inline-block;
+	width:90vw;
+	display:block;
+	font-size:large;
+	margin:0.2em 1em;
+}
+.focusGroup {
+	margin:0.2em 1em;
+	border-radius:1em;
+	border:solid 1px lightgrey;
 }
 .accountSummaryPage {
 	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fefcea+0,f1da36+100;Gold+3D */
@@ -121,6 +148,30 @@ background: -webkit-linear-gradient(-45deg, #f9f1ff 0%,#e8cbff 47%,#d6a1ff 100%)
 background: linear-gradient(135deg, #f9f1ff 0%,#e8cbff 47%,#d6a1ff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', endColorstr='#d6a1ff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
+.majorAttribute .attributeLabel {
+	font-size:large;
+//	display:block;
+}
+.minorAttribute .attributeLabel {
+	font-size:normal;
+	display:inline-block;
+}
+.majorAttribute .attributeValue {
+	font-size:normal;
+//	display:block;
+}
+.minorAttribute .attributeValue {
+	font-size:small;
+	display:inline-block;
+}
+.attributeLabel {
+	font-weight:bold;
+	margin:0em 1em;
+}
+.attributeValue {
+	font-weight:regular;
+	margin:0em 1em;
+}
 	</style>
 	<body>
 		<div id="header">
@@ -133,24 +184,30 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', end
 		<div id="footer"></div>
 		<div id="pageTemplates">
 			<div id="login" class="pageTemplate">
-				<div class="accountCredentials">
-					<div>
-						<label for="usernameInput">Username</label><input name="usernameInput" class="username" type="text"></input>
-					</div>
-					<div>
-						<label for="passwordInput">Password</label><input name="passwordInput" class="password" type="password"></input>
-					</div>
-					<div>
-						<button class="submitCredential">Login</button>
+				<div class="focusGroup">
+					<div class="accountCredentials">
+						<div>
+							<label for="usernameInput">Username</label><input name="usernameInput" class="username" type="text"></input>
+						</div>
+						<div>
+							<label for="passwordInput">Password</label><input name="passwordInput" class="password" type="password"></input>
+						</div>
+						<div>
+							<button class="submitCredential">Login</button>
+						</div>
 					</div>
 				</div>
 			</div>
 			<div id="accountChooser" class="pageTemplate accountChooserPage">
-				<div class="accountList">
-					<div class="accountItem">
-						<div class="accountName"></div>
+				<div>
+					<h2>My accounts</h2>
+					<div class="accountList">
+						<button class="accountItem changePageButton">
+							<div class="accountName"></div>
+						</button>
 					</div>
 				</div>
+				<br/>
 				<button class="consolidateButton changePageButton">Consolidate other account</button>
 			</div>
 			<div id="consolidate" class"pageTemplate consolidatePage">
@@ -158,30 +215,32 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', end
 				<div class="otherAccountIdentifier"></div>
 			</div>
 			<div id="accountSummary" class="pageTemplate accountSummaryPage">
-				<div>
-					<span>Account Name</span><span class="accountName"></span>
-				</div>
-				<div>
-					<span>Account Number</span><span class="accountNumber"></span>
-				</div>
-				<div>
-					<span>Balance</span><span	class="accountBalance"></span>
-				</div>
-				<div>
-					<span>Latest activity</span><span	class="lastTransaction"></span>
-				</div>
-				<div>
-					<span>Concessional contributions</span><span class="concessionaryContributionsTotal"></span>
-				</div>
-				<div>
-					<span>Non-concessional contributions</span><span class="nonConcessionalContributionsTotal"></span>
+				<div class="focusGroup">
+					<div class="majorAttribute">
+						<span class="attributeLabel">Account Name</span><span class="accountName attributeValue"></span>
+					</div>
+					<div class="majorAttribute">
+						<span class="attributeLabel">Account Number</span><span class="accountNumber attributeValue"></span>
+					</div>
+					<div class="majorAttribute">
+						<span class="attributeLabel">Balance</span><span	class="accountBalance attributeValue"></span>
+					</div>
+					<div class="minorAttribute">
+						<span class="attributeLabel">Latest activity</span><span	class="lastTransaction attributeValue"></span>
+					</div>
+					<div class="minorAttribute">
+						<span class="attributeLabel">Concessional contributions</span><span class="concessionaryContributionsTotal attributeValue"></span>
+					</div>
+					<div class="minorAttribute">
+						<span class="attributeLabel">Non-concessional contributions</span><span class="nonConcessionalContributionsTotal attributeValue"></span>
+					</div>
 				</div>
 				<button class="correspondenceButton changePageButton">Correspondence</button>
 				<button class="transactionListButton changePageButton">Transactions List</button>
 				<button class="transactionsGraphButton changePageButton">Transactions Graph</button>
 				<button class="investmentsBreakdownButton changePageButton">Investments</button>
 				<button class="adequacyButton changePageButton">Adequacy</button>
-				<button class="changeNominationsButton">Change Nomination</button>
+				<button class="changeNominationsButton changePageButton">Change Nomination</button>
 			</div>
 			<div id="accountTransactionList" class"pageTemplate">
 				<div class="transactionsListGrid"></div>
