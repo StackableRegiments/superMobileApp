@@ -34,7 +34,7 @@ var JsGridHelpers = (function(){
 		jsGrid.fields.date = MyDateField;
 	}
 	var createReadonlyGrid = function(selector,data,fields,onClick){
-		var grid = $(selector).jsGrid({
+		var grid = selector.jsGrid({
 			width:"100%",
 			inserting:false,
 			editing:false,
