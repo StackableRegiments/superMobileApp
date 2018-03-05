@@ -114,7 +114,139 @@ var app = (function(){
 		var d = new Date(dateLong);
 		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString();
 	};
+	
+	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel){
+	//data is a jsonArray of datum
+	//selector is a jquery selector
+	//xFunc is the extractor from datum to provide the xValue
+	//yFunc is the extractor from datum to provide the yValue
+	//lineSelectorFunc is a function which partitions the data into separate lines, with names
+	//
+		var margin = {top: 0, right: 0, bottom: 90, left: 50};
+		var	width = 640 - margin.left - margin.right;
+		var	height = 480 - margin.top - margin.bottom;
 
+		var parseTime = d3.timeParse("%d-%b-%y");
+
+		var x = d3.scaleTime()
+			.rangeRound([0, width]);
+		x.domain(d3.extent(data, xFunc));
+		var xAxis = d3.axisBottom(x);
+
+		var y = d3.scaleLinear()
+			.rangeRound([height, 0]);
+		y.domain(d3.extent(data, yFunc));
+		var yAxis = d3.axisLeft(y); 
+
+		var zoomed = function(){
+			svg.selectAll(".charts")
+				.attr("transform",d3.event.transform);
+			d3.selectAll(".line")
+				.style("stroke-width",2/d3.event.transform.k);
+			gx.call(xAxis.scale(d3.event.transform.rescaleX(x)));							
+			gy.call(yAxis.scale(d3.event.transform.rescaleY(y)));							
+		}
+
+		var zoom = d3.zoom()
+			.scaleExtent([1,30])
+			.on("zoom",zoomed);
+
+		var svg = d3.select(selector).append("svg")
+			.attr("viewBox","0 0 640 480")
+			.call(zoom)
+			.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+		var graphClipId = "graphClip_"+_.uniqueId().toString();
+
+		svg.append("clipPath")
+			.attr("id",graphClipId)
+			.append("rect")
+				.attr("width",width)
+				.attr("height",height)
+				.attr("x",margin.left)
+				.attr("y",margin.y);
+
+		
+		var gy = svg.append("g")
+			.attr("transform", "translate("+margin.left +"," + margin.top + ")")
+			.call(yAxis);
+
+		gy.selectAll("text")	
+					.style("text-anchor", "end")
+					.attr("dx", "-.8em")
+					.attr("dy", ".15em")
+					.text(yAxisLabel ? yAxisLabel : "");
+
+		var gx = svg.append("g")
+				.attr("transform", "translate("+margin.left+","+height + ")")
+				.call(xAxis);
+
+		gx.append("text")
+				.attr("fill", "#000")
+				.attr("transform", "translate("+margin.left+","+height + ") rotate(-90)")
+				.attr("y", 6)
+				.attr("dy", "0.71em")
+				.attr("text-anchor", "end")
+				.text(xAxisLabel ? xAxisLabel : "");
+
+		var line = d3.line()
+			.x(function(d) { return x(xFunc(d)); })
+			.y(function(d) { return y(yFunc(d)); });
+
+		var g = svg.append("g")
+			.attr("class","chartContiner")
+			.attr("clip-path","url(#"+graphClipId+")");
+
+		var charts = g.append("g")
+			.attr("class","charts");
+
+		var colours = [
+			"steelblue",
+			"blueviolet",
+			"coral",
+			"forestgreen",
+			"magenta",
+			"yellow",
+			"springgreen",
+			"red"
+		];
+		var colourIndex = 0;
+		var legends = svg.append("g")
+			.attr("class","legend")
+			.attr("x",25 + margin.left)
+			.attr("y",25 + margin.top)
+			.attr("transform","translate("+( 25+margin.left )+","+( 25+margin.top )+")");
+		var groupedData = _.groupBy(data,lineSelectorFunc);
+		_.forEach(groupedData,function(values,key){
+			var colour = colours[colourIndex];
+			charts.append("path")
+				.datum(values)
+				.attr("class","line")
+				.attr("fill", "none")
+				.attr("stroke", colour)
+				.attr("stroke-linejoin", "round")
+				.attr("stroke-linecap", "round")
+				.attr("stroke-width", 1.5)
+				.attr("d", line);
+			legends.append("circle")
+				.attr("r",10)
+				.attr("stroke","black")
+				.attr("fill",colour)
+				.attr("cx",0)
+				.attr("cy",25*colourIndex);
+			legends.append("text")
+					.attr("y",((25*colourIndex) + margin.top).toString())
+					.attr("x",(25).toString())
+					.attr("fill","black")
+					.attr("text-anchor","start")
+					.attr("font-family","Verdana")
+					.attr("font-size","12")
+					.text(key);
+			colourIndex++;
+		});
+		return svg;
+	};
 	var JsGridHelpers = (function(){
 		var initFunc = function(){
 			var MyCurrencyField = function(config){
@@ -463,6 +595,8 @@ var app = (function(){
 					afterFunc();
 				},
 				render:function(html){
+					var graphRoot = html.find(".transactionsGraph")[0];
+					var svg = zoomableGraph(graphRoot,transactions.items,function(d){return d.timestamp;},function(d){return d.subTotal;},function(d){return "balance";},"time","$");
 					return html;
 				},
 				header:function(){
