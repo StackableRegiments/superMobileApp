@@ -571,7 +571,8 @@ var app = (function(){
 					JsGridHelpers.readonlyGrid(gridRoot,transactions.items,[
 						{name:"adjustment",title:"adj",type:"currency"},
 						{name:"timestamp",title:"when",type:"date"},
-						{name:"total",type:"currency"}
+						{name:"description",title:"",type:"text"},
+						{name:"subTotal",type:"currency"}
 					]);
 					return html;
 				},
