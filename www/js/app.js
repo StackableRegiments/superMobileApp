@@ -693,13 +693,115 @@ var app = (function(){
 		})(),
 		(function(){
 			var account = {};
+			var investmentOptions = [];
+			var investmentChoices = {};
+			var editing = false;
 			return {
 				name:"accountInvestmentsBreakdown",
 				activate:function(args,afterFunc){
 					account = _.head(args);
-					afterFunc();
+					withInvestmentOptions(function(invs){
+						investmentOptions = invs;
+						afterFunc();
+					});
 				},
 				render:function(html){
+					var breakdownList = html.find(".breakdownList");
+					var breakdownItemTemplate = breakdownList.find(".investmentOption").clone();
+					var changeButton = html.find(".changeBreakdown");
+					var cancelButton = html.find(".cancelChangeBreakdown");
+					var submitButton = html.find(".applyChangeBreakdown");
+					var reRender = function(){
+						breakdownList.html(_.map(investmentOptions,function(io){
+							var ioElem = breakdownItemTemplate.clone();
+							var score = account.investmentOptions[io.name];
+							var ioId = "io_" + io.name;
+							var label = ioElem.find(".investmentOptionLabel").attr("for",ioId).text(io.name);
+							var inputElem = ioElem.find(".investmentOptionInput").attr("id",ioId).attr("value",score);
+							if (editing){
+								inputElem.on("change",function(nv){
+									console.log("beforeChange:",investmentChoices);
+									var newValue = parseInt($(this).val());
+									var oldValue = investmentChoices[io.name];
+									investmentChoices[io.name] = newValue;
+									console.log("afterFirstChange:",investmentChoices);
+									var diff = _.sum(_.values(investmentChoices));
+									if (diff != 100){
+										console.log("adjusting the investmentChoices",diff,newValue,oldValue);
+										var amount = 100 - diff;
+										var options = _.flatMap(investmentChoices,function(v,k){
+											if (k != io.name){
+												return [{name:k,value:v}];
+											} else {
+												return [];
+											}
+										});
+										var count = _.size(options);
+										var each = _.round(amount / count);
+										var remainder = amount % count;
+										var first = true;
+										//should really do this proportionately, so that it never reduces any below 0.
+										console.log("adjusting:",options,amount,count,each,remainder);
+										_.forEach(options,function(kv){
+											var k = kv.name;
+											var v = kv.value;
+											var nv = v + each;
+											if (first){
+												nv += remainder;
+											}
+											nv = _.max([0,nv]);
+											console.log("adjusting item:",k,v,nv);
+											investmentChoices[k] = nv;
+											$("#io_"+k).attr("value",nv).val(nv);
+										});
+										console.log("afterAllChanges:",investmentChoices);
+									}		
+								});
+							} else {
+								inputElem.attr("readonly",true).prop("disabled",true);
+							}
+							return ioElem;
+						}));
+						if (editing){
+							changeButton.hide().unbind("click");
+							cancelButton.show().on("click",function(){
+								investmentChoices = {};
+								editing = false;
+								reRender();
+							});
+							submitButton.show().on("click",function(){
+								account.investmentOptions = investmentChoices;
+								investmentChoices = {};
+								editing = false;
+								reRender();
+							});
+						} else {
+							changeButton.show().on("click",function(){
+								investmentChoices = {};
+								_.forEach(investmentOptions,function(io){
+									if (io.name in account.investmentOptions){
+										investmentChoices[io.name] = account.investmentOptions[io.name];
+									} else {
+										investmentChoices[io.name] = 0;
+									}
+								});
+								editing = true;
+								reRender();
+							});
+							cancelButton.hide().unbind("click");
+							submitButton.hide().unbind("click");
+						}
+					};
+
+					var breakdownGraph = html.find(".breakdownGraph")[0];
+					var graphData = _.flatMap(investmentOptions,function(io){
+						return _.map(io.performance,function(pi){
+							pi.optionName = io.name;
+							return pi;
+						});
+					});
+					var svg = zoomableGraph(breakdownGraph,graphData,function(d){return d.timestamp;},function(d){return d.adjustment;},function(d){return d.optionName;},"time","%");
+					reRender();
 					return html;
 				},
 				header:function(){

@@ -5,7 +5,11 @@
 		"status":"A",
 		"type":"P",
 		"number":0,
-		"investmentOption":"balanced",
+		"investmentOptions":{
+			"cash":10,
+			"aggressive":50,
+			"balanced":40
+		},
 		"insurance":{
 			"type":"disability",
 			"coverAmount":250000,
@@ -19,7 +23,11 @@
 		"status":"A",
 		"type":"C",
 		"number":1,
-		"investmentOption":"aggressive",
+		"investmentOptions":{
+			"balanced":20,
+			"conservative":60,
+			"aggressive":20
+		},
 		"insurance":{
 			"type":"life",
 			"coverAmount":1000000,
@@ -33,6 +41,10 @@
 		"status":"C",
 		"type":"C",
 		"number":2,
-		"investmentOption":"conservative"
+		"investmentOptions":{
+			"cash":30,
+			"balanced":40,
+			"aggressive":30
+		}
 	}
 ]
