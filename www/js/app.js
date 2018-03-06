@@ -489,10 +489,13 @@ var app = (function(){
 						}
 					};
 					var accCreds = html.find(".accountCredentials");
-					accCreds.find(".username").on("change",function(){
+					var usernameInput = accCreds.find(".username").on("change",function(){
 						var val = $(this).val();
 						username = val;
 					}).on("keyup",checkKeyUpForSubmit);
+					_.defer(function(){
+						usernameInput.focus();
+					});
 					accCreds.find(".password").on("change",function(){
 						var val = $(this).val();
 						password = val;
@@ -693,13 +696,121 @@ var app = (function(){
 		})(),
 		(function(){
 			var account = {};
+			var investmentOptions = [];
+			var investmentChoices = {};
+			var editing = false;
 			return {
 				name:"accountInvestmentsBreakdown",
 				activate:function(args,afterFunc){
 					account = _.head(args);
-					afterFunc();
+					withInvestmentOptions(function(invs){
+						investmentOptions = invs;
+						afterFunc();
+					});
 				},
 				render:function(html){
+					var breakdownList = html.find(".breakdownList");
+					var breakdownItemTemplate = breakdownList.find(".investmentOption").clone();
+					var changeButton = html.find(".changeBreakdown");
+					var cancelButton = html.find(".cancelChangeBreakdown");
+					var submitButton = html.find(".applyChangeBreakdown");
+					var reRender = function(){
+						breakdownList.html(_.map(investmentOptions,function(io){
+							var ioElem = breakdownItemTemplate.clone();
+							var score = account.investmentOptions[io.name];
+							if (score === undefined || _.isNaN(score)){
+								score = 0;
+							}
+							var ioId = "io_" + io.name;
+							var label = ioElem.find(".investmentOptionLabel").attr("for",ioId).text(io.name);
+							var textValue = ioElem.find(".investmentOptionValue").attr("id","io_val_"+io.name).text(_.round(score,0));
+							var inputElem = ioElem.find(".investmentOptionInput").attr("id",ioId).attr("value",_.round(score,0)).val(_.round(score,0));
+							if (editing){
+								inputElem.on("change",function(nv){
+									var newValue = parseInt($(this).val());
+									var oldValue = investmentChoices[io.name];
+									investmentChoices[io.name] = newValue;
+									textValue.text(_.round(newValue,0));
+									var diff = _.sum(_.values(investmentChoices));
+									if (diff != 100){
+										var amount = 100 - diff;
+										var options = _.flatMap(investmentChoices,function(v,k){
+											if (k != io.name){
+												return [{name:k,value:v}];
+											} else {
+												return [];
+											}
+										});
+
+										var propTotal = _.sumBy(options,"value");
+										if (propTotal == 0){
+											_.forEach(options,function(kv){
+												var k = kv.name;
+												var v = kv.value;
+												var nv = v + (amount / _.size(options));
+												investmentChoices[k] = nv;
+												$("#io_"+k).attr("value",_.round(nv,0)).val(_.round(nv,0));
+												$("#io_val_"+k).text(_.round(nv,0));
+											});
+
+										} else {
+											_.forEach(options,function(kv){
+												var k = kv.name;
+												var v = kv.value;
+												var proportion = v / propTotal;
+												var nv = v + (proportion * amount);
+												investmentChoices[k] = nv;
+												$("#io_"+k).attr("value",_.round(nv,0)).val(_.round(nv,0));
+												$("#io_val_"+k).text(_.round(nv,0));
+											});
+										}
+									}		
+								});
+							} else {
+								inputElem.attr("readonly",true).prop("disabled",true);
+							}
+							return ioElem;
+						}));
+						if (editing){
+							changeButton.hide().unbind("click");
+							cancelButton.show().on("click",function(){
+								investmentChoices = {};
+								editing = false;
+								reRender();
+							});
+							submitButton.show().on("click",function(){
+								account.investmentOptions = investmentChoices;
+								investmentChoices = {};
+								editing = false;
+								reRender();
+							});
+						} else {
+							changeButton.show().on("click",function(){
+								investmentChoices = {};
+								_.forEach(investmentOptions,function(io){
+									if (io.name in account.investmentOptions){
+										investmentChoices[io.name] = account.investmentOptions[io.name];
+									} else {
+										investmentChoices[io.name] = 0;
+									}
+								});
+								editing = true;
+								reRender();
+							});
+							cancelButton.hide().unbind("click");
+							submitButton.hide().unbind("click");
+						}
+					};
+
+					var breakdownGraph = html.find(".breakdownGraph")[0];
+					var graphData = _.flatMap(investmentOptions,function(io){
+						return _.map(io.performance,function(pi){
+							pi.optionName = io.name;
+							return pi;
+						});
+					});
+					var svg = zoomableGraph(breakdownGraph,graphData,function(d){return d.timestamp;},function(d){return d.adjustment;},function(d){return d.optionName;},"time","%");
+					reRender();
 					return html;
 				},
 				header:function(){
