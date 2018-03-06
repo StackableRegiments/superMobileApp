@@ -715,19 +715,21 @@ var app = (function(){
 						breakdownList.html(_.map(investmentOptions,function(io){
 							var ioElem = breakdownItemTemplate.clone();
 							var score = account.investmentOptions[io.name];
+							if (score === undefined || _.isNaN(score)){
+								score = 0;
+							}
 							var ioId = "io_" + io.name;
 							var label = ioElem.find(".investmentOptionLabel").attr("for",ioId).text(io.name);
-							var inputElem = ioElem.find(".investmentOptionInput").attr("id",ioId).attr("value",score);
+							var textValue = ioElem.find(".investmentOptionValue").attr("id","io_val_"+io.name).text(_.round(score,0));
+							var inputElem = ioElem.find(".investmentOptionInput").attr("id",ioId).attr("value",_.round(score,0)).val(_.round(score,0));
 							if (editing){
 								inputElem.on("change",function(nv){
-									console.log("beforeChange:",investmentChoices);
 									var newValue = parseInt($(this).val());
 									var oldValue = investmentChoices[io.name];
 									investmentChoices[io.name] = newValue;
-									console.log("afterFirstChange:",investmentChoices);
+									textValue.text(_.round(newValue,0));
 									var diff = _.sum(_.values(investmentChoices));
 									if (diff != 100){
-										console.log("adjusting the investmentChoices",diff,newValue,oldValue);
 										var amount = 100 - diff;
 										var options = _.flatMap(investmentChoices,function(v,k){
 											if (k != io.name){
@@ -738,17 +740,27 @@ var app = (function(){
 										});
 
 										var propTotal = _.sumBy(options,"value");
-										console.log("adjusting:",options,amount,propTotal);
-										_.forEach(options,function(kv){
-											var k = kv.name;
-											var v = kv.value;
-											var proportion = v / propTotal;
-											var nv = v + (proportion * amount);
-											console.log("adjusting item:",k,v,proportion,nv);
-											investmentChoices[k] = nv;
-											$("#io_"+k).attr("value",nv).val(nv);
-										});
-										console.log("afterAllChanges:",investmentChoices);
+										if (propTotal == 0){
+											_.forEach(options,function(kv){
+												var k = kv.name;
+												var v = kv.value;
+												var nv = v + (amount / _.size(options));
+												investmentChoices[k] = nv;
+												$("#io_"+k).attr("value",_.round(nv,0)).val(_.round(nv,0));
+												$("#io_val_"+k).text(_.round(nv,0));
+											});
+
+										} else {
+											_.forEach(options,function(kv){
+												var k = kv.name;
+												var v = kv.value;
+												var proportion = v / propTotal;
+												var nv = v + (proportion * amount);
+												investmentChoices[k] = nv;
+												$("#io_"+k).attr("value",_.round(nv,0)).val(_.round(nv,0));
+												$("#io_val_"+k).text(_.round(nv,0));
+											});
+										}
 									}		
 								});
 							} else {
