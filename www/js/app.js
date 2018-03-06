@@ -489,10 +489,13 @@ var app = (function(){
 						}
 					};
 					var accCreds = html.find(".accountCredentials");
-					accCreds.find(".username").on("change",function(){
+					var usernameInput = accCreds.find(".username").on("change",function(){
 						var val = $(this).val();
 						username = val;
 					}).on("keyup",checkKeyUpForSubmit);
+					_.defer(function(){
+						usernameInput.focus();
+					});
 					accCreds.find(".password").on("change",function(){
 						var val = $(this).val();
 						password = val;

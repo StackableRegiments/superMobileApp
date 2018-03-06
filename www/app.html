@@ -88,12 +88,23 @@
 	width:100vw;
 	height:95vh;
 	overflow-y:auto;
-//	padding:0.2em 1em;
 }
+.investmentOptionLabelContainer {
+	width:35vw;
+	position:relative;
+}
+.investmentOptionInputContainer {
+	width:55vw;
+	position:relative;
+}
+.investmentOptionValueContainer {
+	width:10vw;
+	position:relative;
+}
+
 .changePageButton {
-	background: -moz-linear-gradient(-45deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
-background: -webkit-linear-gradient(-45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: -webkit-linear-gradient(-45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 	border: solid 1px lightgrey;
 	padding:0.2em 1em;
@@ -109,6 +120,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 	margin:0.2em 1em;
 	border-radius:1em;
 	border:solid 1px lightgrey;
+}
+.manualAuth {
+	padding:1em;
 }
 .accountSummaryPage {
 	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fefcea+0,f1da36+100;Gold+3D */
@@ -172,6 +186,39 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', end
 	font-weight:regular;
 	margin:0em 1em;
 }
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 5.5px 0;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 25px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: rgba(48, 113, 169, 0.5);
+  border-radius: 1.3px;
+  border: 0.5px solid #010101;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #000000;
+  height: 36px;
+  width: 35px;
+  border-radius: 3px;
+  background: #ffffff;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -6px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: rgba(71, 141, 203, 0.5);
+}
+
 	</style>
 	<body>
 		<div id="header">
@@ -184,7 +231,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', end
 		<div id="footer"></div>
 		<div id="pageTemplates">
 			<div id="login" class="pageTemplate">
-				<div class="focusGroup">
+				<h2>Access restricted</h2>
+				<p>Please reauthenticate to continue using this application</p>
+				<div class="focusGroup manualAuth">
 					<div class="accountCredentials">
 						<div>
 							<label for="usernameInput">Username</label><input name="usernameInput" class="username" type="text"></input>
@@ -254,13 +303,19 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', end
 			<div id="accountInvestmentsBreakdown" class="pageTemplate">
 				<div class="breakdownGraph"></div>
 				<h2>Investment portfolio</h2>
-				<div class="breakdownList">
-					<div class="investmentOption">
-						<label class="investmentOptionLabel"></label>
-						<input class="investmentOptionInput" type="range" step="10" min="0" max="100"></input>
-						<span class="investmentOptionValue"></span>
-					</div>
-				</div>
+				<table class="breakdownList">
+					<tr class="investmentOption">
+						<td class="investmentOptionLabelContainer">
+							<label class="investmentOptionLabel"></label>
+						</td>
+						<td class="investmentOptionInputContainer">
+							<input class="investmentOptionInput" type="range" step="10" min="0" max="100"></input>
+						</td>
+						<td class="investmentOptionValueContainer">
+							<span class="investmentOptionValue"></span>
+						</td>
+					</tr>
+				</table>
 				<button class="changeBreakdown">Edit</button>
 				<button class="cancelChangeBreakdown">Cancel</button>
 				<button class="applyChangeBreakdown">Apply</button>
