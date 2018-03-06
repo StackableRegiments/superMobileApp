@@ -736,21 +736,15 @@ var app = (function(){
 												return [];
 											}
 										});
-										var count = _.size(options);
-										var each = _.round(amount / count);
-										var remainder = amount % count;
-										var first = true;
-										//should really do this proportionately, so that it never reduces any below 0.
-										console.log("adjusting:",options,amount,count,each,remainder);
+
+										var propTotal = _.sumBy(options,"value");
+										console.log("adjusting:",options,amount,propTotal);
 										_.forEach(options,function(kv){
 											var k = kv.name;
 											var v = kv.value;
-											var nv = v + each;
-											if (first){
-												nv += remainder;
-											}
-											nv = _.max([0,nv]);
-											console.log("adjusting item:",k,v,nv);
+											var proportion = v / propTotal;
+											var nv = v + (proportion * amount);
+											console.log("adjusting item:",k,v,proportion,nv);
 											investmentChoices[k] = nv;
 											$("#io_"+k).attr("value",nv).val(nv);
 										});
