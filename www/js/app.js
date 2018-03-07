@@ -1014,10 +1014,14 @@ var app = (function(){
 			};
 		})(),
 		(function(){
+			var news = [];
 			return {
 				name:"news",
 				activate:function(args,afterFunc){
-					afterFunc();
+					withNews(function(n){
+						news = n;
+						afterFunc();
+					});
 				},
 				header:function(){
 					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "news" && i.name != "login";}));
@@ -1037,6 +1041,17 @@ var app = (function(){
 				},
 
 				render:function(html){
+					var newsContainer = html.find(".newsContainer");	
+					var template = newsContainer.find(".newsItem").clone();
+					newsContainer.html(_.map(news,function(article){
+						var newsElem = template.clone();
+						newsElem.find(".newsItemHeader").text(article.heading);
+						newsElem.find(".newsItemImage").attr("src",article.image);
+						newsElem.find(".newsItemTimestamp").text(formatDate(article.timestamp));
+						newsElem.find(".newsItemSummary").text(article.summary);
+						newsElem.find(".newsItemLink").attr("href",article.url);
+						return newsElem;
+					}));
 					return html;
 				}
 			};
