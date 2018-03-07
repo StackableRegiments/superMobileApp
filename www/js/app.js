@@ -471,23 +471,21 @@ var app = (function(){
 					var templateId = template.attr("id");
 					templates[templateId] = template.clone();
 				});
-				//setPageFunc("login");
-				setPageFunc("chat");
+				setPageFunc("login");
 			},
 			error:function(err){
 			}
 		});
 
 		var reauth = function(){
-		//	setPageFunc("login",[]);
+			setPageFunc("login",[]);
 		};
 		bindFunc("online","reauthentication",reauth);
 		bindFunc("resume","reauthentication",reauth);
-		//bindFunc("deviceready","reauthentication",reauth);
+		bindFunc("deviceready","reauthentication",reauth);
 
 		bindFunc("deviceready","startup",function(){
-		//	setPageFunc("login");
-			setPageFunc("chat");
+			setPageFunc("login");
 		});
 	});
 	var pages = _.mapKeys([
