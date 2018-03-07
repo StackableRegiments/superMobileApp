@@ -1,0 +1,17 @@
+[
+	{
+		"from":"helpdesk",
+		"message":"Hi there.  You look lost.  Can I help you?",
+		"when":1520393400000
+	},
+	{
+		"from":"me",
+		"message":"Yes.  What are your opening hours?",
+		"when":1520393520000
+	},
+	{
+		"from":"helpdesk",
+		"message":"Never.  We don't have a storefront.  I'm the best you get.",
+		"when":1520393700000
+	}
+]

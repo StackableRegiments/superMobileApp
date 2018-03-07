@@ -105,11 +105,28 @@ var app = (function(){
 			}
 		});
 	};
-
+	var withChatHistory = function(chatFunc){
+		$.ajax({
+			url:"resources/chatHistory.json",
+			method:"GET",
+			dataType:"json",
+			success:function(history){
+				chatFunc(history);
+			},
+			error:function(err){
+				console.log("error getting chatHistory",err);
+				chatFunc([]);
+			}
+		});
+	};
 	var formatCurrency = function(currency){
 		return "$"+_.round(currency,2).toString();
 	};
 
+	var formatDateTime = function(dateLong){
+		var d = new Date(dateLong);
+		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString() + " " + d.getHours() + ":" + d.getMinutes();
+	};
 	var formatDate = function(dateLong){
 		var d = new Date(dateLong);
 		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString();
@@ -347,7 +364,7 @@ var app = (function(){
 		initialize();
 	});
 
-	var mainPaneContainer,headerContainer,footerContainer;
+	var mainPaneContainer,headerContainer,footerContainer,chatButton,newsButton;
 
 	bindFunc("backbutton","navigation",function(){
 		if (currentPage.name != "login"){
@@ -366,12 +383,15 @@ var app = (function(){
 
 	var pageHistory = [];
 	var currentPage = {};
+	var dontRenderHeadersFor = function(pageName){
+		return _.some(["login","chat"],function(i){return i == pageName;});
+	};
 	var setPageFunc = function(pageName,args){
 		var newPage = pages[pageName];
 		if (newPage !== undefined && mainPaneContainer !== undefined){
 			callFunc("prePageChange",[pageName,args]);
 			pageHistory.push({name:pageName,args:args});
-			if ("deactivate" in currentPage){
+			if ("deactivate" in currentPage && _.isFunction(currentPage.deactivate)){
 				currentPage.deactivate();
 			}
 			currentPage = newPage;
@@ -406,6 +426,17 @@ var app = (function(){
 						backToParentButton.fadeOut();
 					}
 				}
+				if (dontRenderHeadersFor(pageName)){
+					chatButton.hide().unbind("click");
+					newsButton.hide().unbind("click");
+				} else {
+					chatButton.show().on("click",function(){
+						setPageFunc("chat");
+					});
+					newsButton.show().on("click",function(){
+						setPageFunc("news");
+					});
+				}
 				if ("footer" in newPage){
 					footerContainer.html(newPage.footer());
 				}
@@ -426,26 +457,36 @@ var app = (function(){
 		mainPaneContainer = $("#mainPane");
 		headerContainer = $("#header");
 		footerContainer = $("#footer");
-		var templateRoot = $("#pageTemplates");
-		_.forEach(templateRoot.find(".pageTemplate"),function(templateItem){
-			var template = $(templateItem);
-			var templateId = template.attr("id");
-			templates[templateId] = template.clone();
+		chatButton = $("#chatButton");
+		newsButton = $("#newsButton");
+		$.ajax({
+			method:"GET",
+			url:"resources/pageTemplates.html",
+			dataType:"text",
+			success:function(rawHtml){
+				var html = $(rawHtml);
+				var templateRoot = html.find("#pageTemplates");
+				_.forEach(templateRoot.find(".pageTemplate"),function(templateItem){
+					var template = $(templateItem);
+					var templateId = template.attr("id");
+					templates[templateId] = template.clone();
+				});
+				setPageFunc("login");
+			},
+			error:function(err){
+			}
 		});
-		templateRoot.empty();
-		templateRoot.remove();
 
 		var reauth = function(){
 			setPageFunc("login",[]);
 		};
 		bindFunc("online","reauthentication",reauth);
 		bindFunc("resume","reauthentication",reauth);
-		//bindFunc("deviceready","reauthentication",reauth);
+		bindFunc("deviceready","reauthentication",reauth);
 
 		bindFunc("deviceready","startup",function(){
 			setPageFunc("login");
 		});
-		setPageFunc("login");
 	});
 	var pages = _.mapKeys([
 		(function(){
@@ -894,12 +935,80 @@ var app = (function(){
 			};
 		})(),
 		(function(){
+			var chatHistory = [];
+			var sendCurrentMessage = function(){
+				if (currentMessage !== undefined && currentMessage != ""){
+					chatHistory.push({
+						from:"me",
+						message:currentMessage,
+						when:Date.now()
+					});
+					currentMessage = "";
+					newMessageBox.val("");
+					reRenderChatHistory();
+				}
+			};
+			var chatHistoryRoot,chatTemplate,newMessageBox;
+			var reRenderChatHistory = function(){
+				if (chatHistoryRoot !== undefined && chatTemplate !== undefined){
+					chatHistoryRoot.html(_.map(chatHistory,function(chatItem){
+						var chatElem = chatTemplate.clone();
+						chatElem.find(".chatFrom").text(chatItem.from);
+						chatElem.find(".chatMessage").text(chatItem.message);
+						chatElem.find(".chatTimestamp").text(formatDateTime(chatItem.when));
+						chatElem.find(".chatImage").attr("src","resources/chat/"+chatItem.from+".jpg");
+						if (chatItem.from == "me"){
+							chatElem.addClass("outgoingMessage").removeClass("incomingMessage");
+						} else {
+							chatElem.addClass("incomingMessage").removeClass("outgoingMessage");
+						}
+						return chatElem;
+					}));
+				}
+			};
+			var currentMessage = "";
 			return {
 				name:"chat",
 				activate:function(args,afterFunc){
-					afterFunc();
+					withChatHistory(function(history){
+						chatHistory = history;
+						afterFunc();
+					});
+				},
+				header:function(){
+					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "chat" && i.name != "login";}));
+					if (previous !== undefined){
+						return {
+							name:"chat",
+							parent:previous.name,
+							parentArgs:previous.args
+						};
+					} else {
+						return {
+							name:"chat",
+							parent:"accountChooser",
+							parentArgs:[]
+						};
+					}
 				},
 				render:function(html){
+					chatHistoryRoot = html.find(".chatContainer");
+					chatTemplate = chatHistoryRoot.find(".chatItem").clone();
+					
+					chatHistoryRoot.empty();
+					reRenderChatHistory();
+					newMessageBox = html.find(".newMessage").on("keyup",function(evt){
+						var value = $(this).val();
+						currentMessage = value;
+						if ("keyCode" in evt){
+							if (evt.keyCode == 13){
+								sendCurrentMessage();
+							}
+						}
+					});
+					html.find(".sendMessage").on("click",function(){
+						sendCurrentMessage();
+					});
 					return html;
 				}
 			};
@@ -910,6 +1019,23 @@ var app = (function(){
 				activate:function(args,afterFunc){
 					afterFunc();
 				},
+				header:function(){
+					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "news" && i.name != "login";}));
+					if (previous !== undefined){
+						return {
+							name:"news",
+							parent:previous.name,
+							parentArgs:previous.args
+						};
+					} else {
+						return {
+							name:"news",
+							parent:"accountChooser",
+							parentArgs:[]
+						};
+					}
+				},
+
 				render:function(html){
 					return html;
 				}

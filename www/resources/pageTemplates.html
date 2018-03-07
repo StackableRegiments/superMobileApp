@@ -1,0 +1,152 @@
+<div>		
+	<div id="pageTemplates">
+		<div id="login" class="pageTemplate">
+			<h2>Access restricted</h2>
+			<p>Please reauthenticate to continue using this application</p>
+			<div class="focusGroup manualAuth">
+				<div class="accountCredentials">
+					<div>
+						<label for="usernameInput">Username</label><input name="usernameInput" class="username" type="text"></input>
+					</div>
+					<div>
+						<label for="passwordInput">Password</label><input name="passwordInput" class="password" type="password"></input>
+					</div>
+					<div>
+						<button class="submitCredential">Login</button>
+					</div>
+				</div>
+				<div class="deviceAuthContainer">
+					<button class="deviceAuth">Biometric</button>
+				</div>
+			</div>
+		</div>
+		<div id="accountChooser" class="pageTemplate accountChooserPage">
+			<div>
+				<h2>My accounts</h2>
+				<div class="accountList">
+					<button class="accountItem changePageButton">
+						<div class="accountName"></div>
+					</button>
+				</div>
+			</div>
+			<br/>
+			<button class="consolidateButton changePageButton">Consolidate other account</button>
+		</div>
+		<div id="consolidate" class"pageTemplate consolidatePage">
+			<div class="otherAccountProvider"></div>
+			<div class="otherAccountIdentifier"></div>
+		</div>
+		<div id="accountSummary" class="pageTemplate accountSummaryPage">
+			<div class="focusGroup">
+				<div class="majorAttribute">
+					<span class="attributeLabel">Account Name</span><span class="accountName attributeValue"></span>
+				</div>
+				<div class="majorAttribute">
+					<span class="attributeLabel">Account Number</span><span class="accountNumber attributeValue"></span>
+				</div>
+				<div class="majorAttribute">
+					<span class="attributeLabel">Balance</span><span	class="accountBalance attributeValue"></span>
+				</div>
+				<div class="minorAttribute">
+					<span class="attributeLabel">Latest activity</span><span	class="lastTransaction attributeValue"></span>
+				</div>
+				<div class="minorAttribute">
+					<span class="attributeLabel">Concessional contributions</span><span class="concessionaryContributionsTotal attributeValue"></span>
+				</div>
+				<div class="minorAttribute">
+					<span class="attributeLabel">Non-concessional contributions</span><span class="nonConcessionalContributionsTotal attributeValue"></span>
+				</div>
+			</div>
+			<button class="correspondenceButton changePageButton">Correspondence</button>
+			<button class="transactionListButton changePageButton">Transactions List</button>
+			<button class="transactionsGraphButton changePageButton">Transactions Graph</button>
+			<button class="investmentsBreakdownButton changePageButton">Investments</button>
+			<button class="adequacyButton changePageButton">Adequacy</button>
+			<button class="changeNominationsButton changePageButton">Change Nomination</button>
+		</div>
+		<div id="accountTransactionList" class="pageTemplate accountTransactionsGridPage">
+			<div class="transactionsListGrid"></div>
+		</div>
+		<div id="accountTransactionsGraph" class="pageTemplate">
+			<div class="transactionsGraph"></div>
+		</div>
+		<div id="accountInvestmentsBreakdown" class="pageTemplate">
+			<div class="breakdownGraph"></div>
+			<h2>Investment portfolio</h2>
+			<table class="breakdownList">
+				<tr class="investmentOption">
+					<td class="investmentOptionLabelContainer">
+						<label class="investmentOptionLabel"></label>
+					</td>
+					<td class="investmentOptionInputContainer">
+						<input class="investmentOptionInput" type="range" step="10" min="0" max="100"></input>
+					</td>
+					<td class="investmentOptionValueContainer">
+						<span class="investmentOptionValue"></span>
+					</td>
+				</tr>
+			</table>
+			<button class="changeBreakdown">Edit</button>
+			<button class="cancelChangeBreakdown">Cancel</button>
+			<button class="applyChangeBreakdown">Apply</button>
+		</div>
+		<div id="accountAdequacy" class="pageTemplate">
+		</div>
+		<div id="accountCorrespondence" class="pageTemplate">
+			<div class="correspondenceContainer">
+				<div class="correspondenceItem">
+					<div class="correspondenceItemName"></div>
+					<div class="correspondenceItemDate"></div>
+					<div class="correspondenceItemDownloadLink"></div>
+				</div>
+			</div>
+		</div>
+		<div id="profile" class="pageTemplate">
+			<div class="firstName"></div>
+			<div class="middleNames"></div>
+			<div class="surname"></div>
+			<div class="dateOfBirth"></div>
+			<div class="taxFileNumber"></div>
+			<div class="homeAddress"></div>
+			<div class="homeSuburb"></div>
+			<div class="homeState"></div>
+			<div class="homeCountry"></div>
+			<div class="homePostCode"></div>
+			<div class="mobilePhoneNumber"></div>
+			<div class="emailAddress"></div>
+		</div>
+		<div id="chat" class="pageTemplate">
+			<div class="chatPageContainer">
+				<div class="chatContainer">
+					<div class="chatItem">
+						<div class="chatImageContainer">
+							<img class="chatImage"></img>
+						</div>
+						<div class="chatHeader">
+							<span class="chatFrom"></span>
+							<span class="chatTimestamp"></span>
+						</div>
+						<div class="chatMessage"></div>
+					</div>
+				</div>
+				<div class="newMessageContainer">
+					<div class="editableContainer">
+						<textarea class="newMessage"></textarea>
+						<button class="sendMessage"><i class="fa fa-arrow-circle-right"></i></button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="news" class="pageTemplate">
+			<div class="newsContainer">
+				<div class="newsItem">
+					<div class="newsItemHeader"></div>
+					<div class="newsItemImage"></div>
+					<div class="newsItemTimestamp"></div>
+					<div class="newsItemSummary"></div>
+					<div class="newsItemLink"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
