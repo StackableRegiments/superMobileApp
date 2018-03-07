@@ -1,5 +1,4 @@
 var app = (function(){
-
 	var withAccounts = function(accountsFunc){
 		$.ajax({
 			url:"resources/accounts.json",
@@ -119,6 +118,58 @@ var app = (function(){
 			}
 		});
 	};
+
+	var chat = (function(){
+		var history = [];
+		var eliza = new ElizaBot();
+		eliza.memSize = 200;
+		var elizaInitial = eliza.getInitial();
+		var getDelayInterval = function(){
+			return 1000 * _.random(5,30);
+		};
+		withChatHistory(function(chatHistory){
+			history = chatHistory;
+		});
+		var subscribers = {};
+		var addMessageFunc = function(message,author){
+			var m = {
+				message:message,
+				from:author,
+				when:Date.now(),
+				unread:true
+			};
+			history.push(m);
+			_.forEach(subscribers,function(s){
+				try {
+					s(m);
+				} catch(e){
+					console.log("attempted to fire function on message",e,s,m);
+				}
+			});
+			if (author == "me"){
+				_.delay(function(){
+					var reply = eliza.transform(message);
+					addMessageFunc(reply,"helpdesk");
+				},getDelayInterval());
+			}
+		};
+		var subscribeFunc = function(name,messageFunc){
+			subscribers[name] = messageFunc;
+		};
+		var unsubscribeFunc = function(name){
+			delete subscribers[name];
+		};
+		return {
+			getHistory:function(){
+				return history;
+			},
+			addMessage:addMessageFunc,
+			subscribe:subscribeFunc,
+			unsubscribe:unsubscribeFunc
+		};
+	})();
+
+
 	var formatCurrency = function(currency){
 		return "$"+_.round(currency,2).toString();
 	};
@@ -364,7 +415,7 @@ var app = (function(){
 		initialize();
 	});
 
-	var mainPaneContainer,headerContainer,footerContainer,chatButton,newsButton;
+	var mainPaneContainer,headerContainer,footerContainer,chatButton,newsButton,chatCount;
 
 	bindFunc("backbutton","navigation",function(){
 		if (currentPage.name != "login"){
@@ -386,6 +437,20 @@ var app = (function(){
 	var dontRenderHeadersFor = function(pageName){
 		return _.some(["login","chat"],function(i){return i == pageName;});
 	};
+
+	var renderHeaderChatCount = function(){
+		var count = _.size(_.filter(chat.getHistory(),function(cm){return cm.unread == true;}));
+		if (count > 0){
+			chatCount.text(count);
+		} else {
+			chatCount.text("");
+		}
+	};
+	chat.subscribe("header",function(m){
+		renderHeaderChatCount();
+	});
+
+
 	var setPageFunc = function(pageName,args){
 		var newPage = pages[pageName];
 		if (newPage !== undefined && mainPaneContainer !== undefined){
@@ -429,10 +494,13 @@ var app = (function(){
 				if (dontRenderHeadersFor(pageName)){
 					chatButton.hide().unbind("click");
 					newsButton.hide().unbind("click");
+					chatCount.hide();
 				} else {
 					chatButton.show().on("click",function(){
 						setPageFunc("chat");
 					});
+					chatCount.fadeIn();
+					renderHeaderChatCount();
 					newsButton.show().on("click",function(){
 						setPageFunc("news");
 					});
@@ -459,6 +527,7 @@ var app = (function(){
 		footerContainer = $("#footer");
 		chatButton = $("#chatButton");
 		newsButton = $("#newsButton");
+		chatCount = $("#chatCount");
 		$.ajax({
 			method:"GET",
 			url:"resources/pageTemplates.html",
@@ -935,14 +1004,9 @@ var app = (function(){
 			};
 		})(),
 		(function(){
-			var chatHistory = [];
 			var sendCurrentMessage = function(){
 				if (currentMessage !== undefined && currentMessage != ""){
-					chatHistory.push({
-						from:"me",
-						message:currentMessage,
-						when:Date.now()
-					});
+					chat.addMessage(currentMessage,"me");
 					currentMessage = "";
 					newMessageBox.val("");
 					reRenderChatHistory();
@@ -951,7 +1015,11 @@ var app = (function(){
 			var chatHistoryRoot,chatTemplate,newMessageBox;
 			var reRenderChatHistory = function(){
 				if (chatHistoryRoot !== undefined && chatTemplate !== undefined){
-					chatHistoryRoot.html(_.map(chatHistory,function(chatItem){
+					var history = chat.getHistory();
+					_.forEach(history,function(cm){
+						cm.unread = false;
+					});
+					chatHistoryRoot.html(_.map(history,function(chatItem){
 						var chatElem = chatTemplate.clone();
 						chatElem.find(".chatFrom").text(chatItem.from);
 						chatElem.find(".chatMessage").text(chatItem.message);
@@ -964,16 +1032,22 @@ var app = (function(){
 						}
 						return chatElem;
 					}));
+					chatHistoryRoot.animate({ scrollTop: _.sumBy(chatHistoryRoot.find(".chatItem"),function(i){return $(i).height();}) },"slow");
 				}
 			};
 			var currentMessage = "";
+			var chatId = "chatPane_"+_.uniqueId().toString();
 			return {
 				name:"chat",
 				activate:function(args,afterFunc){
-					withChatHistory(function(history){
-						chatHistory = history;
+						chatId = "chatPane_"+_.uniqueId().toString();
+						chat.subscribe(chatId,function(m){
+							reRenderChatHistory();
+						});	
 						afterFunc();
-					});
+				},
+				deactivate:function(){
+					chat.unsubscribe(chatId);
 				},
 				header:function(){
 					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "chat" && i.name != "login";}));

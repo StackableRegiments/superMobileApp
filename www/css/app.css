@@ -112,12 +112,29 @@
 	right:92vw;
 	width:8vw;
 }
-#header #chatButton {
+#header #chatButtonContainer {
 	position:absolute;
 	top:0vh;
 	left:80vw;
 	right:10vw;
 	width:10vw;
+}
+#chatButtonContainer #chatButton{
+	position:relative;
+	top:0vh;
+	bottom:0vh;
+	left:0vh;
+	right:0vh;
+}
+#chatButton .chatIcon {
+	position:absolute;
+}
+#chatButton #chatCount {
+	position:absolute;
+	border:1px solid darkred;
+	border-radius:1em;
+	background-color:red;
+	font-size:0.5em;
 }
 #header #newsButton {
 	position:absolute;

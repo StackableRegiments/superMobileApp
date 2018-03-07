@@ -12,6 +12,7 @@
 	{
 		"from":"helpdesk",
 		"message":"Never.  We don't have a storefront.  I'm the best you get.",
-		"when":1520393700000
+		"when":1520393700000,
+		"unread":true
 	}
 ]
