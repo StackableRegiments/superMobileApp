@@ -123,6 +123,10 @@ var app = (function(){
 		return "$"+_.round(currency,2).toString();
 	};
 
+	var formatDateTime = function(dateLong){
+		var d = new Date(dateLong);
+		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString() + " " + d.getHours() + ":" + d.getMinutes();
+	};
 	var formatDate = function(dateLong){
 		var d = new Date(dateLong);
 		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString();
@@ -467,21 +471,23 @@ var app = (function(){
 					var templateId = template.attr("id");
 					templates[templateId] = template.clone();
 				});
-				setPageFunc("login");
+				//setPageFunc("login");
+				setPageFunc("chat");
 			},
 			error:function(err){
 			}
 		});
 
 		var reauth = function(){
-			setPageFunc("login",[]);
+		//	setPageFunc("login",[]);
 		};
 		bindFunc("online","reauthentication",reauth);
 		bindFunc("resume","reauthentication",reauth);
 		//bindFunc("deviceready","reauthentication",reauth);
 
 		bindFunc("deviceready","startup",function(){
-			setPageFunc("login");
+		//	setPageFunc("login");
+			setPageFunc("chat");
 		});
 	});
 	var pages = _.mapKeys([
@@ -951,7 +957,7 @@ var app = (function(){
 						var chatElem = chatTemplate.clone();
 						chatElem.find(".chatFrom").text(chatItem.from);
 						chatElem.find(".chatMessage").text(chatItem.message);
-						chatElem.find(".chatTimestamp").text(new Date(chatItem.when).toString());
+						chatElem.find(".chatTimestamp").text(formatDateTime(chatItem.when));
 						if (chatItem.from == "me"){
 							chatElem.addClass("outgoingMessage").removeClass("incomingMessage");
 						} else {

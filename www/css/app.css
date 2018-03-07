@@ -15,17 +15,76 @@
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a90329', endColorstr='#6d0019',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 .outgoingMessage {
-	background-color:purple;
-	color:white;
-	width:80vw;
-	margin-right:20vw;
+	background-color:#b3effc;
+	color:black;
+	width:72vw;
+	margin-left:18vw;
 }
 .incomingMessage {
-	background-color:lightblue;
+	background-color:#eceff1;
 	color:black;
-	width:80vw;
-	margin-left:20vw;
+	width:74vw;
+	margin-right:18vw;
 }
+.chatContainer {
+	margin:2vw;
+	width:96vw;
+}
+.chatItem {
+	border-radius:2vw;
+	margin-bottom:2vh;
+	padding:0.5em 1em;
+}
+.chatItem .chatFrom {
+	font-weight:bold;
+}
+.chatItem .chatMessage {
+}
+.chatItem .chatTimestamp {
+	font-size:0.8em;
+	float:right;
+	font-style:italic;
+}
+.chatPageContainer {
+	height:95vh;
+	width:100vw;
+	position:relative;
+}
+.chatContainer {
+	position:absolute;
+	top:0vh;
+	width:100vw;
+	overflow-y:auto;
+	height:70vh;
+}
+.newMessageContainer {
+	position:absolute;
+	height:20vh;
+	width:100vw;
+	bottom:0vh;
+}
+.editableContainer {
+	position:relative;
+	height:20vh;
+	width:100vw;
+}
+.newMessage {
+	position:absolute;
+	top:0vh;
+	bottom:0vh;
+	left:2vw;
+	right:12vw;
+	width:86vw;
+}
+.sendMessage {
+	position:absolute;
+	width:10vw;
+	top:0vh;
+	bottom:0vh;
+	left:88vw;
+	right:2vw;
+}
+
 #header .headerSection {
 	position:absolute;
 	//center this text, surely?

@@ -116,16 +116,22 @@
 			<div class="emailAddress"></div>
 		</div>
 		<div id="chat" class="pageTemplate">
-			<div class="chatContainer">
-				<div class="chatItem">
-					<div class="chatFrom"></div>
-					<div class="chatMessage"></div>
-					<div class="chatTimestamp"></div>
+			<div class="chatPageContainer">
+				<div class="chatContainer">
+					<div class="chatItem">
+						<div class="chatHeader">
+							<span class="chatFrom"></span>
+							<span class="chatTimestamp"></span>
+						</div>
+						<div class="chatMessage"></div>
+					</div>
 				</div>
-			</div>
-			<div class="newMessageContainer">
-				<textarea class="newMessage"></textarea>
-				<div class="sendMessage">send</div>
+				<div class="newMessageContainer">
+					<div class="editableContainer">
+						<textarea class="newMessage"></textarea>
+						<button class="sendMessage"><i class="fa fa-arrow-circle-right"></i></button>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id="news" class="pageTemplate">
