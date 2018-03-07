@@ -26,14 +26,26 @@
 	width:74vw;
 	margin-right:18vw;
 }
+.incomingMessage .chatImage {
+	float:left;
+}
+.outgoingMessage .chatImage {
+	float:left;
+}
 .chatContainer {
 	margin:2vw;
 	width:96vw;
+}
+.chatImage {
+	max-width:40px;
+	max-height:40px;
+	margin-right:1em;
 }
 .chatItem {
 	border-radius:2vw;
 	margin-bottom:2vh;
 	padding:0.5em 1em;
+	min-height:45px;
 }
 .chatItem .chatFrom {
 	font-weight:bold;

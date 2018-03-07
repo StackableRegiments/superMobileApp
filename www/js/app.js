@@ -958,6 +958,7 @@ var app = (function(){
 						chatElem.find(".chatFrom").text(chatItem.from);
 						chatElem.find(".chatMessage").text(chatItem.message);
 						chatElem.find(".chatTimestamp").text(formatDateTime(chatItem.when));
+						chatElem.find(".chatImage").attr("src","resources/chat/"+chatItem.from+".jpg");
 						if (chatItem.from == "me"){
 							chatElem.addClass("outgoingMessage").removeClass("incomingMessage");
 						} else {
