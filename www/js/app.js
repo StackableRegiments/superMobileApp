@@ -415,7 +415,7 @@ var app = (function(){
 		initialize();
 	});
 
-	var mainPaneContainer,headerContainer,footerContainer,chatButton,newsButton;
+	var mainPaneContainer,headerContainer,footerContainer,chatButton,newsButton,chatCount;
 
 	bindFunc("backbutton","navigation",function(){
 		if (currentPage.name != "login"){
@@ -437,6 +437,20 @@ var app = (function(){
 	var dontRenderHeadersFor = function(pageName){
 		return _.some(["login","chat"],function(i){return i == pageName;});
 	};
+
+	var renderHeaderChatCount = function(){
+		var count = _.size(_.filter(chat.getHistory(),function(cm){return cm.unread == true;}));
+		if (count > 0){
+			chatCount.text(count);
+		} else {
+			chatCount.text("");
+		}
+	};
+	chat.subscribe("header",function(m){
+		renderHeaderChatCount();
+	});
+
+
 	var setPageFunc = function(pageName,args){
 		var newPage = pages[pageName];
 		if (newPage !== undefined && mainPaneContainer !== undefined){
@@ -480,10 +494,13 @@ var app = (function(){
 				if (dontRenderHeadersFor(pageName)){
 					chatButton.hide().unbind("click");
 					newsButton.hide().unbind("click");
+					chatCount.hide();
 				} else {
 					chatButton.show().on("click",function(){
 						setPageFunc("chat");
 					});
+					chatCount.fadeIn();
+					renderHeaderChatCount();
 					newsButton.show().on("click",function(){
 						setPageFunc("news");
 					});
@@ -510,6 +527,7 @@ var app = (function(){
 		footerContainer = $("#footer");
 		chatButton = $("#chatButton");
 		newsButton = $("#newsButton");
+		chatCount = $("#chatCount");
 		$.ajax({
 			method:"GET",
 			url:"resources/pageTemplates.html",
@@ -997,7 +1015,11 @@ var app = (function(){
 			var chatHistoryRoot,chatTemplate,newMessageBox;
 			var reRenderChatHistory = function(){
 				if (chatHistoryRoot !== undefined && chatTemplate !== undefined){
-					chatHistoryRoot.html(_.map(chat.getHistory(),function(chatItem){
+					var history = chat.getHistory();
+					_.forEach(history,function(cm){
+						cm.unread = false;
+					});
+					chatHistoryRoot.html(_.map(history,function(chatItem){
 						var chatElem = chatTemplate.clone();
 						chatElem.find(".chatFrom").text(chatItem.from);
 						chatElem.find(".chatMessage").text(chatItem.message);
