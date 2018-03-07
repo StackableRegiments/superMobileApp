@@ -426,14 +426,23 @@ var app = (function(){
 		mainPaneContainer = $("#mainPane");
 		headerContainer = $("#header");
 		footerContainer = $("#footer");
-		var templateRoot = $("#pageTemplates");
-		_.forEach(templateRoot.find(".pageTemplate"),function(templateItem){
-			var template = $(templateItem);
-			var templateId = template.attr("id");
-			templates[templateId] = template.clone();
+		$.ajax({
+			method:"GET",
+			url:"resources/pageTemplates.html",
+			dataType:"text",
+			success:function(rawHtml){
+				var html = $(rawHtml);
+				var templateRoot = html.find("#pageTemplates");
+				_.forEach(templateRoot.find(".pageTemplate"),function(templateItem){
+					var template = $(templateItem);
+					var templateId = template.attr("id");
+					templates[templateId] = template.clone();
+				});
+				setPageFunc("login");
+			},
+			error:function(err){
+			}
 		});
-		templateRoot.empty();
-		templateRoot.remove();
 
 		var reauth = function(){
 			setPageFunc("login",[]);
@@ -445,7 +454,6 @@ var app = (function(){
 		bindFunc("deviceready","startup",function(){
 			setPageFunc("login");
 		});
-		setPageFunc("login");
 	});
 	var pages = _.mapKeys([
 		(function(){
