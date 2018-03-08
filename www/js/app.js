@@ -575,7 +575,7 @@ var app = (function(){
 			if (thisMessage !== undefined){
 				currentFunc = _.debounce(function(){
 					if (_.find(chat.getHistory(),function(item){
-						return item.message == thisMessage.message && item.author == thisMessage.author;
+						return item.message == thisMessage.message && item.from == thisMessage.author;
 					}) == undefined){ 
 						chat.addMessage(thisMessage.message,thisMessage.author);
 					}
