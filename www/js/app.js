@@ -716,7 +716,7 @@ var app = (function(){
 				},
 				deferredMessages:[
 					{
-						message:"You've been looking at the account page for a while.  Are you not seeing an account you were expecting?  Can I help with that?",
+						message:"You've been looking at the account chooser page for a while.  Are you not seeing an account you were expecting?  Can I help with that?",
 						author:"helpdesk",
 						delay:10 * 1000
 					},
@@ -773,6 +773,14 @@ var app = (function(){
 					});
 				},
 				name:"accountSummary",
+				deferredMessages:[
+					{
+						message:"Are you looking for a button you can't see here?  Can I help with that?",
+						author:"helpdesk",
+						delay:30 * 1000
+					}
+				],
+
 				header:function(){
 					return {
 						name:"account summary",
@@ -818,6 +826,13 @@ var app = (function(){
 					transactions = args[1];
 					afterFunc();
 				},
+				deferredMessages:[
+					{
+						message:"Having trouble finding a transaction you're looking for?  Did you know that you can click on the column headers and resort the list by those headers?  I find it easier to find a particular transaction by date or by type by doing that.  That way, I can sort them that way, and then just skip through the pages until I find it.",
+						author:"helpdesk",
+						delay:60 * 1000
+					}
+				],
 				render:function(html){
 					var gridRoot = html.find(".transactionsListGrid");
 					JsGridHelpers.readonlyGrid(gridRoot,transactions.items,[
@@ -847,6 +862,13 @@ var app = (function(){
 					transactions = args[1];
 					afterFunc();
 				},
+				deferredMessages:[
+					{
+						message:"If you're finding it difficult to make sense of the graph, you can zoom in and pan around with your fingers - just use two fingers.",
+						author:"helpdesk",
+						delay:60 * 1000
+					}
+				],
 				render:function(html){
 					var graphRoot = html.find(".transactionsGraph")[0];
 					var svg = zoomableGraph(graphRoot,transactions.items,function(d){return d.timestamp;},function(d){return d.subTotal;},function(d){return "balance";},"time","$");
@@ -875,6 +897,13 @@ var app = (function(){
 						afterFunc();
 					});
 				},
+				deferredMessages:[
+					{
+						message:"You can redistribute your investments here - there's an edit button on this page which'll let you change what percentage is in which option.",
+						author:"helpdesk",
+						delay:60 * 1000
+					}
+				],
 				render:function(html){
 					var breakdownList = html.find(".breakdownList");
 					var breakdownItemTemplate = breakdownList.find(".investmentOption").clone();
@@ -997,6 +1026,14 @@ var app = (function(){
 					account = _.head(args);
 					afterFunc();
 				},
+				deferredMessages:[
+					{
+						message:"Everything we've sent you should also appear here.  There might even be things we want to send you which haven't turned up in your mailbox yet.  You can always come back here to read it again.",
+						author:"helpdesk",
+						delay:60 * 1000
+					}
+				],
+
 				render:function(html){
 					return html;
 				},
@@ -1054,7 +1091,15 @@ var app = (function(){
 				name:"profile",
 				activate:function(args,afterFunc){
 					afterFunc();
-				},
+				},	
+				deferredMessages:[
+					{
+						message:"Are these not your details?  There's an edit button on this page which you can use to fix that.",
+						author:"helpdesk",
+						delay:60 * 1000
+					}
+				],
+
 				render:function(html){
 					return html;
 				}
