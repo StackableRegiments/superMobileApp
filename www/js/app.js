@@ -615,6 +615,8 @@ var app = (function(){
 			var rejectLogin = function(){
 				alert("Authentication failed.  Please try again");
 			};
+			var requestBiometrics = function(){
+			};
 			return {
 				"name":"login",
 				"activate":function(args,afterFunc){
@@ -628,6 +630,11 @@ var app = (function(){
 						};
 					}
 					afterFunc();
+				},
+				"deactivate":function(){
+					if ("cancel" in requestBiometrics){
+						requestBiometrics.cancel();
+					}
 				},
 				"render":function(html){
 					var attemptLogin = function(){
@@ -687,7 +694,8 @@ var app = (function(){
 								});
 							};
 							deviceAuthButton.on("click",doDeviceAuth);
-							doDeviceAuth();
+							requestBiometrics = _.debounce(doDeviceAuth,1000);
+							requestBiometrics();
 						},function(error){
 							deviceAuthContainer.remove();
 						});
