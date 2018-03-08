@@ -119,13 +119,14 @@ var app = (function(){
 		});
 	};
 
+	var idleHelpdeskTime = 15 * 1000;
 	var chat = (function(){
 		var history = [];
 		var eliza = new ElizaBot();
 		eliza.memSize = 200;
 		var elizaInitial = eliza.getInitial();
 		var getDelayInterval = function(){
-			return 1000 * _.random(5,30);
+			return 1000 * _.random(1,5);
 		};
 		withChatHistory(function(chatHistory){
 			history = chatHistory;
@@ -616,7 +617,7 @@ var app = (function(){
 					if ("Fingerprint" in window){
 						Fingerprint.isAvailable(function(result){
 							var deviceAuthButton = html.find(".deviceAuth");
-							deviceAuthButton.on("click",function(){
+							var doDeviceAuth = function(){
 								Fingerprint.show({
 									clientId:"superMobileApp",
 									clientSecret:"secretPasswordForSuperMobileApp"
@@ -641,7 +642,9 @@ var app = (function(){
 								},function(error){
 									alert("failed to authenticate with biometrics");
 								});
-							});
+							};
+							deviceAuthButton.on("click",doDeviceAuth);
+							doDeviceAuth();
 						},function(error){
 							deviceAuthContainer.remove();
 						});
@@ -661,13 +664,23 @@ var app = (function(){
 		})(),
 		(function(){
 			var accounts = [];
+			var deferredHelpRequest = function(){};
 			return {
 				name:"accountChooser",
 				activate:function(args,afterFunc){
 					withAccounts(function(accs){
 						accounts = accs;
+						deferredHelpRequest = _.debounce(function(){
+							chat.addMessage("You've been looking at the account page for a while.  Are you not seeing an account you were expecting?  Can I help with that?","helpdesk");
+						},idleHelpdeskTime);
 						afterFunc();
+						deferredHelpRequest();
 					});
+				},
+				deactivate:function(){
+					if ("cancel" in deferredHelpRequest){
+						deferredHelpRequest.cancel();
+					}
 				},
 				header:function(){
 					return {
