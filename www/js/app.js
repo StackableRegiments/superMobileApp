@@ -460,11 +460,19 @@ var app = (function(){
 			if ("deactivate" in currentPage && _.isFunction(currentPage.deactivate)){
 				currentPage.deactivate();
 			}
+			if ("messageDeferrer" in currentPage){
+				currentPage.messageDeferrer.cancel();
+			}
 			currentPage = newPage;
 			var oldPageContent = mainPaneContainer.find(".pageTemplate");
 			oldPageContent.fadeOut(400,function(){
 				oldPageContent.remove();
 			});
+			if ("deferredMessages" in newPage){
+				currentPage.messageDeferrer = createDeferredMessages(newPage.deferredMessages);
+				currentPage.messageDeferrer.start();
+			};
+			var deferredMessages = newPage.def
 			var renderFunc = function(){
 				var backToParentButton = headerContainer.find(".backToParentButton").unbind("click");
 				if ("render" in newPage){
@@ -558,6 +566,37 @@ var app = (function(){
 			setPageFunc("login");
 		});
 	});
+	var createDeferredMessages = function(messages){
+		var currentFunc = function(){
+		};
+		var generateDelayFuncFromMessages = function(ms){
+			var thisMessage = _.head(ms);
+			var remainder = _.tail(ms);
+			if (thisMessage !== undefined){
+				currentFunc = _.debounce(function(){
+					chat.addMessage(thisMessage.message,thisMessage.author);
+					generateDelayFuncFromMessages(remainder);
+					currentFunc();
+				},thisMessage.delay);
+			} else {
+				currentFunc = function(){
+				};
+			}
+		};
+		var startFunc = function(){
+			generateDelayFuncFromMessages(messages);
+			currentFunc();
+		};
+		var cancelFunc = function(){
+			if (currentFunc !== undefined && "cancel" in currentFunc){
+				currentFunc.cancel();
+			};
+		};
+		return {
+			start:startFunc,
+			cancel:cancelFunc
+		};
+	};
 	var pages = _.mapKeys([
 		(function(){
 			var username = undefined;
@@ -664,24 +703,29 @@ var app = (function(){
 		})(),
 		(function(){
 			var accounts = [];
-			var deferredHelpRequest = function(){};
+
 			return {
 				name:"accountChooser",
 				activate:function(args,afterFunc){
 					withAccounts(function(accs){
 						accounts = accs;
-						deferredHelpRequest = _.debounce(function(){
-							chat.addMessage("You've been looking at the account page for a while.  Are you not seeing an account you were expecting?  Can I help with that?","helpdesk");
-						},idleHelpdeskTime);
 						afterFunc();
-						deferredHelpRequest();
 					});
 				},
 				deactivate:function(){
-					if ("cancel" in deferredHelpRequest){
-						deferredHelpRequest.cancel();
-					}
 				},
+				deferredMessages:[
+					{
+						message:"You've been looking at the account page for a while.  Are you not seeing an account you were expecting?  Can I help with that?",
+						author:"helpdesk",
+						delay:10 * 1000
+					},
+					{
+						message:"Perhaps you need to consolidate the account?  Pressing the Consolidate account button lets you enter the details of another account you might have with us, but which might not be showing up here.",
+						author:"helpdesk",
+						delay:5 * 1000
+					}
+				],
 				header:function(){
 					return {
 						name:"accounts"
