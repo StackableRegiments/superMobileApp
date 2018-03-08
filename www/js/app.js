@@ -690,7 +690,7 @@ var app = (function(){
 										rejectLogin();
 									}
 								},function(error){
-									alert("failed to authenticate with biometrics",JSON.stringify(error));
+									alert("failed to authenticate with biometrics: "+JSON.stringify(error));
 								});
 							};
 							deviceAuthButton.on("click",doDeviceAuth);
