@@ -574,7 +574,11 @@ var app = (function(){
 			var remainder = _.tail(ms);
 			if (thisMessage !== undefined){
 				currentFunc = _.debounce(function(){
-					chat.addMessage(thisMessage.message,thisMessage.author);
+					if (_.find(chat.getHistory(),function(item){
+						return item.message == thisMessage.message && item.author == thisMessage.author;
+					}) == undefined){ 
+						chat.addMessage(thisMessage.message,thisMessage.author);
+					}
 					generateDelayFuncFromMessages(remainder);
 					currentFunc();
 				},thisMessage.delay);
