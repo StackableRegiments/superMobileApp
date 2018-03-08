@@ -694,8 +694,8 @@ var app = (function(){
 								});
 							};
 							deviceAuthButton.on("click",doDeviceAuth);
-							requestBiometrics = _.debounce(doDeviceAuth,1000);
-							requestBiometrics();
+							//requestBiometrics = _.debounce(doDeviceAuth,1000);
+							//requestBiometrics();
 						},function(error){
 							deviceAuthContainer.remove();
 						});
