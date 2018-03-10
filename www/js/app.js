@@ -715,13 +715,20 @@ var app = (function(){
 		})(),
 		(function(){
 			var accounts = [];
-
 			return {
 				name:"accountChooser",
 				activate:function(args,afterFunc){
 					withAccounts(function(accs){
 						accounts = accs;
-						afterFunc();
+						var total = _.size(accounts);
+						_.forEach(accounts,function(account,accIndex){
+							withTransactions(account.number,function(trans){
+								account.transactions = reduceTransactions(trans);
+								if (!(_.some(accounts,function(acc){ return (!("transactions" in acc));}))){
+									afterFunc();
+								}
+							});
+						});
 					});
 				},
 				deactivate:function(){
@@ -747,8 +754,11 @@ var app = (function(){
 					var accountList = html.find(".accountList");
 					var accountItemTemplate = accountList.find(".accountItem").clone();
 					accountList.html(_.map(accounts,function(account){
+						console.log("rendering account",account);
 						var elem = accountItemTemplate.clone();
 						elem.find(".accountName").text(account.name);
+						elem.find(".accountNumber").text(account.number);
+						elem.find(".accountBalance").text(formatCurrency(account.transactions.total));
 						elem.on("click",function(){
 							setPageFunc("accountSummary",[account]);
 						});
