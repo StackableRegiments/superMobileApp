@@ -21,6 +21,24 @@
 	overflow-y:auto;
 }
 
+.focusGroup {
+	margin:0.2em 1em;
+	border-radius:1em;
+	border:solid 1px lightgrey;
+}
+
+.changePageButton {
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	border: solid 1px lightgrey;
+	text-align:center;
+	text-decoration:none;
+	width:calc(100% - 2em);
+	display:block;
+	font-size:large;
+	padding:0.2em 1em 0.2em 1em;
+	margin:0.2em 1em 0.2em 1em;
+}
+
 .outgoingMessage {
 	background-color:#b3effc;
 	color:black;
@@ -161,26 +179,6 @@
 .investmentOptionValueContainer {
 	width:10vw;
 	position:relative;
-}
-
-.changePageButton {
-	background: -webkit-linear-gradient(-45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-	border: solid 1px lightgrey;
-	padding:0.2em 1em;
-	text-align:center;
-	text-decoration:none;
-//	display:inline-block;
-	width:90vw;
-	display:block;
-	font-size:large;
-	margin:0.2em 1em;
-}
-.focusGroup {
-	margin:0.2em 1em;
-	border-radius:1em;
-	border:solid 1px lightgrey;
 }
 .manualAuth {
 	padding:1em;

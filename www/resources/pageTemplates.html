@@ -12,25 +12,27 @@
 						<label for="passwordInput">Password</label><input name="passwordInput" class="password" type="password"></input>
 					</div>
 					<div>
-						<button class="submitCredential">Login</button>
+						<button class="submitCredential changePageButton">Login</button>
 					</div>
 				</div>
 				<div class="deviceAuthContainer">
-					<button class="deviceAuth">Biometric</button>
+					<button class="deviceAuth changePageButton">Biometric</button>
 				</div>
 			</div>
 		</div>
 		<div id="accountChooser" class="pageTemplate accountChooserPage">
-			<div>
-				<h2>My accounts</h2>
+			<div class="focusGroup">
 				<div class="accountList">
 					<button class="accountItem changePageButton">
 						<div class="accountName"></div>
 					</button>
 				</div>
+				<br/>
+				<button class="consolidateButton changePageButton">Consolidate other account</button>
 			</div>
 			<br/>
-			<button class="consolidateButton changePageButton">Consolidate other account</button>
+			<button class="profileButton changePageButton">My profile</button>
+			<button class="offersButton changePageButton">Current offers</button>
 		</div>
 		<div id="consolidate" class"pageTemplate consolidatePage">
 			<div class="otherAccountProvider"></div>
@@ -145,6 +147,17 @@
 					<div class="newsItemTimestamp"></div>
 					<div class="newsItemSummary"></div>
 					<a class="newsItemLink">read more...</a>
+				</div>
+			</div>
+		</div>
+		<div id="offers" class="pageTemplate">
+			<h2>Offers</h2>
+			<div class="offersContainer">
+				<div class="offerItem">
+					<div class="offerName"></div>
+					<img class="offerImage"></img>
+					<div class="offerText"></div>
+					<div class="offerExpiry"></div>
 				</div>
 			</div>
 		</div>
