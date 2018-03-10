@@ -132,6 +132,20 @@ var app = (function(){
 			}
 		});
 	};
+	var withOffers = function(offerFunc){
+		$.ajax({
+			url:"resources/offers.json",
+			method:"GET",
+			dataType:"json",
+			success:function(offers){
+				offerFunc(offers);
+			},
+			error:function(err){
+				console.log("error getting offers",err);
+				offerFunc([]);
+			}
+		});
+	};
 	var idleHelpdeskTime = 15 * 1000;
 	var chat = (function(){
 		var history = [];
@@ -1339,14 +1353,28 @@ var app = (function(){
 			};
 		})(),
 		(function(){
+			var offers = [];
 			return {
 				name:"offers",
 				activate:function(args,afterFunc){
-					afterFunc();
+					withOffers(function(off){
+						offers = off;
+						afterFunc();
+					});
 				},
 				deactivate:function(){
 				},
 				render:function(html){
+					var offerContainer = html.find(".offersContainer");
+					var offerTemplate = offerContainer.find(".offerItem").clone();
+					offerContainer.html(_.map(offers,function(offer){
+						var elem = offerTemplate.clone();
+						elem.find(".offerName").text(offer.name);
+						elem.find(".offerImage").attr("src",offer.imageUrl);
+						elem.find(".offerText").text(offer.text);
+						elem.find(".offerExpiry").text(offer.expiry);
+						return elem;
+					}));
 					return html;
 				},
 				header:function(){
