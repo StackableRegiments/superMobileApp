@@ -757,6 +757,12 @@ var app = (function(){
 					html.find(".consolidateButton").on("click",function(){
 						setPageFunc("consolidate");
 					});
+					html.find(".offersButton").on("click",function(){
+						setPageFunc("offers");
+					});
+					html.find(".profileButton").on("click",function(){
+						setPageFunc("profile");
+					});
 					return html;
 				}
 			}
@@ -1111,7 +1117,13 @@ var app = (function(){
 						delay:60 * 1000
 					}
 				],
-
+				header:function(){
+					return {
+						name:"profile",
+						parent:"accountChooser",
+						parentArgs:[]
+					};
+				},
 				render:function(html){
 					return html;
 				}
@@ -1227,7 +1239,6 @@ var app = (function(){
 						};
 					}
 				},
-
 				render:function(html){
 					var newsContainer = html.find(".newsContainer");	
 					var template = newsContainer.find(".newsItem").clone();
@@ -1241,6 +1252,26 @@ var app = (function(){
 						return newsElem;
 					}));
 					return html;
+				}
+			};
+		})(),
+		(function(){
+			return {
+				name:"offers",
+				activate:function(args,afterFunc){
+					afterFunc();
+				},
+				deactivate:function(){
+				},
+				render:function(html){
+					return html;
+				},
+				header:function(){
+					return {
+						name:"offers",
+						parent:"accountChooser",
+						parentArgs:[]
+					};
 				}
 			};
 		})()

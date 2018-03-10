@@ -1,19 +1,44 @@
 #mainPane{
+	height:calc(100vh - 2rem);
 	position:relative;
+	width:100vw;
 }
 #header {
-	position:relative;
-	height:5vh;
-	width:100vw;
+	overflow-y:hidden;
 	color:white;
 	font-size:x-large;
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a90329+0,8f0222+65,6d0019+100;Brown+Red+3D */
-	background: #a90329; /* Old browsers */
-	background: -moz-linear-gradient(-45deg, #a90329 0%, #8f0222 65%, #6d0019 100%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(-45deg, #a90329 0%,#8f0222 65%,#6d0019 100%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(135deg, #a90329 0%,#8f0222 65%,#6d0019 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a90329', endColorstr='#6d0019',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	position:relative;
+	height:2rem;
+	width:100vw;
+	background: linear-gradient(135deg, #a90329 0%,#8f0222 65%,#6d0019 100%);
 }
+#mainPane .pageTemplate {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100vw;
+	height:calc(100vh - 2rem);
+	overflow-y:auto;
+}
+
+.focusGroup {
+	margin:0.2em 1em;
+	border-radius:1em;
+	border:solid 1px lightgrey;
+}
+
+.changePageButton {
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	border: solid 1px lightgrey;
+	text-align:center;
+	text-decoration:none;
+	width:calc(100% - 2em);
+	display:block;
+	font-size:large;
+	padding:0.2em 1em 0.2em 1em;
+	margin:0.2em 1em 0.2em 1em;
+}
+
 .outgoingMessage {
 	background-color:#b3effc;
 	color:black;
@@ -143,14 +168,6 @@
 	right:0vw;
 	width:10vw;
 }
-#mainPane .pageTemplate {
-	position:absolute;
-	top:0;
-	left:0;
-	width:100vw;
-	height:95vh;
-	overflow-y:auto;
-}
 .investmentOptionLabelContainer {
 	width:35vw;
 	position:relative;
@@ -162,26 +179,6 @@
 .investmentOptionValueContainer {
 	width:10vw;
 	position:relative;
-}
-
-.changePageButton {
-	background: -webkit-linear-gradient(-45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-	border: solid 1px lightgrey;
-	padding:0.2em 1em;
-	text-align:center;
-	text-decoration:none;
-//	display:inline-block;
-	width:90vw;
-	display:block;
-	font-size:large;
-	margin:0.2em 1em;
-}
-.focusGroup {
-	margin:0.2em 1em;
-	border-radius:1em;
-	border:solid 1px lightgrey;
 }
 .manualAuth {
 	padding:1em;
