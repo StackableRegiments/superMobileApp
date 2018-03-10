@@ -1166,12 +1166,46 @@ var app = (function(){
 			};
 		})(),
 		(function(){
+			var url = "";
+			return {
+				name:"viewUrl",
+				activate:function(args,afterFunc){
+					url = args[0];
+					afterFunc();
+				},
+				header:function(){
+					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "viewUrl" && i.name != "login";}));
+					if (previous !== undefined){
+						return {
+							name:url,
+							parent:previous.name,
+							parentArgs:previous.args
+						};
+					} else {
+						return {
+							name:url,
+							parent:"accountChooser",
+							parentArgs:[]
+						};
+					}
+				},
+				render:function(html){
+					html.find(".embeddedBrowser").attr("src",url);
+					return html;
+				}
+			};
+		})(),
+		(function(){
 			var account = {};
+			var corro = [];
 			return {
 				name:"accountCorrespondence",
 				activate:function(args,afterFunc){
 					account = _.head(args);
-					afterFunc();
+					withCorrespondence(account.number,function(c){
+						corro = c;
+						afterFunc();
+					});
 				},
 				deferredMessages:[
 					{
@@ -1182,6 +1216,17 @@ var app = (function(){
 				],
 
 				render:function(html){
+					var corroContainer = html.find(".correspondenceContainer");
+					var corroTemplate = corroContainer.find(".correspondenceItem").clone();
+					corroContainer.html(_.map(corro,function(c){
+						var el = corroTemplate.clone();
+						el.find(".correspondenceItemName").text(c.name);
+						el.find(".correspondenceItemDate").text(c.date);
+						el.on("click",function(){
+							setPageFunc("viewUrl",[c.url]);
+						});
+						return el;
+					}));
 					return html;
 				},
 				header:function(){

@@ -21,6 +21,11 @@
 	overflow-y:auto;
 }
 
+#viewUrl .embeddedBrowser {
+	width:100vw;
+	height:calc(100vh - 2rem);
+}
+
 .focusGroup {
 	margin:1em 1em;
 	border-radius:1em;
@@ -236,6 +241,14 @@ background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #ffc578 0%,
 }
 .consolidatePage {
 background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #f9f1ff 0%,#e8cbff 47%,#d6a1ff 100%);
+}
+
+/*corro*/
+.correspondenceItem {
+	background:white;
+	margin:1em;
+	padding:1em;
+	width:calc(100vw - 4em);
 }
 
 /*general attributes*/
