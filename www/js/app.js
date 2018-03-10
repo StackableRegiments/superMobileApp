@@ -866,6 +866,9 @@ var app = (function(){
 					html.find(".changeNominationsButton").on("click",function(){
 						setPageFunc("accountChangeNomination",[account]);
 					});
+					html.find(".insuranceButton").on("click",function(){
+						setPageFunc("accountInsurance",[account]);
+					});
 					return html;
 				}
 			};
@@ -904,6 +907,27 @@ var app = (function(){
 						parentArgs:[account]
 					};
 				},
+			};
+		})(),
+		(function(){
+			var account = {};
+			return {
+				name:"accountInsurance",
+				activate:function(args,afterFunc){
+					account = args[0];
+					afterFunc();
+				},
+				deferredMessages:[],
+				render:function(html){
+					return html;
+				},
+				header:function(){
+					return {
+						name:"insurance",
+						parent:"accountSummary",
+						parentArgs:[account],
+					};
+				}
 			};
 		})(),
 		(function(){
