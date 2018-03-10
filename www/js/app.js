@@ -118,7 +118,20 @@ var app = (function(){
 			}
 		});
 	};
-
+	var withProfile = function(profFunc){
+		$.ajax({
+			url:"resources/profile.json",
+			method:"GET",
+			dataType:"json",
+			success:function(prof){
+				profFunc(prof);
+			},
+			error:function(err){
+				console.log("error getting profile",err);
+				profFunc({});
+			}
+		});
+	};
 	var idleHelpdeskTime = 15 * 1000;
 	var chat = (function(){
 		var history = [];
@@ -177,11 +190,11 @@ var app = (function(){
 
 	var formatDateTime = function(dateLong){
 		var d = new Date(dateLong);
-		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString() + " " + d.getHours() + ":" + d.getMinutes();
+		return sprintf("%s %02d:%02d",formatDate(dateLong),d.getHours(),d.getMinutes())
 	};
 	var formatDate = function(dateLong){
 		var d = new Date(dateLong);
-		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString();
+		return sprintf("%02d/%02d/%04d",d.getDate(),d.getMonth()+1,d.getYear()+1900);
 	};
 	
 	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel){
@@ -1115,6 +1128,10 @@ var app = (function(){
 			};
 		})(),
 		(function(){
+			var profile = {};
+			withProfile(function(prof){
+				profile = prof;
+			});
 			return {
 				name:"profile",
 				activate:function(args,afterFunc){
@@ -1135,6 +1152,62 @@ var app = (function(){
 					};
 				},
 				render:function(html){
+					var editing = false;
+					var tempProfile = _.clone(profile);
+					var editAccount = function(selector,attribute){
+						var rootElem = html.find(selector);
+						var id = sprintf("profile_%s",attribute);
+						var inputElem = rootElem.find(".profileInput").val(tempProfile[attribute]).attr("name",id);
+						var labelElem = rootElem.find(".profileLabel").attr("for",id); 
+						if (editing){
+							inputElem.on("change",function(){
+								var val = $(this).val();
+								tempProfile[attribute] = val;
+							}).attr("readonly",false).attr("disabled",false);
+						} else {
+							inputElem.attr("readonly",true).attr("disabled",true).unbind("change");
+						}
+					}
+					var editButton = html.find(".editButton");
+					var applyButton = html.find(".applyEditButton");
+					var rejectButton = html.find(".rejectEditButton");	
+					var reRender = function(){
+						editAccount(".firstName","firstName");	
+						editAccount(".middleNames","middleNames");	
+						editAccount(".surname","surname");	
+						editAccount(".dateOfBirth","dateOfBirth");	
+						editAccount(".taxFileNumber","taxFileNumber");	
+						editAccount(".homeAddress","homeAddress");	
+						editAccount(".homeSuburb","homeSuburb");	
+						editAccount(".homeState","homeState");	
+						editAccount(".homeCountry","homeCountry");	
+						editAccount(".homePostCode","homePostCode");	
+						editAccount(".mobilePhoneNumber","mobilePhoneNumber");	
+						editAccount(".emailAddress","emailAddress");	
+						if (editing){
+							editButton.unbind("click").hide();
+							applyButton.unbind("click").on("click",function(){
+								var oldProfile = _.clone(profile);
+								profile = _.clone(tempProfile);
+								console.log("saving",tempProfile,profile,oldProfile);
+								editing = false;
+								reRender();
+							}).show();
+							rejectButton.unbind("click").on("click",function(){
+								tempProfile = _.clone(profile);
+								editing = false;
+								reRender();
+							}).show();
+						} else {
+							editButton.unbind("click").on("click",function(){
+								editing = true;
+								reRender();
+							}).show();
+							applyButton.unbind("click").hide();
+							rejectButton.unbind("click").hide();
+						}
+					};
+					reRender();
 					return html;
 				}
 			};
