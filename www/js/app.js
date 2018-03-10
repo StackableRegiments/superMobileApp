@@ -554,7 +554,7 @@ var app = (function(){
 		}
 	};
 	var getPageFunc = function(){
-		return page;
+		return currentPage;
 	}
 	var templates = {};
 	$(function(){
@@ -781,7 +781,6 @@ var app = (function(){
 					var accountList = html.find(".accountList");
 					var accountItemTemplate = accountList.find(".accountItem").clone();
 					accountList.html(_.map(accounts,function(account){
-						console.log("rendering account",account);
 						var elem = accountItemTemplate.clone();
 						elem.find(".accountName").text(account.name);
 						elem.find(".accountNumber").text(account.number);
@@ -1203,7 +1202,6 @@ var app = (function(){
 							applyButton.unbind("click").on("click",function(){
 								var oldProfile = _.clone(profile);
 								profile = _.clone(tempProfile);
-								console.log("saving",tempProfile,profile,oldProfile);
 								editing = false;
 								reRender();
 							}).show();
