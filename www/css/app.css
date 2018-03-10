@@ -1,19 +1,26 @@
 #mainPane{
+	height:calc(100vh - 2rem);
 	position:relative;
+	width:100vw;
 }
 #header {
-	position:relative;
-	height:5vh;
-	width:100vw;
+	overflow-y:hidden;
 	color:white;
 	font-size:x-large;
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a90329+0,8f0222+65,6d0019+100;Brown+Red+3D */
-	background: #a90329; /* Old browsers */
-	background: -moz-linear-gradient(-45deg, #a90329 0%, #8f0222 65%, #6d0019 100%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(-45deg, #a90329 0%,#8f0222 65%,#6d0019 100%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(135deg, #a90329 0%,#8f0222 65%,#6d0019 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a90329', endColorstr='#6d0019',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	position:relative;
+	height:2rem;
+	width:100vw;
+	background: linear-gradient(135deg, #a90329 0%,#8f0222 65%,#6d0019 100%);
 }
+#mainPane .pageTemplate {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100vw;
+	height:calc(100vh - 2rem);
+	overflow-y:auto;
+}
+
 .outgoingMessage {
 	background-color:#b3effc;
 	color:black;
@@ -142,14 +149,6 @@
 	left:90vw;
 	right:0vw;
 	width:10vw;
-}
-#mainPane .pageTemplate {
-	position:absolute;
-	top:0;
-	left:0;
-	width:100vw;
-	height:95vh;
-	overflow-y:auto;
 }
 .investmentOptionLabelContainer {
 	width:35vw;
