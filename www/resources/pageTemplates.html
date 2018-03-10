@@ -70,7 +70,22 @@
 			<button class="changeNominationsButton changePageButton">Change Nomination</button>
 		</div>
 		<div id="accountInsurance" class="pageTemplate accountInsurancePage">
-			<h2>insurance</h2>
+			<div class="insuranceSchemesContainer">
+				<div class="insuranceScheme focusGroup">
+					<div class="attributeLabel">Coverage type <span class="attributeValue schemeName"></span></div>
+					<div>
+						<label class="coveredLabel attributeLabel">Covered</label>
+						<input type="checkbox" class="coveredInput attributeValue"></input>
+					</div>
+					<div class="attributeLabel">Coverage amount <span class="attributeValue coverageValue"></span>
+					</div>
+					<div>
+						<label class="weeklyContributionLabel attributeLabel">Weekly premium</label>
+						<span class="weeklyContribution"></span>
+						<input type="range" class="weeklyContributionInput attributeValue"></input>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div id="accountTransactionList" class="pageTemplate accountTransactionsGridPage">
 			<div class="transactionsListGrid"></div>

@@ -90,6 +90,20 @@ var app = (function(){
 			}
 		});
 	};
+	var withInsuranceSchemes = function(schemesFunc){
+		$.ajax({
+			url:"resources/insurance.json",
+			method:"GET",
+			dataType:"json",
+			success:function(schemes){
+				schemesFunc(schemes);
+			},
+			error:function(err){
+				console.log("error getting insurance schemes",err);
+				schemesFunc({});
+			}
+		});
+	};
 	var withNews = function(newsFunc){
 		$.ajax({
 			url:"resources/news.json",
@@ -911,14 +925,69 @@ var app = (function(){
 		})(),
 		(function(){
 			var account = {};
+			var schemes = {};
 			return {
 				name:"accountInsurance",
 				activate:function(args,afterFunc){
 					account = args[0];
-					afterFunc();
+					withInsuranceSchemes(function(s){
+						schemes = s;
+						afterFunc();
+					});
 				},
 				deferredMessages:[],
 				render:function(html){
+					var schemesContainer = html.find(".insuranceSchemesContainer");
+					var schemeTemplate = schemesContainer.find(".insuranceScheme").clone();
+					schemesContainer.html(_.map(schemes,function(scheme,schemeName){
+						var el = schemeTemplate.clone();
+						var coverageValue = el.find(".coverageValue");
+						el.find(".schemeName").text(scheme.name);
+						var premiumCost = el.find(".weeklyContribution");
+						
+						var elCId = "insuranceScheme_cb_"+schemeName;
+						var isCovered = el.find(".coveredInput").attr("name",elCId);
+						el.find(".coveredLabel").attr("for",elCId);
+						var elId = "insuranceScheme_"+schemeName;
+						el.find(".weeklyContributionLabel").attr("for",elId);
+						var inputElem = el.find(".weeklyContributionInput").attr("name",elId);
+						var reRenderCoverage = function(){
+							var amountString = "not contributing";
+							var valueString = "not covered";
+
+							if ("insurance" in account && schemeName in account.insurance){
+								premiumCost.show();
+								var amount = account.insurance[schemeName].amount;
+								var value =	amount * scheme.coverageMultiplier;
+								valueString =	formatCurrency(amount * scheme.coverageMultiplier);
+								amountString = formatCurrency(amount);
+
+								inputElem.show().unbind("change").on("change",function(evt){
+									var value = $(this).val();
+									account.insurance[schemeName].amount = value;
+									reRenderCoverage();
+								}).val(account.insurance[schemeName].amount);
+								isCovered.prop("checked",true);
+							} else {
+								inputElem.hide().unbind("change");
+								isCovered.prop("checked",false);
+							}
+						 	premiumCost.text(amountString);
+							coverageValue.text(valueString);
+						};
+						isCovered.on("click",function(){
+							var isChecked = $(this).is(":checked");
+							if (isChecked){
+								account.insurance[schemeName] = {amount:scheme.min,start:formatDate(Date.now())};
+							} else {
+								delete account.insurance[schemeName];
+							}
+							reRenderCoverage();
+						});
+						inputElem.attr("min",scheme.min).attr("max",scheme.max).attr("step",5);
+						reRenderCoverage();
+						return el;
+					}));
 					return html;
 				},
 				header:function(){
