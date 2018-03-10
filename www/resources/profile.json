@@ -1,0 +1,14 @@
+{
+	"firstName":"Melissa",
+	"middleNames":"Fake",
+	"surname":"Member",
+	"dateOfBirth":"1969-06-04",
+	"taxFileNumber":"987654321",
+	"homeAddress":"Under the bridge",
+	"homeSuburb":"City",
+	"homeState":"ACT",
+	"homeCountry":"Austrlia",
+	"homePostCode":"2600",
+	"mobilePhoneNumber":"0123456789",
+	"emailAddress":"Melissa.Member@FakeDomain.com.au"
+}

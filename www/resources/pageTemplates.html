@@ -25,6 +25,8 @@
 				<div class="accountList">
 					<button class="accountItem changePageButton">
 						<div class="accountName"></div>
+						<div class="accountNumber"></div>
+						<div class="accountBalance"></div>
 					</button>
 				</div>
 				<br/>
@@ -63,8 +65,30 @@
 			<button class="transactionListButton changePageButton">Transactions List</button>
 			<button class="transactionsGraphButton changePageButton">Transactions Graph</button>
 			<button class="investmentsBreakdownButton changePageButton">Investments</button>
+			<button class="insuranceButton changePageButton">Insurance</button>
 			<button class="adequacyButton changePageButton">Adequacy</button>
 			<button class="changeNominationsButton changePageButton">Change Nomination</button>
+		</div>
+		<div id="accountInsurance" class="pageTemplate accountInsurancePage">
+			<div class="insuranceSchemesContainer">
+				<div class="insuranceScheme focusGroup">
+					<div class="attributeLabel">Coverage type <span class="attributeValue schemeName"></span></div>
+					<div>
+						<label class="coveredLabel attributeLabel">Covered</label>
+						<input type="checkbox" class="coveredInput attributeValue"></input>
+					</div>
+					<div class="attributeLabel">Coverage amount <span class="attributeValue coverageValue"></span>
+					</div>
+					<div>
+						<label class="weeklyContributionLabel attributeLabel">Weekly premium</label>
+						<span class="weeklyContribution"></span>
+						<input type="range" class="weeklyContributionInput attributeValue"></input>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="viewUrl" class="pageTemplate">
+			<iframe class="embeddedBrowser"></iframe>
 		</div>
 		<div id="accountTransactionList" class="pageTemplate accountTransactionsGridPage">
 			<div class="transactionsListGrid"></div>
@@ -88,9 +112,9 @@
 					</td>
 				</tr>
 			</table>
-			<button class="changeBreakdown">Edit</button>
-			<button class="cancelChangeBreakdown">Cancel</button>
-			<button class="applyChangeBreakdown">Apply</button>
+			<button class="changeBreakdown"><i class="fa fa-edit"></i></button>
+			<button class="cancelChangeBreakdown"><i class="fa fa-times-circle"></i></button>
+			<button class="applyChangeBreakdown"><i class="fa fa-check-circle"></i></button>
 		</div>
 		<div id="accountAdequacy" class="pageTemplate">
 		</div>
@@ -104,18 +128,111 @@
 			</div>
 		</div>
 		<div id="profile" class="pageTemplate">
-			<div class="firstName"></div>
-			<div class="middleNames"></div>
-			<div class="surname"></div>
-			<div class="dateOfBirth"></div>
-			<div class="taxFileNumber"></div>
-			<div class="homeAddress"></div>
-			<div class="homeSuburb"></div>
-			<div class="homeState"></div>
-			<div class="homeCountry"></div>
-			<div class="homePostCode"></div>
-			<div class="mobilePhoneNumber"></div>
-			<div class="emailAddress"></div>
+			<table>
+				<colgroup>
+					<col width="30%"></col>
+					<col width="70%"></col>
+				</colgroup>
+				<tr class="firstName profileItem">
+					<td>
+						<label class="profileLabel">First name</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="middleNames profileItem">
+					<td>
+						<label class="profileLabel">Middle names</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="surname profileItem">
+					<td>
+						<label class="profileLabel">Surname</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="dateOfBirth profileItem">
+					<td>
+						<label class="profileLabel">Date of birth</label>
+					</td>
+					<td>
+						<input type="date" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="taxFileNumber profileItem">
+					<td>
+						<label class="profileLabel">Tax File Number</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="homeAddress profileItem">
+					<td>
+						<label class="profileLabel">Address</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="homeSuburb profileItem">
+					<td>
+						<label class="profileLabel">Suburb</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="homeState profileItem">
+					<td>
+						<label class="profileLabel">State</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="homeCountry profileItem">
+					<td>
+						<label class="profileLabel">Country</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="homePostCode profileItem">
+					<td>
+						<label class="profileLabel">Postcode</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="mobilePhoneNumber profileItem">
+					<td>
+						<label class="profileLabel">Mobile number</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+				<tr class="emailAddress profileItem">
+					<td>
+						<label class="profileLabel">Email address</label>
+					</td>
+					<td>
+						<input type="text" class="profileInput"></input>
+					</td>
+				</tr>
+			</table>
+			<button class="editButton"><i class="fa fa-edit"></i></button>
+			<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
+			<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
 		</div>
 		<div id="chat" class="pageTemplate">
 			<div class="chatPageContainer">
@@ -151,7 +268,6 @@
 			</div>
 		</div>
 		<div id="offers" class="pageTemplate">
-			<h2>Offers</h2>
 			<div class="offersContainer">
 				<div class="offerItem">
 					<div class="offerName"></div>

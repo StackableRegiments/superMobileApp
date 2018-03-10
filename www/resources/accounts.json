@@ -11,10 +11,6 @@
 			"balanced":40
 		},
 		"insurance":{
-			"type":"disability",
-			"coverAmount":250000,
-			"expirationDate":1707696000000,
-			"registrationDate":1423699200000
 		}
 	},
 	{
@@ -29,10 +25,14 @@
 			"aggressive":20
 		},
 		"insurance":{
-			"type":"life",
-			"coverAmount":1000000,
-			"expirationDate":2532729600000,
-			"registrationDate":1333584000000
+			"tpd":{
+				"start":"1984-11-14",
+				"amount":75
+			},
+			"ip":{
+				"start":"1984-11-17",
+				"amount":25
+			}
 		}	
 	},
 	{
@@ -45,6 +45,12 @@
 			"cash":30,
 			"balanced":40,
 			"aggressive":30
+		},
+		"insurance":{
+			"d":{
+				"start":"1979-04-15",
+				"amount":5
+			}
 		}
 	}
 ]

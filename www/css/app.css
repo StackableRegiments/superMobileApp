@@ -21,14 +21,19 @@
 	overflow-y:auto;
 }
 
+#viewUrl .embeddedBrowser {
+	width:100vw;
+	height:calc(100vh - 2rem);
+}
+
 .focusGroup {
-	margin:0.2em 1em;
+	margin:1em 1em;
 	border-radius:1em;
 	border:solid 1px lightgrey;
 }
 
 .changePageButton {
-	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
 	border: solid 1px lightgrey;
 	text-align:center;
 	text-decoration:none;
@@ -39,6 +44,41 @@
 	margin:0.2em 1em 0.2em 1em;
 }
 
+/*profile styling*/
+.profileItem {
+	margin:0.5em;
+}
+.profileItem .profileLabel {
+	margin-right:1em;
+}
+.profileItem .profileInput {
+	width:100%;
+}
+
+/*offers styling*/
+.offerItem {
+	width:calc(100vw - 4em);
+	margin:1em;
+	padding:1em;
+	border:1px solid grey;
+	background:white;
+}
+.offerItem .offerName {
+	font-size:large;
+	font-weight:bold;
+}
+.offerItem .offerImage {
+	max-width:3em;
+	max-height:3em;
+	float:left;
+	margin:1em;
+}
+.offerItem .offerText {
+}
+.offerItem .offerExpiry {
+}
+
+/*chat styling*/
 .outgoingMessage {
 	background-color:#b3effc;
 	color:black;
@@ -122,9 +162,9 @@
 	right:2vw;
 }
 
+/*header styling*/
 #header .headerSection {
 	position:absolute;
-	//center this text, surely?
 	text-align:center;
 	width: 92vw;
 	left:8vw;
@@ -168,6 +208,8 @@
 	right:0vw;
 	width:10vw;
 }
+
+/*investments styling*/
 .investmentOptionLabelContainer {
 	width:35vw;
 	position:relative;
@@ -183,46 +225,33 @@
 .manualAuth {
 	padding:1em;
 }
+
+/*page backgrounds*/
 .accountSummaryPage {
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fefcea+0,f1da36+100;Gold+3D */
-background: #fefcea; /* Old browsers */
-background: url('img/paper-35819_1280.png'), -moz-linear-gradient(-45deg, #fefcea 0%, #f1da36 100%); /* FF3.6-15 */
-background: url('img/paper-35819_1280.png'), -webkit-linear-gradient(-45deg, #fefcea 0%,#f1da36 100%); /* Chrome10-25,Safari5.1-6 */
-background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #fefcea 0%,#f1da36 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefcea', endColorstr='#f1da36',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #fefcea 0%,#f1da36 100%);
 }
 .accountChooserPage {
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f8ffe8+0,e3f5ab+33,b7df2d+100;Green+3D+%234 */
-background: #f8ffe8; /* Old browsers */
-background: url('img/paper-35819_1280.png'), -moz-linear-gradient(-45deg, #f8ffe8 0%, #e3f5ab 33%, #b7df2d 100%); /* FF3.6-15 */
-background: url('img/paper-35819_1280.png'), -webkit-linear-gradient(-45deg, #f8ffe8 0%,#e3f5ab 33%,#b7df2d 100%); /* Chrome10-25,Safari5.1-6 */
-background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #f8ffe8 0%,#e3f5ab 33%,#b7df2d 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8ffe8', endColorstr='#b7df2d',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #f8ffe8 0%,#e3f5ab 33%,#b7df2d 100%);
 }
 .accountTransactionsGridPage {
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f0f9ff+0,cbebff+47,a1dbff+100;Blue+3D+%2313 */
-background: #f0f9ff; /* Old browsers */
-background: url('img/paper-35819_1280.png') -moz-linear-gradient(-45deg, #f0f9ff 0%, #cbebff 47%, #a1dbff 100%); /* FF3.6-15 */
-background: url('img/paper-35819_1280.png') -webkit-linear-gradient(-45deg, #f0f9ff 0%,#cbebff 47%,#a1dbff 100%); /* Chrome10-25,Safari5.1-6 */
-background: url('img/paper-35819_1280.png') linear-gradient(135deg, #f0f9ff 0%,#cbebff 47%,#a1dbff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+background: url('img/paper-35819_1280.png') linear-gradient(135deg, #f0f9ff 0%,#cbebff 47%,#a1dbff 100%);
 }
 .newsPage {
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffc578+0,fb9d23+100;Orange+3D+%233 */
-background: #ffc578; /* Old browsers */
-background: url('img/paper-35819_1280.png'), -moz-linear-gradient(-45deg, #ffc578 0%, #fb9d23 100%); /* FF3.6-15 */
-background: url('img/paper-35819_1280.png'), -webkit-linear-gradient(-45deg, #ffc578 0%,#fb9d23 100%); /* Chrome10-25,Safari5.1-6 */
-background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #ffc578 0%,#fb9d23 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffc578', endColorstr='#fb9d23',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #ffc578 0%,#fb9d23 100%);
 }
 .consolidatePage {
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f9f1ff+0,e8cbff+47,d6a1ff+100 */
-background: #f9f1ff; /* Old browsers */
-background: url('img/paper-35819_1280.png'), -moz-linear-gradient(-45deg, #f9f1ff 0%, #e8cbff 47%, #d6a1ff 100%); /* FF3.6-15 */
-background: url('img/paper-35819_1280.png'), -webkit-linear-gradient(-45deg, #f9f1ff 0%,#e8cbff 47%,#d6a1ff 100%); /* Chrome10-25,Safari5.1-6 */
-background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #f9f1ff 0%,#e8cbff 47%,#d6a1ff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f1ff', endColorstr='#d6a1ff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #f9f1ff 0%,#e8cbff 47%,#d6a1ff 100%);
 }
+
+/*corro*/
+.correspondenceItem {
+	background:white;
+	margin:1em;
+	padding:1em;
+	width:calc(100vw - 4em);
+}
+
+/*general attributes*/
 .majorAttribute .attributeLabel {
 	font-size:large;
 }

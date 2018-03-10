@@ -90,6 +90,20 @@ var app = (function(){
 			}
 		});
 	};
+	var withInsuranceSchemes = function(schemesFunc){
+		$.ajax({
+			url:"resources/insurance.json",
+			method:"GET",
+			dataType:"json",
+			success:function(schemes){
+				schemesFunc(schemes);
+			},
+			error:function(err){
+				console.log("error getting insurance schemes",err);
+				schemesFunc({});
+			}
+		});
+	};
 	var withNews = function(newsFunc){
 		$.ajax({
 			url:"resources/news.json",
@@ -118,7 +132,34 @@ var app = (function(){
 			}
 		});
 	};
-
+	var withProfile = function(profFunc){
+		$.ajax({
+			url:"resources/profile.json",
+			method:"GET",
+			dataType:"json",
+			success:function(prof){
+				profFunc(prof);
+			},
+			error:function(err){
+				console.log("error getting profile",err);
+				profFunc({});
+			}
+		});
+	};
+	var withOffers = function(offerFunc){
+		$.ajax({
+			url:"resources/offers.json",
+			method:"GET",
+			dataType:"json",
+			success:function(offers){
+				offerFunc(offers);
+			},
+			error:function(err){
+				console.log("error getting offers",err);
+				offerFunc([]);
+			}
+		});
+	};
 	var idleHelpdeskTime = 15 * 1000;
 	var chat = (function(){
 		var history = [];
@@ -177,11 +218,11 @@ var app = (function(){
 
 	var formatDateTime = function(dateLong){
 		var d = new Date(dateLong);
-		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString() + " " + d.getHours() + ":" + d.getMinutes();
+		return sprintf("%s %02d:%02d",formatDate(dateLong),d.getHours(),d.getMinutes())
 	};
 	var formatDate = function(dateLong){
 		var d = new Date(dateLong);
-		return d.getDate() +"/"+ (d.getMonth() + 1).toString() +"/"+ (d.getYear() + 1900).toString();
+		return sprintf("%02d/%02d/%04d",d.getDate(),d.getMonth()+1,d.getYear()+1900);
 	};
 	
 	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel){
@@ -527,7 +568,7 @@ var app = (function(){
 		}
 	};
 	var getPageFunc = function(){
-		return page;
+		return currentPage;
 	}
 	var templates = {};
 	$(function(){
@@ -715,13 +756,20 @@ var app = (function(){
 		})(),
 		(function(){
 			var accounts = [];
-
 			return {
 				name:"accountChooser",
 				activate:function(args,afterFunc){
 					withAccounts(function(accs){
 						accounts = accs;
-						afterFunc();
+						var total = _.size(accounts);
+						_.forEach(accounts,function(account,accIndex){
+							withTransactions(account.number,function(trans){
+								account.transactions = reduceTransactions(trans);
+								if (!(_.some(accounts,function(acc){ return (!("transactions" in acc));}))){
+									afterFunc();
+								}
+							});
+						});
 					});
 				},
 				deactivate:function(){
@@ -749,6 +797,8 @@ var app = (function(){
 					accountList.html(_.map(accounts,function(account){
 						var elem = accountItemTemplate.clone();
 						elem.find(".accountName").text(account.name);
+						elem.find(".accountNumber").text(account.number);
+						elem.find(".accountBalance").text(formatCurrency(account.transactions.total));
 						elem.on("click",function(){
 							setPageFunc("accountSummary",[account]);
 						});
@@ -830,6 +880,9 @@ var app = (function(){
 					html.find(".changeNominationsButton").on("click",function(){
 						setPageFunc("accountChangeNomination",[account]);
 					});
+					html.find(".insuranceButton").on("click",function(){
+						setPageFunc("accountInsurance",[account]);
+					});
 					return html;
 				}
 			};
@@ -868,6 +921,82 @@ var app = (function(){
 						parentArgs:[account]
 					};
 				},
+			};
+		})(),
+		(function(){
+			var account = {};
+			var schemes = {};
+			return {
+				name:"accountInsurance",
+				activate:function(args,afterFunc){
+					account = args[0];
+					withInsuranceSchemes(function(s){
+						schemes = s;
+						afterFunc();
+					});
+				},
+				deferredMessages:[],
+				render:function(html){
+					var schemesContainer = html.find(".insuranceSchemesContainer");
+					var schemeTemplate = schemesContainer.find(".insuranceScheme").clone();
+					schemesContainer.html(_.map(schemes,function(scheme,schemeName){
+						var el = schemeTemplate.clone();
+						var coverageValue = el.find(".coverageValue");
+						el.find(".schemeName").text(scheme.name);
+						var premiumCost = el.find(".weeklyContribution");
+						
+						var elCId = "insuranceScheme_cb_"+schemeName;
+						var isCovered = el.find(".coveredInput").attr("name",elCId);
+						el.find(".coveredLabel").attr("for",elCId);
+						var elId = "insuranceScheme_"+schemeName;
+						el.find(".weeklyContributionLabel").attr("for",elId);
+						var inputElem = el.find(".weeklyContributionInput").attr("name",elId);
+						var reRenderCoverage = function(){
+							var amountString = "not contributing";
+							var valueString = "not covered";
+
+							if ("insurance" in account && schemeName in account.insurance){
+								premiumCost.show();
+								var amount = account.insurance[schemeName].amount;
+								var value =	amount * scheme.coverageMultiplier;
+								valueString =	formatCurrency(amount * scheme.coverageMultiplier);
+								amountString = formatCurrency(amount);
+
+								inputElem.show().unbind("change").on("change",function(evt){
+									var value = $(this).val();
+									account.insurance[schemeName].amount = value;
+									reRenderCoverage();
+								}).val(account.insurance[schemeName].amount);
+								isCovered.prop("checked",true);
+							} else {
+								inputElem.hide().unbind("change");
+								isCovered.prop("checked",false);
+							}
+						 	premiumCost.text(amountString);
+							coverageValue.text(valueString);
+						};
+						isCovered.on("click",function(){
+							var isChecked = $(this).is(":checked");
+							if (isChecked){
+								account.insurance[schemeName] = {amount:scheme.min,start:formatDate(Date.now())};
+							} else {
+								delete account.insurance[schemeName];
+							}
+							reRenderCoverage();
+						});
+						inputElem.attr("min",scheme.min).attr("max",scheme.max).attr("step",5);
+						reRenderCoverage();
+						return el;
+					}));
+					return html;
+				},
+				header:function(){
+					return {
+						name:"insurance",
+						parent:"accountSummary",
+						parentArgs:[account],
+					};
+				}
 			};
 		})(),
 		(function(){
@@ -1037,12 +1166,46 @@ var app = (function(){
 			};
 		})(),
 		(function(){
+			var url = "";
+			return {
+				name:"viewUrl",
+				activate:function(args,afterFunc){
+					url = args[0];
+					afterFunc();
+				},
+				header:function(){
+					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "viewUrl" && i.name != "login";}));
+					if (previous !== undefined){
+						return {
+							name:url,
+							parent:previous.name,
+							parentArgs:previous.args
+						};
+					} else {
+						return {
+							name:url,
+							parent:"accountChooser",
+							parentArgs:[]
+						};
+					}
+				},
+				render:function(html){
+					html.find(".embeddedBrowser").attr("src",url);
+					return html;
+				}
+			};
+		})(),
+		(function(){
 			var account = {};
+			var corro = [];
 			return {
 				name:"accountCorrespondence",
 				activate:function(args,afterFunc){
 					account = _.head(args);
-					afterFunc();
+					withCorrespondence(account.number,function(c){
+						corro = c;
+						afterFunc();
+					});
 				},
 				deferredMessages:[
 					{
@@ -1053,6 +1216,17 @@ var app = (function(){
 				],
 
 				render:function(html){
+					var corroContainer = html.find(".correspondenceContainer");
+					var corroTemplate = corroContainer.find(".correspondenceItem").clone();
+					corroContainer.html(_.map(corro,function(c){
+						var el = corroTemplate.clone();
+						el.find(".correspondenceItemName").text(c.name);
+						el.find(".correspondenceItemDate").text(c.date);
+						el.on("click",function(){
+							setPageFunc("viewUrl",[c.url]);
+						});
+						return el;
+					}));
 					return html;
 				},
 				header:function(){
@@ -1105,6 +1279,10 @@ var app = (function(){
 			};
 		})(),
 		(function(){
+			var profile = {};
+			withProfile(function(prof){
+				profile = prof;
+			});
 			return {
 				name:"profile",
 				activate:function(args,afterFunc){
@@ -1125,6 +1303,61 @@ var app = (function(){
 					};
 				},
 				render:function(html){
+					var editing = false;
+					var tempProfile = _.clone(profile);
+					var editAccount = function(selector,attribute){
+						var rootElem = html.find(selector);
+						var id = sprintf("profile_%s",attribute);
+						var inputElem = rootElem.find(".profileInput").val(tempProfile[attribute]).attr("name",id);
+						var labelElem = rootElem.find(".profileLabel").attr("for",id); 
+						if (editing){
+							inputElem.on("change",function(){
+								var val = $(this).val();
+								tempProfile[attribute] = val;
+							}).attr("readonly",false).attr("disabled",false);
+						} else {
+							inputElem.attr("readonly",true).attr("disabled",true).unbind("change");
+						}
+					}
+					var editButton = html.find(".editButton");
+					var applyButton = html.find(".applyEditButton");
+					var rejectButton = html.find(".rejectEditButton");	
+					var reRender = function(){
+						editAccount(".firstName","firstName");	
+						editAccount(".middleNames","middleNames");	
+						editAccount(".surname","surname");	
+						editAccount(".dateOfBirth","dateOfBirth");	
+						editAccount(".taxFileNumber","taxFileNumber");	
+						editAccount(".homeAddress","homeAddress");	
+						editAccount(".homeSuburb","homeSuburb");	
+						editAccount(".homeState","homeState");	
+						editAccount(".homeCountry","homeCountry");	
+						editAccount(".homePostCode","homePostCode");	
+						editAccount(".mobilePhoneNumber","mobilePhoneNumber");	
+						editAccount(".emailAddress","emailAddress");	
+						if (editing){
+							editButton.unbind("click").hide();
+							applyButton.unbind("click").on("click",function(){
+								var oldProfile = _.clone(profile);
+								profile = _.clone(tempProfile);
+								editing = false;
+								reRender();
+							}).show();
+							rejectButton.unbind("click").on("click",function(){
+								tempProfile = _.clone(profile);
+								editing = false;
+								reRender();
+							}).show();
+						} else {
+							editButton.unbind("click").on("click",function(){
+								editing = true;
+								reRender();
+							}).show();
+							applyButton.unbind("click").hide();
+							rejectButton.unbind("click").hide();
+						}
+					};
+					reRender();
 					return html;
 				}
 			};
@@ -1256,14 +1489,28 @@ var app = (function(){
 			};
 		})(),
 		(function(){
+			var offers = [];
 			return {
 				name:"offers",
 				activate:function(args,afterFunc){
-					afterFunc();
+					withOffers(function(off){
+						offers = off;
+						afterFunc();
+					});
 				},
 				deactivate:function(){
 				},
 				render:function(html){
+					var offerContainer = html.find(".offersContainer");
+					var offerTemplate = offerContainer.find(".offerItem").clone();
+					offerContainer.html(_.map(offers,function(offer){
+						var elem = offerTemplate.clone();
+						elem.find(".offerName").text(offer.name);
+						elem.find(".offerImage").attr("src",offer.imageUrl);
+						elem.find(".offerText").text(offer.text);
+						elem.find(".offerExpiry").text(offer.expiry);
+						return elem;
+					}));
 					return html;
 				},
 				header:function(){
