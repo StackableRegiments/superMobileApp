@@ -330,7 +330,8 @@ var app = (function(){
 		var groupedData = _.groupBy(data,lineSelectorFunc);
 		_.forEach(groupedData,function(values,key){
 			var colour = colours[colourIndex];
-			charts.append("path")
+			var visible = true;
+			var path = charts.append("path")
 				.datum(values)
 				.attr("class","line")
 				.attr("fill", "none")
@@ -339,12 +340,32 @@ var app = (function(){
 				.attr("stroke-linecap", "round")
 				.attr("stroke-width", 1.5)
 				.attr("d", line);
-			legends.append("circle")
+			var circle = legends.append("circle")
 				.attr("r",10)
 				.attr("stroke","black")
 				.attr("fill",colour)
 				.attr("cx",0)
-				.attr("cy",25*colourIndex);
+				.attr("cy",25*colourIndex)
+				.on("click",function(){
+					console.log("click");
+					visible = !visible;
+					renderVisibility();
+				});
+			var renderVisibility = function(){
+				if (visible){
+					circle.classed("visiblePathLegend",true);
+					path.classed("visiblePath",true);
+					circle.classed("invisiblePathLegend",false);
+					path.classed("invisiblePath",false);
+				}	else {
+					circle.classed("visiblePathLegend",false);
+					path.classed("visiblePath",false);
+					circle.classed("invisiblePathLegend",true);
+					path.classed("invisiblePath",true);
+				}	
+			};
+			renderVisibility();
+
 			legends.append("text")
 					.attr("y",((25*colourIndex) + margin.top).toString())
 					.attr("x",(25).toString())
@@ -358,13 +379,14 @@ var app = (function(){
 			if (includeTrends){
 				var colour = colours[colourIndex];
 
+				var trendVisible = false;
 				var rawData = _.map(values,function(d){return [xFunc(d),yFunc(d)];})
 				var logRegression = regression.logarithmic(rawData);
 				var trendData = _.map(logRegression.points,function(d){return logRegression.predict(d[0]);});
 				var trendLine = d3.line()
 					.x(function(d) { return x(d[0]); })
 					.y(function(d) { return y(d[1]); });
-				charts.append("path")
+				var trendPath = charts.append("path")
 					.datum(trendData)
 					.attr("class","trendline")
 					.attr("d",trendLine)
@@ -373,12 +395,31 @@ var app = (function(){
 					.attr("stroke",colour)
 					.attr("fill", "none")
 					.attr("stroke-width",0.5);
-				legends.append("circle")
+				var trendCircle = legends.append("circle")
 					.attr("r",10)
 					.attr("stroke","black")
 					.attr("fill",colour)
 					.attr("cx",0)
-					.attr("cy",25*colourIndex);
+					.attr("cy",25*colourIndex)
+					.on("click",function(){
+						console.log("click");
+						trendVisible = !trendVisible;
+						renderTrendVisibility();
+					});
+				var renderTrendVisibility = function(){
+					if (trendVisible){
+						trendCircle.classed("visiblePathLegend",true);
+						trendPath.classed("visiblePath",true);
+						trendCircle.classed("invisiblePathLegend",false);
+						trendPath.classed("invisiblePath",false);
+					}	else {
+						trendCircle.classed("visiblePathLegend",false);
+						trendPath.classed("visiblePath",false);
+						trendCircle.classed("invisiblePathLegend",true);
+						trendPath.classed("invisiblePath",true);
+					}	
+				};
+				renderTrendVisibility();
 				legends.append("text")
 					.attr("y",((25*colourIndex) + margin.top).toString())
 					.attr("x",(25).toString())
