@@ -1339,6 +1339,54 @@ var app = (function(){
 					afterFunc();
 				},
 				render:function(html){
+					var editing = false;
+					var tempNom = _.clone(account.nomination);
+
+					html.find(".nominationName .profileLabel").attr("for","nomName");
+					var nameInput = html.find(".nominationName .profileInput").attr("name","nomName");
+					html.find(".nominationRelationship .profileLabel").attr("for","nomRel");
+					var relInput = html.find(".nominationRelationship .profileInput").attr("name","nomRel");
+					var editButton = html.find(".editButton");
+					var applyButton = html.find(".applyEditButton");
+					var rejectButton = html.find(".rejectEditButton");
+					var reRender = function(){
+						nameInput.val(tempNom.name);
+						relInput.val(tempNom.relationship);
+						if (editing){
+							nameInput.unbind("change").attr("disabled",false).attr("readonly",false).on("change",function(){
+								var val = $(this).val();
+								tempNom.name = val;
+							});
+							relInput.unbind("change").attr("disabled",false).attr("readonly",false).on("change",function(){
+								var val = $(this).val();
+								tempNom.relationship = val;
+							});
+							editButton.unbind("click").hide();
+							applyButton.unbind("click").on("click",function(){
+								var oldNom = _.clone(account.nomination);
+								account.nomination = _.clone(tempNom);
+								editing = false;
+								reRender();
+							}).show();
+							rejectButton.unbind("click").on("click",function(){
+								tempNom = _.clone(account.nomination);
+								editing = false;
+								reRender();
+							}).show();
+
+						} else {
+							nameInput.unbind("change").attr("disabled",true).attr("readonly",true);
+							relInput.unbind("change").attr("disabled",true).attr("readonly",true);	
+							editButton.unbind("click").on("click",function(){
+								editing = true;
+								reRender();
+							}).show();
+							applyButton.unbind("click").hide();
+							rejectButton.unbind("click").hide();
+						}
+					};
+
+					reRender();
 					return html;
 				},
 				header:function(){
