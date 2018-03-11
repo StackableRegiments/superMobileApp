@@ -243,6 +243,22 @@ background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #ffc578 0%,
 background: url('img/paper-35819_1280.png'), linear-gradient(135deg, #f9f1ff 0%,#e8cbff 47%,#d6a1ff 100%);
 }
 
+/*charts*/
+.visiblePathLegend {
+	stroke-opacity:1;
+	fill-opacity:1;
+}
+.visiblePath {
+	stroke-opacity:1;
+}
+.invisiblePathLegend {
+	stroke-opacity:0.3;
+	fill-opacity:0.2;
+}
+.invisiblePath {
+	stroke-opacity:0;
+}
+
 /*corro*/
 .correspondenceItem {
 	background:white;

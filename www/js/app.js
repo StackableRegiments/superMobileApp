@@ -28,6 +28,19 @@ var app = (function(){
 		});
 	};
 
+	var auditHistory = (function(){
+		var history = [];
+		var addFunc = function(item){
+			item.when = Date.now();
+			history.push(item);
+			callFunc("audit",[item]);
+		};
+		return {
+			add:addFunc,
+			getHistory:function(){return history;}
+		};
+	})();
+
 	var reduceTransactions = function(transactions){
 		return _.reduce(_.sortBy(transactions,function(item){return item.timestamp;}),function(acc,item){
 			if ("adjustment" in item){
@@ -225,7 +238,7 @@ var app = (function(){
 		return sprintf("%02d/%02d/%04d",d.getDate(),d.getMonth()+1,d.getYear()+1900);
 	};
 	
-	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel){
+	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel,includeTrends,predictionMultiplier){
 	//data is a jsonArray of datum
 	//selector is a jquery selector
 	//xFunc is the extractor from datum to provide the xValue
@@ -253,12 +266,14 @@ var app = (function(){
 				.attr("transform",d3.event.transform);
 			d3.selectAll(".line")
 				.style("stroke-width",2/d3.event.transform.k);
+			d3.selectAll(".trendline")
+				.style("stroke-width",2/d3.event.transform.k);
 			gx.call(xAxis.scale(d3.event.transform.rescaleX(x)));							
 			gy.call(yAxis.scale(d3.event.transform.rescaleY(y)));							
 		}
 
 		var zoom = d3.zoom()
-			.scaleExtent([1,30])
+			.scaleExtent([0.125,30])
 			.on("zoom",zoomed);
 
 		var svg = d3.select(selector).append("svg")
@@ -330,7 +345,8 @@ var app = (function(){
 		var groupedData = _.groupBy(data,lineSelectorFunc);
 		_.forEach(groupedData,function(values,key){
 			var colour = colours[colourIndex];
-			charts.append("path")
+			var visible = true;
+			var path = charts.append("path")
 				.datum(values)
 				.attr("class","line")
 				.attr("fill", "none")
@@ -339,12 +355,31 @@ var app = (function(){
 				.attr("stroke-linecap", "round")
 				.attr("stroke-width", 1.5)
 				.attr("d", line);
-			legends.append("circle")
+			var circle = legends.append("circle")
 				.attr("r",10)
 				.attr("stroke","black")
 				.attr("fill",colour)
 				.attr("cx",0)
-				.attr("cy",25*colourIndex);
+				.attr("cy",25*colourIndex)
+				.on("click",function(){
+					visible = !visible;
+					renderVisibility();
+				});
+			var renderVisibility = function(){
+				if (visible){
+					circle.classed("visiblePathLegend",true);
+					path.classed("visiblePath",true);
+					circle.classed("invisiblePathLegend",false);
+					path.classed("invisiblePath",false);
+				}	else {
+					circle.classed("visiblePathLegend",false);
+					path.classed("visiblePath",false);
+					circle.classed("invisiblePathLegend",true);
+					path.classed("invisiblePath",true);
+				}	
+			};
+			renderVisibility();
+
 			legends.append("text")
 					.attr("y",((25*colourIndex) + margin.top).toString())
 					.attr("x",(25).toString())
@@ -354,11 +389,114 @@ var app = (function(){
 					.attr("font-size","12")
 					.text(key);
 			colourIndex++;
+
+			if (includeTrends){
+				var colour = colours[colourIndex];
+
+				var trendVisible = false;
+				var rawData = _.map(values,function(d){return [xFunc(d),yFunc(d)];})
+				var logRegression = regression.logarithmic(rawData);
+				var trendData = _.map(logRegression.points,function(d){return logRegression.predict(d[0]);});
+
+				var firstStep = _.head(trendData)[0];
+				var lastStep = _.last(trendData)[0];
+				var futureSteps = [];
+				if (predictionMultiplier >= 1){
+					futureSteps = _.concat(trendData,_.flatMap(_.range(1,predictionMultiplier),function(i){
+						return _.map(trendData,function(di){
+							var newStep = (di[0] - firstStep) + (i * (lastStep - firstStep)) + firstStep;
+							return logRegression.predict(newStep);  
+						});
+					}));
+				} else {
+					futureSteps = trendData;
+				}
+				var trendLine = d3.line()
+					.x(function(d) { return x(d[0]); })
+					.y(function(d) { return y(d[1]); });
+				var trendPath = charts.append("path")
+					.datum(futureSteps)
+					.attr("class","trendline")
+					.attr("d",trendLine)
+					.attr("stroke-linejoin", "round")
+					.attr("stroke-linecap", "round")
+					.attr("stroke",colour)
+					.attr("fill", "none")
+					.attr("stroke-width",0.5);
+				var trendCircle = legends.append("circle")
+					.attr("r",10)
+					.attr("stroke","black")
+					.attr("fill",colour)
+					.attr("cx",0)
+					.attr("cy",25*colourIndex)
+					.on("click",function(){
+						trendVisible = !trendVisible;
+						renderTrendVisibility();
+					});
+				var renderTrendVisibility = function(){
+					if (trendVisible){
+						trendCircle.classed("visiblePathLegend",true);
+						trendPath.classed("visiblePath",true);
+						trendCircle.classed("invisiblePathLegend",false);
+						trendPath.classed("invisiblePath",false);
+					}	else {
+						trendCircle.classed("visiblePathLegend",false);
+						trendPath.classed("visiblePath",false);
+						trendCircle.classed("invisiblePathLegend",true);
+						trendPath.classed("invisiblePath",true);
+					}	
+				};
+				renderTrendVisibility();
+				legends.append("text")
+					.attr("y",((25*colourIndex) + margin.top).toString())
+					.attr("x",(25).toString())
+					.attr("fill","black")
+					.attr("text-anchor","start")
+					.attr("font-family","Verdana")
+					.attr("font-size","12")
+					.text(sprintf("%s trend",key));
+
+				colourIndex++;
+			}
 		});
 		return svg;
 	};
+
 	var JsGridHelpers = (function(){
 		var initFunc = function(){
+			var MyAlertField = function(config){
+				jsGrid.Field.call(this,config);
+			};
+			MyAlertField.prototype = new jsGrid.Field({
+				css:"alert-field",
+				align:"center",
+				sorter:function(a,b){
+					return 1;
+				},
+				itemTemplate:function(item){
+					return $("<button/>").append($("<i/>",{
+						"class":"fa fa-list-alt"
+					})).on("click",function(){
+						alert(JSON.stringify(item,undefined,0));
+					});
+				}
+			});
+			jsGrid.fields.alert = MyAlertField;
+			var MyJsonField = function(config){
+				jsGrid.Field.call(this,config);
+			};
+			MyJsonField.prototype = new jsGrid.Field({
+				css: "json-field",
+				align:"right",
+				sorter: function(json1,json2){
+					return _.size(json1) - _.size(json2);
+				},
+				itemTemplate: function(json){
+					return JSON.stringify(json,undefined,1);
+				}
+			});
+			jsGrid.fields.json = MyJsonField;
+
 			var MyCurrencyField = function(config){
 				jsGrid.Field.call(this,config);
 			};
@@ -375,6 +513,7 @@ var app = (function(){
 					});
 				}
 			});
+
 			jsGrid.fields.currency = MyCurrencyField;
 			//add a date field to jsgrid
 			var MyDateField = function(config) {
@@ -647,13 +786,26 @@ var app = (function(){
 			var username = undefined;
 			var password = undefined;
 			var lastValidPage = undefined;
-			var logIn = function(){
+			var logIn = function(loginType){
 				pageHistory = _.filter(pageHistory,function(i){
 					return i.name != "login";
 				});
+				auditHistory.add({
+					action:"login",
+					result:"successful",
+					parameters:{loginType:loginType}
+				});
 				setPageFunc(lastValidPage.name,lastValidPage.args);
 			};
-			var rejectLogin = function(){
+			var rejectLogin = function(loginType,reason){
+				auditHistory.add({
+					action:"login",
+					result:"failed",
+					parameters:{
+						loginType:loginType,
+						reason:reason
+					}
+				});
 				alert("Authentication failed.  Please try again");
 			};
 			var requestBiometrics = function(){
@@ -680,14 +832,14 @@ var app = (function(){
 				"render":function(html){
 					var attemptLogin = function(){
 						if (username !== undefined && password !== undefined && username == "dave" && password == "test"){
-							logIn();
+							logIn("password");
 						} else {
-							rejectLogin();
+							rejectLogin("password","incorrect credentials");
 						}
 					};
 					var checkKeyUpForSubmit = function(evt){
 						if ("keyCode" in evt && evt.keyCode == 13){
-							attemptLogin();
+							attemptLogin("password");
 						}
 					};
 					var accCreds = html.find(".accountCredentials");
@@ -714,24 +866,30 @@ var app = (function(){
 									clientSecret:"secretPasswordForSuperMobileApp"
 								},function(success){
 									var authenticated = false;
+									var authType = "";
 									if ("withFingerprint" in success){
 										authenticated = true;
+										authType = "fingerprint";
 									} else if ("withFace" in success){
 										authenticated = true;
+										authType = "face";
 									} else if ("withPattern" in success){
 										authenticated = true;
+										authType = "pattern";
 									} else if ("withPassword" in success){
 										authenticated = true;
+										authType = "password";
 									} else {
 										authenticated = true;
 									}
 									if (authenticated){
-										logIn();
+										logIn("biometrics",authType);
 									} else {
-										rejectLogin();
+										rejectLogin("deviceAuth");
 									}
 								},function(error){
 									alert("failed to authenticate with biometrics: "+JSON.stringify(error));
+									rejectLogin("deviceAuth");
 								});
 							};
 							deviceAuthButton.on("click",doDeviceAuth);
@@ -813,22 +971,50 @@ var app = (function(){
 					html.find(".profileButton").on("click",function(){
 						setPageFunc("profile");
 					});
+					html.find(".auditButton").on("click",function(){
+						setPageFunc("audit");
+					});
 					return html;
 				}
 			}
 		})(),
-		{
-			name:"consolidate",
-			render:function(html){
-				return html;
-			},
-			header:function(){
-				return {
-					name:"consolidate",
-					parent:"accountChooser"
-				};
-			}
-		},
+		(function(){
+			return {
+				name:"consolidate",
+				activate:function(args,afterFunc){
+					afterFunc();
+				},
+				render:function(html){
+					var temp = {
+						provider:"",
+						number:""
+					};
+					html.find(".otherAccountProvider .profileInput").on("change",function(){
+						var val = $(this).val();
+						temp.provider = val;
+					});
+					html.find(".otherAccountIdentifier .profileInput").on("change",function(){
+						var val = $(this).val();
+						temp.number = val;
+					});
+					html.find(".submitNewAccount").on("click",function(){
+						auditHistory.add({
+							action:"consolidateAccountRequest",
+							parameters:temp,
+							result:"submitted"
+						});
+						alert("submitted request to consolidate: "+JSON.stringify(temp));
+					});
+					return html;
+				},
+				header:function(){
+					return {
+						name:"consolidate",
+						parent:"accountChooser"
+					};
+				}
+			};
+		})(),
 		(function(){
 			var account = {};
 			var transactions = {};
@@ -868,9 +1054,6 @@ var app = (function(){
 					html.find(".transactionListButton").on("click",function(){
 						setPageFunc("accountTransactionList",[account,transactions]);
 					});
-					html.find(".transactionsGraphButton").on("click",function(){
-						setPageFunc("accountTransactionsGraph",[account,transactions]);
-					});
 					html.find(".investmentsBreakdownButton").on("click",function(){
 						setPageFunc("accountInvestmentsBreakdown",[account]);
 					});
@@ -880,6 +1063,14 @@ var app = (function(){
 					html.find(".changeNominationsButton").on("click",function(){
 						setPageFunc("accountChangeNomination",[account]);
 					});
+					var changeEmployerButton = html.find(".changeEmployerButton");
+					if ("employer" in account){
+						changeEmployerButton.unbind("click").on("click",function(){
+							setPageFunc("accountChangeEmployer",[account]);
+						}).show();
+					} else {
+						changeEmployerButton.unbind("click").hide();
+					}
 					html.find(".insuranceButton").on("click",function(){
 						setPageFunc("accountInsurance",[account]);
 					});
@@ -965,6 +1156,12 @@ var app = (function(){
 								inputElem.show().unbind("change").on("change",function(evt){
 									var value = $(this).val();
 									account.insurance[schemeName].amount = value;
+									auditHistory.add({
+										action:"changedCoverage",
+										parameters:account.insurance[schemeName],
+										account:account.number,
+										result:"applied"
+									});
 									reRenderCoverage();
 								}).val(account.insurance[schemeName].amount);
 								isCovered.prop("checked",true);
@@ -979,7 +1176,19 @@ var app = (function(){
 							var isChecked = $(this).is(":checked");
 							if (isChecked){
 								account.insurance[schemeName] = {amount:scheme.min,start:formatDate(Date.now())};
+								auditHistory.add({
+									action:"addCoverage",
+									parameters:account.insurance[schemeName],
+									account:account.number,
+									result:"applied"
+								});
 							} else {
+								auditHistory.add({
+									action:"removedCoverage",
+									parameters:schemeName,
+									account:account.number,
+									result:"applied"
+								});
 								delete account.insurance[schemeName];
 							}
 							reRenderCoverage();
@@ -1003,7 +1212,7 @@ var app = (function(){
 			var account = {};
 			var transactions = {};
 			return {
-				name:"accountTransactionsGraph",
+				name:"accountAdequacy",
 				activate:function(args,afterFunc){
 					account = args[0];
 					transactions = args[1];
@@ -1018,12 +1227,12 @@ var app = (function(){
 				],
 				render:function(html){
 					var graphRoot = html.find(".transactionsGraph")[0];
-					var svg = zoomableGraph(graphRoot,transactions.items,function(d){return d.timestamp;},function(d){return d.subTotal;},function(d){return "balance";},"time","$");
+					var svg = zoomableGraph(graphRoot,transactions.items,function(d){return d.timestamp;},function(d){return d.subTotal;},function(d){return "balance";},"time","$",true,30);
 					return html;
 				},
 				header:function(){
 					return {
-						name:"transactions graph",
+						name:"adequacy",
 						parent:"accountSummary",
 						parentArgs:[account]
 					};
@@ -1107,7 +1316,7 @@ var app = (function(){
 												$("#io_val_"+k).text(_.round(nv,0));
 											});
 										}
-									}		
+									}
 								});
 							} else {
 								inputElem.attr("readonly",true).prop("disabled",true);
@@ -1125,6 +1334,12 @@ var app = (function(){
 								account.investmentOptions = investmentChoices;
 								investmentChoices = {};
 								editing = false;
+								auditHistory.add({
+									action:"changedInvestments",
+									parameters:account.investmentOptions,
+									account:account.number,
+									result:"applied"
+								});
 								reRender();
 							});
 						} else {
@@ -1146,13 +1361,13 @@ var app = (function(){
 					};
 
 					var breakdownGraph = html.find(".breakdownGraph")[0];
-					var graphData = _.flatMap(investmentOptions,function(io){
+					var graphData = _.sortBy(_.flatMap(investmentOptions,function(io){
 						return _.map(io.performance,function(pi){
 							pi.optionName = io.name;
 							return pi;
 						});
-					});
-					var svg = zoomableGraph(breakdownGraph,graphData,function(d){return d.timestamp;},function(d){return d.adjustment;},function(d){return d.optionName;},"time","%");
+					}),function(d){return d.timestamp;});
+					var svg = zoomableGraph(breakdownGraph,graphData,function(d){return d.timestamp;},function(d){return d.adjustment;},function(d){return d.optionName;},"time","%",true,3);
 					reRender();
 					return html;
 				},
@@ -1241,23 +1456,78 @@ var app = (function(){
 		(function(){
 			var account = {};
 			return {
-				name:"accountAdequacy",
+				name:"accountChangeEmployer",
 				activate:function(args,afterFunc){
 					account = _.head(args);
 					afterFunc();
 				},
 				render:function(html){
+					var editing = false;
+					var tempNom = _.clone(account.employer);
+
+					html.find(".employerName .profileLabel").attr("for","nomName");
+					var nameInput = html.find(".employerName .profileInput").attr("name","nomName");
+					html.find(".employerTitle .profileLabel").attr("for","nomRel");
+					var relInput = html.find(".employerTitle .profileInput").attr("name","nomRel");
+					var editButton = html.find(".editButton");
+					var applyButton = html.find(".applyEditButton");
+					var rejectButton = html.find(".rejectEditButton");
+					var reRender = function(){
+						nameInput.val(tempNom.name);
+						relInput.val(tempNom.title);
+						if (editing){
+							nameInput.unbind("change").attr("disabled",false).attr("readonly",false).on("change",function(){
+								var val = $(this).val();
+								tempNom.name = val;
+							});
+							relInput.unbind("change").attr("disabled",false).attr("readonly",false).on("change",function(){
+								var val = $(this).val();
+								tempNom.title = val;
+							});
+							editButton.unbind("click").hide();
+							applyButton.unbind("click").on("click",function(){
+								var oldNom = _.clone(account.nomination);
+								account.employer = _.clone(tempNom);
+								editing = false;
+								auditHistory.add({
+									action:"changedEmployer",
+									parameters:account.employer,
+									account:account.number,
+									result:"requested"
+								});
+								reRender();
+							}).show();
+							rejectButton.unbind("click").on("click",function(){
+								tempNom = _.clone(account.employer);
+								editing = false;
+								reRender();
+							}).show();
+
+						} else {
+							nameInput.unbind("change").attr("disabled",true).attr("readonly",true);
+							relInput.unbind("change").attr("disabled",true).attr("readonly",true);	
+							editButton.unbind("click").on("click",function(){
+								editing = true;
+								reRender();
+							}).show();
+							applyButton.unbind("click").hide();
+							rejectButton.unbind("click").hide();
+						}
+					};
+
+					reRender();
 					return html;
 				},
 				header:function(){
 					return {
-						name:"adequacy",
+						name:"change employer",
 						parent:"accountSummary",
 						parentArgs:[account]
 					};
 				},
 			};
 		})(),
+
 		(function(){
 			var account = {};
 			return {
@@ -1267,6 +1537,60 @@ var app = (function(){
 					afterFunc();
 				},
 				render:function(html){
+					var editing = false;
+					var tempNom = _.clone(account.nomination);
+
+					html.find(".nominationName .profileLabel").attr("for","nomName");
+					var nameInput = html.find(".nominationName .profileInput").attr("name","nomName");
+					html.find(".nominationRelationship .profileLabel").attr("for","nomRel");
+					var relInput = html.find(".nominationRelationship .profileInput").attr("name","nomRel");
+					var editButton = html.find(".editButton");
+					var applyButton = html.find(".applyEditButton");
+					var rejectButton = html.find(".rejectEditButton");
+					var reRender = function(){
+						nameInput.val(tempNom.name);
+						relInput.val(tempNom.relationship);
+						if (editing){
+							nameInput.unbind("change").attr("disabled",false).attr("readonly",false).on("change",function(){
+								var val = $(this).val();
+								tempNom.name = val;
+							});
+							relInput.unbind("change").attr("disabled",false).attr("readonly",false).on("change",function(){
+								var val = $(this).val();
+								tempNom.relationship = val;
+							});
+							editButton.unbind("click").hide();
+							applyButton.unbind("click").on("click",function(){
+								var oldNom = _.clone(account.nomination);
+								account.nomination = _.clone(tempNom);
+								editing = false;
+								auditHistory.add({
+									action:"changedNominations",
+									parameters:account.nomination,
+									account:account.number,
+									result:"requested"
+								});
+								reRender();
+							}).show();
+							rejectButton.unbind("click").on("click",function(){
+								tempNom = _.clone(account.nomination);
+								editing = false;
+								reRender();
+							}).show();
+
+						} else {
+							nameInput.unbind("change").attr("disabled",true).attr("readonly",true);
+							relInput.unbind("change").attr("disabled",true).attr("readonly",true);	
+							editButton.unbind("click").on("click",function(){
+								editing = true;
+								reRender();
+							}).show();
+							applyButton.unbind("click").hide();
+							rejectButton.unbind("click").hide();
+						}
+					};
+
+					reRender();
 					return html;
 				},
 				header:function(){
@@ -1341,6 +1665,11 @@ var app = (function(){
 								var oldProfile = _.clone(profile);
 								profile = _.clone(tempProfile);
 								editing = false;
+								auditHistory.add({
+									action:"changedProfile",
+									parameters:profile,
+									result:"applied"
+								});
 								reRender();
 							}).show();
 							rejectButton.unbind("click").on("click",function(){
@@ -1368,6 +1697,11 @@ var app = (function(){
 					chat.addMessage(currentMessage,"me");
 					currentMessage = "";
 					newMessageBox.val("");
+					auditHistory.add({
+						action:"sentChatMessage",
+						parameters:currentMessage,
+						result:"sent"
+					});
 					reRenderChatHistory();
 				}
 			};
@@ -1485,6 +1819,44 @@ var app = (function(){
 						return newsElem;
 					}));
 					return html;
+				}
+			};
+		})(),
+		(function(){
+			return {
+				name:"audit",
+				activate:function(args,afterFunc){
+					afterFunc();
+				},
+				deactivate:function(){
+				},
+				render:function(html){
+					var gridRoot = html.find(".auditGrid");
+					var auditItems = auditHistory.getHistory();
+					JsGridHelpers.readonlyGrid(gridRoot,auditHistory.getHistory(),[
+						{name:"when",title:"when",type:"date",width:"20vw"},
+						{name:"account",title:"acct",type:"text",width:"10vw"},
+						{name:"action",title:"action",type:"text",width:"30vw"},
+						{name:"result",type:"text",width:"30vw"},
+						{name:"parameters",title:"show",type:"alert",width:"10vw"}
+					]);
+					return html;
+				},
+				header:function(){
+					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "audit" && i.name != "login";}));
+					if (previous !== undefined){
+						return {
+							name:"audit",
+							parent:previous.name,
+							parentArgs:previous.args
+						};
+					} else {
+						return {
+							name:"audit",
+							parent:"accountChooser",
+							parentArgs:[]
+						};
+					}
 				}
 			};
 		})(),
