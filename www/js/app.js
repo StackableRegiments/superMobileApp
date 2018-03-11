@@ -362,7 +362,6 @@ var app = (function(){
 				.attr("cx",0)
 				.attr("cy",25*colourIndex)
 				.on("click",function(){
-					console.log("click");
 					visible = !visible;
 					renderVisibility();
 				});
@@ -412,7 +411,6 @@ var app = (function(){
 				} else {
 					futureSteps = trendData;
 				}
-				console.log("trends",trendData,futureSteps);
 				var trendLine = d3.line()
 					.x(function(d) { return x(d[0]); })
 					.y(function(d) { return y(d[1]); });
@@ -432,7 +430,6 @@ var app = (function(){
 					.attr("cx",0)
 					.attr("cy",25*colourIndex)
 					.on("click",function(){
-						console.log("click");
 						trendVisible = !trendVisible;
 						renderTrendVisibility();
 					});

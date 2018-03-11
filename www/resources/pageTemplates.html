@@ -38,50 +38,54 @@
 			<button class="auditButton changePageButton">Activity history</button>
 		</div>
 		<div id="accountChangeNomination" class="pageTemplate changeNominationPage">
-			<table>
-				<tr class="nominationName profileItem">
-					<td>
-						<label class="profileLabel">Name</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="nominationRelationship profileItem">
-					<td>
-						<label class="profileLabel">Relationship</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-			</table>
-			<button class="editButton"><i class="fa fa-edit"></i></button>
-			<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
-			<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
+			<div class="focusGroup">
+				<table>
+					<tr class="nominationName profileItem">
+						<td>
+							<label class="profileLabel">Name</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="nominationRelationship profileItem">
+						<td>
+							<label class="profileLabel">Relationship</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+				</table>
+				<button class="editButton"><i class="fa fa-edit"></i></button>
+				<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
+				<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
+			</div>
 		</div>
 		<div id="accountChangeEmployer" class="pageTemplate changeEmployerPage">
-			<table>
-				<tr class="employerName profileItem">
-					<td>
-						<label class="profileLabel">Name</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="employerTitle profileItem">
-					<td>
-						<label class="profileLabel">Title</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-			</table>
-			<button class="editButton"><i class="fa fa-edit"></i></button>
-			<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
-			<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
+			<div class="focusGroup">
+				<table>
+					<tr class="employerName profileItem">
+						<td>
+							<label class="profileLabel">Name</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="employerTitle profileItem">
+						<td>
+							<label class="profileLabel">Title</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+				</table>
+				<button class="editButton"><i class="fa fa-edit"></i></button>
+				<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
+				<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
+			</div>
 		</div>
 		<div id="consolidate" class="pageTemplate consolidatePage">
 			<table>
@@ -158,27 +162,31 @@
 			<div class="transactionsListGrid"></div>
 		</div>
 		<div id="accountInvestmentsBreakdown" class="pageTemplate">
-			<div class="breakdownGraph"></div>
-			<h2>Investment portfolio</h2>
-			<table class="breakdownList">
-				<tr class="investmentOption">
-					<td class="investmentOptionLabelContainer">
-						<label class="investmentOptionLabel"></label>
-					</td>
-					<td class="investmentOptionInputContainer">
-						<input class="investmentOptionInput" type="range" step="10" min="0" max="100"></input>
-					</td>
-					<td class="investmentOptionValueContainer">
-						<span class="investmentOptionValue"></span>
-					</td>
-				</tr>
-			</table>
-			<button class="changeBreakdown"><i class="fa fa-edit"></i></button>
-			<button class="cancelChangeBreakdown"><i class="fa fa-times-circle"></i></button>
-			<button class="applyChangeBreakdown"><i class="fa fa-check-circle"></i></button>
+			<div class="focusGroup">
+				<div class="breakdownGraph"></div>
+				<h2>Investment portfolio</h2>
+				<table class="breakdownList">
+					<tr class="investmentOption">
+						<td class="investmentOptionLabelContainer">
+							<label class="investmentOptionLabel"></label>
+						</td>
+						<td class="investmentOptionInputContainer">
+							<input class="investmentOptionInput" type="range" step="10" min="0" max="100"></input>
+						</td>
+						<td class="investmentOptionValueContainer">
+							<span class="investmentOptionValue"></span>
+						</td>
+					</tr>
+				</table>
+				<button class="changeBreakdown"><i class="fa fa-edit"></i></button>
+				<button class="cancelChangeBreakdown"><i class="fa fa-times-circle"></i></button>
+				<button class="applyChangeBreakdown"><i class="fa fa-check-circle"></i></button>
+			</div>
 		</div>
 		<div id="accountAdequacy" class="pageTemplate">
-			<div class="transactionsGraph"></div>
+			<div class="focusGroup">
+				<div class="transactionsGraph"></div>
+			</div>
 		</div>
 		<div id="accountCorrespondence" class="pageTemplate">
 			<div class="correspondenceContainer">
@@ -190,111 +198,113 @@
 			</div>
 		</div>
 		<div id="profile" class="pageTemplate">
-			<table>
-				<colgroup>
-					<col width="30%"></col>
-					<col width="70%"></col>
-				</colgroup>
-				<tr class="firstName profileItem">
-					<td>
-						<label class="profileLabel">First name</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="middleNames profileItem">
-					<td>
-						<label class="profileLabel">Middle names</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="surname profileItem">
-					<td>
-						<label class="profileLabel">Surname</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="dateOfBirth profileItem">
-					<td>
-						<label class="profileLabel">Date of birth</label>
-					</td>
-					<td>
-						<input type="date" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="taxFileNumber profileItem">
-					<td>
-						<label class="profileLabel">Tax File Number</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="homeAddress profileItem">
-					<td>
-						<label class="profileLabel">Address</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="homeSuburb profileItem">
-					<td>
-						<label class="profileLabel">Suburb</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="homeState profileItem">
-					<td>
-						<label class="profileLabel">State</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="homeCountry profileItem">
-					<td>
-						<label class="profileLabel">Country</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="homePostCode profileItem">
-					<td>
-						<label class="profileLabel">Postcode</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="mobilePhoneNumber profileItem">
-					<td>
-						<label class="profileLabel">Mobile number</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="emailAddress profileItem">
-					<td>
-						<label class="profileLabel">Email address</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-			</table>
-			<button class="editButton"><i class="fa fa-edit"></i></button>
-			<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
-			<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
+			<div class="focusGroup">
+				<table>
+					<colgroup>
+						<col width="30%"></col>
+						<col width="70%"></col>
+					</colgroup>
+					<tr class="firstName profileItem">
+						<td>
+							<label class="profileLabel">First name</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="middleNames profileItem">
+						<td>
+							<label class="profileLabel">Middle names</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="surname profileItem">
+						<td>
+							<label class="profileLabel">Surname</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="dateOfBirth profileItem">
+						<td>
+							<label class="profileLabel">Date of birth</label>
+						</td>
+						<td>
+							<input type="date" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="taxFileNumber profileItem">
+						<td>
+							<label class="profileLabel">Tax File Number</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="homeAddress profileItem">
+						<td>
+							<label class="profileLabel">Address</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="homeSuburb profileItem">
+						<td>
+							<label class="profileLabel">Suburb</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="homeState profileItem">
+						<td>
+							<label class="profileLabel">State</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="homeCountry profileItem">
+						<td>
+							<label class="profileLabel">Country</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="homePostCode profileItem">
+						<td>
+							<label class="profileLabel">Postcode</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="mobilePhoneNumber profileItem">
+						<td>
+							<label class="profileLabel">Mobile number</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="emailAddress profileItem">
+						<td>
+							<label class="profileLabel">Email address</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+				</table>
+				<button class="editButton"><i class="fa fa-edit"></i></button>
+				<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
+				<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
+			</div>
 		</div>
 		<div id="chat" class="pageTemplate">
 			<div class="chatPageContainer">
