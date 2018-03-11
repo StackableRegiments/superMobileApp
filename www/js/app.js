@@ -371,6 +371,7 @@ var app = (function(){
 					.attr("stroke-linejoin", "round")
 					.attr("stroke-linecap", "round")
 					.attr("stroke",colour)
+					.attr("fill", "none")
 					.attr("stroke-width",0.5);
 				legends.append("circle")
 					.attr("r",10)
