@@ -1066,6 +1066,14 @@ var app = (function(){
 					html.find(".changeNominationsButton").on("click",function(){
 						setPageFunc("accountChangeNomination",[account]);
 					});
+					var changeEmployerButton = html.find(".changeEmployerButton");
+					if ("employer" in account){
+						changeEmployerButton.unbind("click").on("click",function(){
+							setPageFunc("accountChangeEmployer",[account]);
+						}).show();
+					} else {
+						changeEmployerButton.unbind("click").hide();
+					}
 					html.find(".insuranceButton").on("click",function(){
 						setPageFunc("accountInsurance",[account]);
 					});
@@ -1448,6 +1456,81 @@ var app = (function(){
 				},
 			};
 		})(),
+		(function(){
+			var account = {};
+			return {
+				name:"accountChangeEmployer",
+				activate:function(args,afterFunc){
+					account = _.head(args);
+					afterFunc();
+				},
+				render:function(html){
+					var editing = false;
+					var tempNom = _.clone(account.employer);
+
+					html.find(".employerName .profileLabel").attr("for","nomName");
+					var nameInput = html.find(".employerName .profileInput").attr("name","nomName");
+					html.find(".employerTitle .profileLabel").attr("for","nomRel");
+					var relInput = html.find(".employerTitle .profileInput").attr("name","nomRel");
+					var editButton = html.find(".editButton");
+					var applyButton = html.find(".applyEditButton");
+					var rejectButton = html.find(".rejectEditButton");
+					var reRender = function(){
+						nameInput.val(tempNom.name);
+						relInput.val(tempNom.title);
+						if (editing){
+							nameInput.unbind("change").attr("disabled",false).attr("readonly",false).on("change",function(){
+								var val = $(this).val();
+								tempNom.name = val;
+							});
+							relInput.unbind("change").attr("disabled",false).attr("readonly",false).on("change",function(){
+								var val = $(this).val();
+								tempNom.title = val;
+							});
+							editButton.unbind("click").hide();
+							applyButton.unbind("click").on("click",function(){
+								var oldNom = _.clone(account.nomination);
+								account.employer = _.clone(tempNom);
+								editing = false;
+								auditHistory.add({
+									action:"changedEmployer",
+									parameters:account.employer,
+									account:account.number,
+									result:"requested"
+								});
+								reRender();
+							}).show();
+							rejectButton.unbind("click").on("click",function(){
+								tempNom = _.clone(account.employer);
+								editing = false;
+								reRender();
+							}).show();
+
+						} else {
+							nameInput.unbind("change").attr("disabled",true).attr("readonly",true);
+							relInput.unbind("change").attr("disabled",true).attr("readonly",true);	
+							editButton.unbind("click").on("click",function(){
+								editing = true;
+								reRender();
+							}).show();
+							applyButton.unbind("click").hide();
+							rejectButton.unbind("click").hide();
+						}
+					};
+
+					reRender();
+					return html;
+				},
+				header:function(){
+					return {
+						name:"change employer",
+						parent:"accountSummary",
+						parentArgs:[account]
+					};
+				},
+			};
+		})(),
+
 		(function(){
 			var account = {};
 			return {

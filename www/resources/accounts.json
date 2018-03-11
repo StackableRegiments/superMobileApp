@@ -38,6 +38,10 @@
 				"amount":25
 			}
 		},
+		"employer":{
+			"name":"Ned's Newspapers",
+			"title":"cyclist"
+		},
 		"nomination":{
 			"relationship":"son",
 			"name":"sinbad fake son"
@@ -59,6 +63,10 @@
 				"start":"1979-04-15",
 				"amount":5
 			}
+		},
+		"employer":{
+			"name":"The government",
+			"title":"bureaucrat"
 		},
 		"nomination":{
 			"relationship":"wife",
