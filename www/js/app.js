@@ -253,12 +253,14 @@ var app = (function(){
 				.attr("transform",d3.event.transform);
 			d3.selectAll(".line")
 				.style("stroke-width",2/d3.event.transform.k);
+			d3.selectAll(".trendline")
+				.style("stroke-width",2/d3.event.transform.k);
 			gx.call(xAxis.scale(d3.event.transform.rescaleX(x)));							
 			gy.call(yAxis.scale(d3.event.transform.rescaleY(y)));							
 		}
 
 		var zoom = d3.zoom()
-			.scaleExtent([1,30])
+			.scaleExtent([0.125,30])
 			.on("zoom",zoomed);
 
 		var svg = d3.select(selector).append("svg")
@@ -383,11 +385,21 @@ var app = (function(){
 				var rawData = _.map(values,function(d){return [xFunc(d),yFunc(d)];})
 				var logRegression = regression.logarithmic(rawData);
 				var trendData = _.map(logRegression.points,function(d){return logRegression.predict(d[0]);});
+
+				var firstStep = _.head(trendData)[0];
+				var lastStep = _.last(trendData)[0];
+				var futureSteps = _.concat(trendData,_.flatMap(_.range(1,5),function(i){
+					return _.map(trendData,function(di){
+						var newStep = (di[0] - firstStep) + (i * lastStep);
+						return logRegression.predict(newStep);  
+					});
+				}));
+				console.log("trends",trendData,futureSteps);
 				var trendLine = d3.line()
 					.x(function(d) { return x(d[0]); })
 					.y(function(d) { return y(d[1]); });
 				var trendPath = charts.append("path")
-					.datum(trendData)
+					.datum(futureSteps)
 					.attr("class","trendline")
 					.attr("d",trendLine)
 					.attr("stroke-linejoin", "round")
