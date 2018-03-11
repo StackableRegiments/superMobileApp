@@ -225,7 +225,7 @@ var app = (function(){
 		return sprintf("%02d/%02d/%04d",d.getDate(),d.getMonth()+1,d.getYear()+1900);
 	};
 	
-	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel,includeTrends){
+	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel,includeTrends,predictionMultiplier){
 	//data is a jsonArray of datum
 	//selector is a jquery selector
 	//xFunc is the extractor from datum to provide the xValue
@@ -388,12 +388,17 @@ var app = (function(){
 
 				var firstStep = _.head(trendData)[0];
 				var lastStep = _.last(trendData)[0];
-				var futureSteps = _.concat(trendData,_.flatMap(_.range(1,5),function(i){
-					return _.map(trendData,function(di){
-						var newStep = (di[0] - firstStep) + (i * lastStep);
-						return logRegression.predict(newStep);  
-					});
-				}));
+				var futureSteps = [];
+				if (predictionMultiplier >= 1){
+					futureSteps = _.concat(trendData,_.flatMap(_.range(1,predictionMultiplier),function(i){
+						return _.map(trendData,function(di){
+							var newStep = (di[0] - firstStep) + (i * (lastStep - firstStep)) + firstStep;
+							return logRegression.predict(newStep);  
+						});
+					}));
+				} else {
+					futureSteps = trendData;
+				}
 				console.log("trends",trendData,futureSteps);
 				var trendLine = d3.line()
 					.x(function(d) { return x(d[0]); })
@@ -1105,7 +1110,7 @@ var app = (function(){
 				],
 				render:function(html){
 					var graphRoot = html.find(".transactionsGraph")[0];
-					var svg = zoomableGraph(graphRoot,transactions.items,function(d){return d.timestamp;},function(d){return d.subTotal;},function(d){return "balance";},"time","$",true);
+					var svg = zoomableGraph(graphRoot,transactions.items,function(d){return d.timestamp;},function(d){return d.subTotal;},function(d){return "balance";},"time","$",true,30);
 					return html;
 				},
 				header:function(){
@@ -1233,13 +1238,13 @@ var app = (function(){
 					};
 
 					var breakdownGraph = html.find(".breakdownGraph")[0];
-					var graphData = _.flatMap(investmentOptions,function(io){
+					var graphData = _.sortBy(_.flatMap(investmentOptions,function(io){
 						return _.map(io.performance,function(pi){
 							pi.optionName = io.name;
 							return pi;
 						});
-					});
-					var svg = zoomableGraph(breakdownGraph,graphData,function(d){return d.timestamp;},function(d){return d.adjustment;},function(d){return d.optionName;},"time","%",true);
+					}),function(d){return d.timestamp;});
+					var svg = zoomableGraph(breakdownGraph,graphData,function(d){return d.timestamp;},function(d){return d.adjustment;},function(d){return d.optionName;},"time","%",true,3);
 					reRender();
 					return html;
 				},
