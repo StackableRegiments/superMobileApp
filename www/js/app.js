@@ -31,17 +31,13 @@ var app = (function(){
 	var auditHistory = (function(){
 		var history = [];
 		var addFunc = function(item){
-			var auditItem =	{
-				when:Date.now(),
-				item:item
-			};
-			history.push(auditItem);
-			console.log("audit",auditItem);
-			callFunc("audit",[auditItem]);
+			item.when = Date.now();
+			history.push(item);
+			callFunc("audit",[item]);
 		};
 		return {
 			add:addFunc,
-			getAll:function(){return history;}
+			getHistory:function(){return history;}
 		};
 	})();
 
@@ -471,6 +467,39 @@ var app = (function(){
 
 	var JsGridHelpers = (function(){
 		var initFunc = function(){
+			var MyAlertField = function(config){
+				jsGrid.Field.call(this,config);
+			};
+			MyAlertField.prototype = new jsGrid.Field({
+				css:"alert-field",
+				align:"center",
+				sorter:function(a,b){
+					return 1;
+				},
+				itemTemplate:function(item){
+					return $("<button/>").append($("<i/>",{
+						"class":"fa fa-list-alt"
+					})).on("click",function(){
+						alert(JSON.stringify(item,undefined,0));
+					});
+				}
+			});
+			jsGrid.fields.alert = MyAlertField;
+			var MyJsonField = function(config){
+				jsGrid.Field.call(this,config);
+			};
+			MyJsonField.prototype = new jsGrid.Field({
+				css: "json-field",
+				align:"right",
+				sorter: function(json1,json2){
+					return _.size(json1) - _.size(json2);
+				},
+				itemTemplate: function(json){
+					return JSON.stringify(json,undefined,1);
+				}
+			});
+			jsGrid.fields.json = MyJsonField;
+
 			var MyCurrencyField = function(config){
 				jsGrid.Field.call(this,config);
 			};
@@ -487,6 +516,7 @@ var app = (function(){
 					});
 				}
 			});
+
 			jsGrid.fields.currency = MyCurrencyField;
 			//add a date field to jsgrid
 			var MyDateField = function(config) {
@@ -765,17 +795,19 @@ var app = (function(){
 				});
 				auditHistory.add({
 					action:"login",
-					value:"successful",
-					loginType:loginType
+					result:"successful",
+					parameters:{loginType:loginType}
 				});
 				setPageFunc(lastValidPage.name,lastValidPage.args);
 			};
 			var rejectLogin = function(loginType,reason){
 				auditHistory.add({
 					action:"login",
-					value:"failed",
-					loginType:loginType,
-					reason:reason
+					result:"failed",
+					parameters:{
+						loginType:loginType,
+						reason:reason
+					}
 				});
 				alert("Authentication failed.  Please try again");
 			};
@@ -942,6 +974,9 @@ var app = (function(){
 					html.find(".profileButton").on("click",function(){
 						setPageFunc("profile");
 					});
+					html.find(".auditButton").on("click",function(){
+						setPageFunc("audit");
+					});
 					return html;
 				}
 			}
@@ -968,7 +1003,8 @@ var app = (function(){
 					html.find(".submitNewAccount").on("click",function(){
 						auditHistory.add({
 							action:"consolidateAccountRequest",
-							value:temp,
+							parameters:temp,
+							result:"submitted"
 						});
 						alert("submitted request to consolidate: "+JSON.stringify(temp));
 					});
@@ -1117,8 +1153,9 @@ var app = (function(){
 									account.insurance[schemeName].amount = value;
 									auditHistory.add({
 										action:"changedCoverage",
-										insurance:account.insurance[schemeName],
-										account:account.number
+										parameters:account.insurance[schemeName],
+										account:account.number,
+										result:"applied"
 									});
 									reRenderCoverage();
 								}).val(account.insurance[schemeName].amount);
@@ -1136,14 +1173,16 @@ var app = (function(){
 								account.insurance[schemeName] = {amount:scheme.min,start:formatDate(Date.now())};
 								auditHistory.add({
 									action:"addCoverage",
-									insurance:account.insurance[schemeName],
-									account:account.number
+									parameters:account.insurance[schemeName],
+									account:account.number,
+									result:"applied"
 								});
 							} else {
 								auditHistory.add({
 									action:"removedCoverage",
-									insurance:schemeName,
-									account:account.number
+									parameters:schemeName,
+									account:account.number,
+									result:"applied"
 								});
 								delete account.insurance[schemeName];
 							}
@@ -1292,8 +1331,9 @@ var app = (function(){
 								editing = false;
 								auditHistory.add({
 									action:"changedInvestments",
-									investmentBreakdown:account.investmentOptions,
-									account:account.number
+									parameters:account.investmentOptions,
+									account:account.number,
+									result:"applied"
 								});
 								reRender();
 							});
@@ -1446,8 +1486,9 @@ var app = (function(){
 								editing = false;
 								auditHistory.add({
 									action:"changedNominations",
-									nomination:account.nomination,
-									account:account.number
+									parameters:account.nomination,
+									account:account.number,
+									result:"requested"
 								});
 								reRender();
 							}).show();
@@ -1546,7 +1587,8 @@ var app = (function(){
 								editing = false;
 								auditHistory.add({
 									action:"changedProfile",
-									profile:profile
+									parameters:profile,
+									result:"applied"
 								});
 								reRender();
 							}).show();
@@ -1577,7 +1619,8 @@ var app = (function(){
 					newMessageBox.val("");
 					auditHistory.add({
 						action:"sentChatMessage",
-						profile:currentMessage
+						parameters:currentMessage,
+						result:"sent"
 					});
 					reRenderChatHistory();
 				}
@@ -1696,6 +1739,44 @@ var app = (function(){
 						return newsElem;
 					}));
 					return html;
+				}
+			};
+		})(),
+		(function(){
+			return {
+				name:"audit",
+				activate:function(args,afterFunc){
+					afterFunc();
+				},
+				deactivate:function(){
+				},
+				render:function(html){
+					var gridRoot = html.find(".auditGrid");
+					var auditItems = auditHistory.getHistory();
+					JsGridHelpers.readonlyGrid(gridRoot,auditHistory.getHistory(),[
+						{name:"when",title:"when",type:"date",width:"20vw"},
+						{name:"account",title:"acct",type:"text",width:"10vw"},
+						{name:"action",title:"action",type:"text",width:"30vw"},
+						{name:"result",type:"text",width:"30vw"},
+						{name:"parameters",title:"show",type:"alert",width:"10vw"}
+					]);
+					return html;
+				},
+				header:function(){
+					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "audit" && i.name != "login";}));
+					if (previous !== undefined){
+						return {
+							name:"audit",
+							parent:previous.name,
+							parentArgs:previous.args
+						};
+					} else {
+						return {
+							name:"audit",
+							parent:"accountChooser",
+							parentArgs:[]
+						};
+					}
 				}
 			};
 		})(),
