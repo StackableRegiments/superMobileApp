@@ -28,6 +28,23 @@ var app = (function(){
 		});
 	};
 
+	var auditHistory = (function(){
+		var history = [];
+		var addFunc = function(item){
+			var auditItem =	{
+				when:Date.now(),
+				item:item
+			};
+			history.push(auditItem);
+			console.log("audit",auditItem);
+			callFunc("audit",[auditItem]);
+		};
+		return {
+			add:addFunc,
+			getAll:function(){return history;}
+		};
+	})();
+
 	var reduceTransactions = function(transactions){
 		return _.reduce(_.sortBy(transactions,function(item){return item.timestamp;}),function(acc,item){
 			if ("adjustment" in item){
@@ -742,13 +759,24 @@ var app = (function(){
 			var username = undefined;
 			var password = undefined;
 			var lastValidPage = undefined;
-			var logIn = function(){
+			var logIn = function(loginType){
 				pageHistory = _.filter(pageHistory,function(i){
 					return i.name != "login";
 				});
+				auditHistory.add({
+					action:"login",
+					value:"successful",
+					loginType:loginType
+				});
 				setPageFunc(lastValidPage.name,lastValidPage.args);
 			};
-			var rejectLogin = function(){
+			var rejectLogin = function(loginType,reason){
+				auditHistory.add({
+					action:"login",
+					value:"failed",
+					loginType:loginType,
+					reason:reason
+				});
 				alert("Authentication failed.  Please try again");
 			};
 			var requestBiometrics = function(){
@@ -775,14 +803,14 @@ var app = (function(){
 				"render":function(html){
 					var attemptLogin = function(){
 						if (username !== undefined && password !== undefined && username == "dave" && password == "test"){
-							logIn();
+							logIn("password");
 						} else {
-							rejectLogin();
+							rejectLogin("password","incorrect credentials");
 						}
 					};
 					var checkKeyUpForSubmit = function(evt){
 						if ("keyCode" in evt && evt.keyCode == 13){
-							attemptLogin();
+							attemptLogin("password");
 						}
 					};
 					var accCreds = html.find(".accountCredentials");
@@ -809,24 +837,30 @@ var app = (function(){
 									clientSecret:"secretPasswordForSuperMobileApp"
 								},function(success){
 									var authenticated = false;
+									var authType = "";
 									if ("withFingerprint" in success){
 										authenticated = true;
+										authType = "fingerprint";
 									} else if ("withFace" in success){
 										authenticated = true;
+										authType = "face";
 									} else if ("withPattern" in success){
 										authenticated = true;
+										authType = "pattern";
 									} else if ("withPassword" in success){
 										authenticated = true;
+										authType = "password";
 									} else {
 										authenticated = true;
 									}
 									if (authenticated){
-										logIn();
+										logIn("biometrics",authType);
 									} else {
-										rejectLogin();
+										rejectLogin("deviceAuth");
 									}
 								},function(error){
 									alert("failed to authenticate with biometrics: "+JSON.stringify(error));
+									rejectLogin("deviceAuth");
 								});
 							};
 							deviceAuthButton.on("click",doDeviceAuth);
@@ -919,6 +953,25 @@ var app = (function(){
 					afterFunc();
 				},
 				render:function(html){
+					var temp = {
+						provider:"",
+						number:""
+					};
+					html.find(".otherAccountProvider .profileInput").on("change",function(){
+						var val = $(this).val();
+						temp.provider = val;
+					});
+					html.find(".otherAccountIdentifier .profileInput").on("change",function(){
+						var val = $(this).val();
+						temp.number = val;
+					});
+					html.find(".submitNewAccount").on("click",function(){
+						auditHistory.add({
+							action:"consolidateAccountRequest",
+							value:temp,
+						});
+						alert("submitted request to consolidate: "+JSON.stringify(temp));
+					});
 					return html;
 				},
 				header:function(){
@@ -1062,6 +1115,11 @@ var app = (function(){
 								inputElem.show().unbind("change").on("change",function(evt){
 									var value = $(this).val();
 									account.insurance[schemeName].amount = value;
+									auditHistory.add({
+										action:"changedCoverage",
+										insurance:account.insurance[schemeName],
+										account:account.number
+									});
 									reRenderCoverage();
 								}).val(account.insurance[schemeName].amount);
 								isCovered.prop("checked",true);
@@ -1076,7 +1134,17 @@ var app = (function(){
 							var isChecked = $(this).is(":checked");
 							if (isChecked){
 								account.insurance[schemeName] = {amount:scheme.min,start:formatDate(Date.now())};
+								auditHistory.add({
+									action:"addCoverage",
+									insurance:account.insurance[schemeName],
+									account:account.number
+								});
 							} else {
+								auditHistory.add({
+									action:"removedCoverage",
+									insurance:schemeName,
+									account:account.number
+								});
 								delete account.insurance[schemeName];
 							}
 							reRenderCoverage();
@@ -1204,7 +1272,7 @@ var app = (function(){
 												$("#io_val_"+k).text(_.round(nv,0));
 											});
 										}
-									}		
+									}
 								});
 							} else {
 								inputElem.attr("readonly",true).prop("disabled",true);
@@ -1222,6 +1290,11 @@ var app = (function(){
 								account.investmentOptions = investmentChoices;
 								investmentChoices = {};
 								editing = false;
+								auditHistory.add({
+									action:"changedInvestments",
+									investmentBreakdown:account.investmentOptions,
+									account:account.number
+								});
 								reRender();
 							});
 						} else {
@@ -1371,6 +1444,11 @@ var app = (function(){
 								var oldNom = _.clone(account.nomination);
 								account.nomination = _.clone(tempNom);
 								editing = false;
+								auditHistory.add({
+									action:"changedNominations",
+									nomination:account.nomination,
+									account:account.number
+								});
 								reRender();
 							}).show();
 							rejectButton.unbind("click").on("click",function(){
@@ -1466,6 +1544,10 @@ var app = (function(){
 								var oldProfile = _.clone(profile);
 								profile = _.clone(tempProfile);
 								editing = false;
+								auditHistory.add({
+									action:"changedProfile",
+									profile:profile
+								});
 								reRender();
 							}).show();
 							rejectButton.unbind("click").on("click",function(){
@@ -1493,6 +1575,10 @@ var app = (function(){
 					chat.addMessage(currentMessage,"me");
 					currentMessage = "";
 					newMessageBox.val("");
+					auditHistory.add({
+						action:"sentChatMessage",
+						profile:currentMessage
+					});
 					reRenderChatHistory();
 				}
 			};
