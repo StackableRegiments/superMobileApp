@@ -1743,7 +1743,7 @@ var app = (function(){
 					chat.unsubscribe(chatId);
 				},
 				header:function(){
-					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "chat" && i.name != "login";}));
+					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "chat"  && i.name != "news" && i.name != "login";}));
 					if (previous !== undefined){
 						return {
 							name:"chat",
@@ -1791,7 +1791,7 @@ var app = (function(){
 					});
 				},
 				header:function(){
-					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "news" && i.name != "login";}));
+					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "news" && i.name != "chat" && i.name != "login";}));
 					if (previous !== undefined){
 						return {
 							name:"news",
