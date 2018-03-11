@@ -1098,10 +1098,10 @@ var app = (function(){
 				render:function(html){
 					var gridRoot = html.find(".transactionsListGrid");
 					JsGridHelpers.readonlyGrid(gridRoot,transactions.items,[
-						{name:"adjustment",title:"adj",type:"currency"},
-						{name:"timestamp",title:"when",type:"date"},
-						{name:"description",title:"",type:"text"},
-						{name:"subTotal",type:"currency"}
+						{name:"adjustment",title:"adj",type:"currency",width:"15vw"},
+						{name:"timestamp",title:"when",type:"date",width:"20vw"},
+						{name:"description",title:"",type:"text",width:"35vw"},
+						{name:"subTotal",type:"currency",width:"25vw"}
 					]);
 					return html;
 				},
@@ -1837,7 +1837,7 @@ var app = (function(){
 						{name:"when",title:"when",type:"date",width:"20vw"},
 						{name:"account",title:"acct",type:"text",width:"10vw"},
 						{name:"action",title:"action",type:"text",width:"30vw"},
-						{name:"result",type:"text",width:"30vw"},
+						{name:"result",type:"text",width:"25vw"},
 						{name:"parameters",title:"show",type:"alert",width:"10vw"}
 					]);
 					return html;
