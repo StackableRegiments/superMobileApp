@@ -225,7 +225,7 @@ var app = (function(){
 		return sprintf("%02d/%02d/%04d",d.getDate(),d.getMonth()+1,d.getYear()+1900);
 	};
 	
-	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel){
+	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel,includeTrends){
 	//data is a jsonArray of datum
 	//selector is a jquery selector
 	//xFunc is the extractor from datum to provide the xValue
@@ -354,9 +354,45 @@ var app = (function(){
 					.attr("font-size","12")
 					.text(key);
 			colourIndex++;
+
+			if (includeTrends){
+				var colour = colours[colourIndex];
+
+				var rawData = _.map(values,function(d){return [xFunc(d),yFunc(d)];})
+				var logRegression = regression.logarithmic(rawData);
+				var trendData = _.map(logRegression.points,function(d){return logRegression.predict(d[0]);});
+				var trendLine = d3.line()
+					.x(function(d) { return x(d[0]); })
+					.y(function(d) { return y(d[1]); });
+				charts.append("path")
+					.datum(trendData)
+					.attr("class","trendline")
+					.attr("d",trendLine)
+					.attr("stroke-linejoin", "round")
+					.attr("stroke-linecap", "round")
+					.attr("stroke",colour)
+					.attr("stroke-width",0.5);
+				legends.append("circle")
+					.attr("r",10)
+					.attr("stroke","black")
+					.attr("fill",colour)
+					.attr("cx",0)
+					.attr("cy",25*colourIndex);
+				legends.append("text")
+					.attr("y",((25*colourIndex) + margin.top).toString())
+					.attr("x",(25).toString())
+					.attr("fill","black")
+					.attr("text-anchor","start")
+					.attr("font-family","Verdana")
+					.attr("font-size","12")
+					.text(sprintf("%s trend",key));
+
+				colourIndex++;
+			}
 		});
 		return svg;
 	};
+
 	var JsGridHelpers = (function(){
 		var initFunc = function(){
 			var MyCurrencyField = function(config){
@@ -868,9 +904,6 @@ var app = (function(){
 					html.find(".transactionListButton").on("click",function(){
 						setPageFunc("accountTransactionList",[account,transactions]);
 					});
-					html.find(".transactionsGraphButton").on("click",function(){
-						setPageFunc("accountTransactionsGraph",[account,transactions]);
-					});
 					html.find(".investmentsBreakdownButton").on("click",function(){
 						setPageFunc("accountInvestmentsBreakdown",[account]);
 					});
@@ -1003,7 +1036,7 @@ var app = (function(){
 			var account = {};
 			var transactions = {};
 			return {
-				name:"accountTransactionsGraph",
+				name:"accountAdequacy",
 				activate:function(args,afterFunc){
 					account = args[0];
 					transactions = args[1];
@@ -1018,12 +1051,12 @@ var app = (function(){
 				],
 				render:function(html){
 					var graphRoot = html.find(".transactionsGraph")[0];
-					var svg = zoomableGraph(graphRoot,transactions.items,function(d){return d.timestamp;},function(d){return d.subTotal;},function(d){return "balance";},"time","$");
+					var svg = zoomableGraph(graphRoot,transactions.items,function(d){return d.timestamp;},function(d){return d.subTotal;},function(d){return "balance";},"time","$",true);
 					return html;
 				},
 				header:function(){
 					return {
-						name:"transactions graph",
+						name:"adequacy",
 						parent:"accountSummary",
 						parentArgs:[account]
 					};
@@ -1152,7 +1185,7 @@ var app = (function(){
 							return pi;
 						});
 					});
-					var svg = zoomableGraph(breakdownGraph,graphData,function(d){return d.timestamp;},function(d){return d.adjustment;},function(d){return d.optionName;},"time","%");
+					var svg = zoomableGraph(breakdownGraph,graphData,function(d){return d.timestamp;},function(d){return d.adjustment;},function(d){return d.optionName;},"time","%",true);
 					reRender();
 					return html;
 				},
@@ -1232,26 +1265,6 @@ var app = (function(){
 				header:function(){
 					return {
 						name:"correspondence",
-						parent:"accountSummary",
-						parentArgs:[account]
-					};
-				},
-			};
-		})(),
-		(function(){
-			var account = {};
-			return {
-				name:"accountAdequacy",
-				activate:function(args,afterFunc){
-					account = _.head(args);
-					afterFunc();
-				},
-				render:function(html){
-					return html;
-				},
-				header:function(){
-					return {
-						name:"adequacy",
 						parent:"accountSummary",
 						parentArgs:[account]
 					};
