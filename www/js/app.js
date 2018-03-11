@@ -912,18 +912,23 @@ var app = (function(){
 				}
 			}
 		})(),
-		{
-			name:"consolidate",
-			render:function(html){
-				return html;
-			},
-			header:function(){
-				return {
-					name:"consolidate",
-					parent:"accountChooser"
-				};
-			}
-		},
+		(function(){
+			return {
+				name:"consolidate",
+				activate:function(args,afterFunc){
+					afterFunc();
+				},
+				render:function(html){
+					return html;
+				},
+				header:function(){
+					return {
+						name:"consolidate",
+						parent:"accountChooser"
+					};
+				}
+			};
+		})(),
 		(function(){
 			var account = {};
 			var transactions = {};
