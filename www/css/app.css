@@ -42,9 +42,10 @@
 	width:calc(100% - 2em);
 	display:block;
 	font-size:large;
-	padding:0.2em 1em 0.2em 1em;
-	margin:0.2em 1em 0.2em 1em;
+	padding:0.5em 1em 0.5em 1em;
+	margin:0.5em 1em 0.5em 1em;
 	min-height:3em;
+	font-weight:bold;
 }
 .actionButton {
 	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
@@ -57,6 +58,7 @@
 	padding:0.2em 1em 0.2em 1em;
 	margin:0.2em 1em 0.2em 1em;
 	min-height:4em;
+	font-weight:bold;
 }
 
 /*profile styling*/
@@ -305,63 +307,65 @@
 }
 .submitCredentialButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/loginButton.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .deviceAuthButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/fingerprint.png');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .accountButtonType_P {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/pensionAccountType.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .accountButtonType_C {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/contributionAccountType.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .consolidateButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/otherAccount.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
+	margin-top:1.5em;
+	margin-bottom:1.5em;
 }
 .profileButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/profile.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .offersButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/offers.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .auditButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/activityHistory.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .correspondenceButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/accountCorrespondence.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .transactionListButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/accountTransactions.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .investmentsBreakdownButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/investments.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .insuranceButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/insurance.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .adequacyButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/adequacy.jpg')
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .changeNominationsButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/nominations.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 .changeEmployerButton {
 	background-size:cover;
-	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/employer.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 }
 
 .editButton {
