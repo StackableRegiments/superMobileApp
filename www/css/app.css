@@ -34,9 +34,21 @@
 	padding:1em;
 }
 
+svg text {
+	font-size:large;
+}
+
+.accountDetails {
+	font-size:large;
+}
+.transactionsGraph {
+	background:white;
+	padding-right:1em;
+	padding-top:1em;
+}
 .changePageButton {
 	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
-	border: solid 1px lightgrey;
+	border: solid 2px darkgrey;
 	text-align:center;
 	text-decoration:none;
 	width:calc(100% - 2em);
@@ -49,7 +61,7 @@
 }
 .actionButton {
 	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
-	border: solid 1px lightgrey;
+	border: solid 2px darkgrey;
 	text-align:center;
 	text-decoration:none;
 	min-width:4em;
@@ -182,7 +194,7 @@
 /*header styling*/
 #header .headerSection {
 	position:absolute;
-	text-align:center;
+	text-align:left;
 	width: 92vw;
 	left:8vw;
 	top:0vh;
@@ -244,6 +256,9 @@
 }
 .jsgrid-pager {
 	background:aliceblue;
+}
+.accountItemButton {
+	text-align:left;
 }
 
 /*page backgrounds*/
