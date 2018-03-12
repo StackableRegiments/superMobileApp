@@ -38,6 +38,14 @@ svg text {
 	font-size:large;
 }
 
+.accountAttribute {
+}
+.accountAttribute .attributeName {
+	font-weight:normal;
+}
+.accountAttribute .attributeValue {
+}
+
 .accountDetails {
 	font-size:large;
 }
