@@ -1,8 +1,10 @@
 <div>		
 	<div id="pageTemplates">
-		<div id="login" class="pageTemplate">
-			<h2>Access restricted</h2>
-			<p>Please reauthenticate to continue using this application</p>
+		<div id="login" class="loginPage pageTemplate">
+			<div class="focusGroup">
+				<h2>Access restricted</h2>
+				<p>Please reauthenticate to continue using this application</p>
+			</div>
 			<div class="focusGroup manualAuth">
 				<div class="accountCredentials">
 					<div>
@@ -12,30 +14,32 @@
 						<label for="passwordInput">Password</label><input name="passwordInput" class="password" type="password"></input>
 					</div>
 					<div>
-						<button class="submitCredential changePageButton">Login</button>
+						<button class="submitCredential submitCredentialButton backgroundedButton actionButton">Login</button>
 					</div>
 				</div>
 				<div class="deviceAuthContainer">
-					<button class="deviceAuth changePageButton">Biometric</button>
+					<button class="deviceAuth deviceAuthButton backgroundedButton actionButton">Biometric</button>
 				</div>
 			</div>
 		</div>
 		<div id="accountChooser" class="pageTemplate accountChooserPage">
 			<div class="focusGroup">
 				<div class="accountList">
-					<button class="accountItem changePageButton">
+					<button class="accountItem changePageButton backgroundedButton accountItemButton">
 						<div class="accountName"></div>
 						<div class="accountNumber"></div>
 						<div class="accountBalance"></div>
 					</button>
 				</div>
 				<br/>
-				<button class="consolidateButton changePageButton">Consolidate other account</button>
+				<button class="consolidateButton backgroundedButton changePageButton">Consolidate other account</button>
 			</div>
 			<br/>
-			<button class="profileButton changePageButton">My profile</button>
-			<button class="offersButton changePageButton">Current offers</button>
-			<button class="auditButton changePageButton">Activity history</button>
+			<div class="focusGroup">
+				<button class="profileButton backgroundedButton changePageButton">My profile</button>
+				<button class="offersButton backgroundedButton changePageButton">Current offers</button>
+				<button class="auditButton backgroundedButton changePageButton">Activity history</button>
+			</div>
 		</div>
 		<div id="accountChangeNomination" class="pageTemplate changeNominationPage">
 			<div class="focusGroup">
@@ -57,9 +61,9 @@
 						</td>
 					</tr>
 				</table>
-				<button class="editButton"><i class="fa fa-edit"></i></button>
-				<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
-				<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
+				<button class="editButton actionButton"><i class="fa fa-edit"></i></button>
+				<button class="applyEditButton actionButton"><i class="fa fa-check-circle"></i></button>
+				<button class="rejectEditButton actionButton"><i class="fa fa-times-circle"></i></button>
 			</div>
 		</div>
 		<div id="accountChangeEmployer" class="pageTemplate changeEmployerPage">
@@ -82,60 +86,64 @@
 						</td>
 					</tr>
 				</table>
-				<button class="editButton"><i class="fa fa-edit"></i></button>
-				<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
-				<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
+				<button class="editButton actionButton"><i class="fa fa-edit"></i></button>
+				<button class="applyEditButton actionButton"><i class="fa fa-check-circle"></i></button>
+				<button class="rejectEditButton actionButton"><i class="fa fa-times-circle"></i></button>
 			</div>
 		</div>
 		<div id="consolidate" class="pageTemplate consolidatePage">
-			<table>
-				<tr class="otherAccountProvider profileItem">
-					<td>
-						<label class="profileLabel">Provider</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-				<tr class="otherAccountIdentifier profileItem">
-					<td>
-						<label class="profileLabel">AccountNumber</label>
-					</td>
-					<td>
-						<input type="text" class="profileInput"></input>
-					</td>
-				</tr>
-			</table>
-			<button class="submitNewAccount">Search</button> 
+			<div class="focusGroup">
+				<table>
+					<tr class="otherAccountProvider profileItem">
+						<td>
+							<label class="profileLabel">Provider</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+					<tr class="otherAccountIdentifier profileItem">
+						<td>
+							<label class="profileLabel">AccountNumber</label>
+						</td>
+						<td>
+							<input type="text" class="profileInput"></input>
+						</td>
+					</tr>
+				</table>
+				<button class="submitNewAccount actionButton">Submit</button> 
+			</div>
 		</div>
 		<div id="accountSummary" class="pageTemplate accountSummaryPage">
 			<div class="focusGroup">
-				<div class="majorAttribute">
-					<span class="attributeLabel">Account Name</span><span class="accountName attributeValue"></span>
-				</div>
-				<div class="majorAttribute">
-					<span class="attributeLabel">Account Number</span><span class="accountNumber attributeValue"></span>
-				</div>
-				<div class="majorAttribute">
-					<span class="attributeLabel">Balance</span><span	class="accountBalance attributeValue"></span>
-				</div>
-				<div class="minorAttribute">
-					<span class="attributeLabel">Latest activity</span><span	class="lastTransaction attributeValue"></span>
-				</div>
-				<div class="minorAttribute">
-					<span class="attributeLabel">Concessional contributions</span><span class="concessionaryContributionsTotal attributeValue"></span>
-				</div>
-				<div class="minorAttribute">
-					<span class="attributeLabel">Non-concessional contributions</span><span class="nonConcessionalContributionsTotal attributeValue"></span>
-				</div>
+				<table>
+					<tr>
+						<td class="attributeLabel">Account Name</td><td class="accountName attributeValue"></td>
+					</tr>
+					<tr>
+						<td class="attributeLabel">Account Number</td><td class="accountNumber attributeValue"></td>
+					</tr>
+					<tr>
+						<td class="attributeLabel">Balance</td><td	class="accountBalance attributeValue"></td>
+					</tr>
+					<tr>
+						<td class="attributeLabel">Latest activity</td><td	class="lastTransaction attributeValue"></td>
+					</tr>
+					<tr>
+						<td class="attributeLabel">Concessional contributions</td><td class="concessionaryContributionsTotal attributeValue"></td>
+					</tr>
+					<tr>
+						<td class="attributeLabel">Non-concessional contributions</td><td class="nonConcessionalContributionsTotal attributeValue"></td>
+					</tr>
+				</table>
 			</div>
-			<button class="correspondenceButton changePageButton">Correspondence</button>
-			<button class="transactionListButton changePageButton">Transactions List</button>
-			<button class="investmentsBreakdownButton changePageButton">Investments</button>
-			<button class="insuranceButton changePageButton">Insurance</button>
-			<button class="adequacyButton changePageButton">Adequacy</button>
-			<button class="changeNominationsButton changePageButton">Nominations/Beneficiaries</button>
-			<button class="changeEmployerButton changePageButton">Employer</button>
+			<button class="correspondenceButton backgroundedButton changePageButton">Correspondence</button>
+			<button class="transactionListButton backgroundedButton changePageButton">Transactions List</button>
+			<button class="investmentsBreakdownButton backgroundedButton changePageButton">Investments</button>
+			<button class="insuranceButton backgroundedButton changePageButton">Insurance</button>
+			<button class="adequacyButton backgroundedButton changePageButton">Adequacy</button>
+			<button class="changeNominationsButton backgroundedButton changePageButton">Nominations/Beneficiaries</button>
+			<button class="changeEmployerButton backgroundedButton changePageButton">Employer</button>
 		</div>
 		<div id="accountInsurance" class="pageTemplate accountInsurancePage">
 			<div class="insuranceSchemesContainer">
@@ -161,7 +169,7 @@
 		<div id="accountTransactionList" class="pageTemplate accountTransactionsGridPage">
 			<div class="transactionsListGrid"></div>
 		</div>
-		<div id="accountInvestmentsBreakdown" class="pageTemplate">
+		<div id="accountInvestmentsBreakdown" class="accountInvestmentsPage pageTemplate">
 			<div class="focusGroup">
 				<div class="breakdownGraph"></div>
 				<h2>Investment portfolio</h2>
@@ -178,17 +186,17 @@
 						</td>
 					</tr>
 				</table>
-				<button class="changeBreakdown"><i class="fa fa-edit"></i></button>
-				<button class="cancelChangeBreakdown"><i class="fa fa-times-circle"></i></button>
-				<button class="applyChangeBreakdown"><i class="fa fa-check-circle"></i></button>
+				<button class="changeBreakdown editButton actionButton"><i class="fa fa-edit"></i></button>
+				<button class="cancelChangeBreakdown rejectEditButton actionButton"><i class="fa fa-times-circle"></i></button>
+				<button class="applyChangeBreakdown applEditButton actionButton"><i class="fa fa-check-circle"></i></button>
 			</div>
 		</div>
-		<div id="accountAdequacy" class="pageTemplate">
+		<div id="accountAdequacy" class="accountAdeqaucyPage pageTemplate">
 			<div class="focusGroup">
 				<div class="transactionsGraph"></div>
 			</div>
 		</div>
-		<div id="accountCorrespondence" class="pageTemplate">
+		<div id="accountCorrespondence" class="accountCorrespondencePage pageTemplate">
 			<div class="correspondenceContainer">
 				<div class="correspondenceItem">
 					<div class="correspondenceItemName"></div>
@@ -197,7 +205,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="profile" class="pageTemplate">
+		<div id="profile" class="profilePage pageTemplate">
 			<div class="focusGroup">
 				<table>
 					<colgroup>
@@ -301,12 +309,12 @@
 						</td>
 					</tr>
 				</table>
-				<button class="editButton"><i class="fa fa-edit"></i></button>
-				<button class="applyEditButton"><i class="fa fa-check-circle"></i></button>
-				<button class="rejectEditButton"><i class="fa fa-times-circle"></i></button>
+				<button class="editButton actionButton"><i class="fa fa-edit"></i></button>
+				<button class="applyEditButton actionButton"><i class="fa fa-check-circle"></i></button>
+				<button class="rejectEditButton actionButton"><i class="fa fa-times-circle"></i></button>
 			</div>
 		</div>
-		<div id="chat" class="pageTemplate">
+		<div id="chat" class="chatPage pageTemplate">
 			<div class="chatPageContainer">
 				<div class="chatContainer">
 					<div class="chatItem">
@@ -328,7 +336,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="news" class="pageTemplate">
+		<div id="news" class="newsPage pageTemplate">
 			<div class="newsContainer">
 				<div class="newsItem">
 					<div class="newsItemHeader"></div>
@@ -339,7 +347,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="offers" class="pageTemplate">
+		<div id="offers" class="offersPage pageTemplate">
 			<div class="offersContainer">
 				<div class="offerItem">
 					<div class="offerName"></div>
@@ -349,7 +357,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="audit" class="pageTemplate">
+		<div id="audit" class="auditPage pageTemplate">
 			<div class="auditGrid"></div>
 		</div>
 	</div>
