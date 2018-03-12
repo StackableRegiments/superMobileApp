@@ -191,7 +191,7 @@ var app = (function(){
 				message:message,
 				from:author,
 				when:Date.now(),
-				unread:true
+				unread:currentPage.name != "chat"
 			};
 			history.push(m);
 			_.forEach(subscribers,function(s){
@@ -207,20 +207,24 @@ var app = (function(){
 					addMessageFunc(reply,"helpdesk");
 				},getDelayInterval());
 			}
-			if (author != "me"){
+			if (author != "me" && currentPage.name != "chat"){
 				if ("Notification" in window){
 					Notification.requestPermission(function(permission){
 						if (permission === "granted"){
-							var notification = new Notification("new message from superMembers",{
+							var notification = new Notification(author,{
 								tag:author,
 								body:message
 							});
+							m.notification = notification;
 							notification.onshow = function(){
 								m.unread = false;
 							};
 							notification.onclick = function(){
 								setPageFunc("chat",[]);
 							};
+							if ("navigator" in window && "notification" in window.navigator && "beep" in window.navigator.notification){
+								window.navigator.notification.beep(1);
+							}
 						}
 					});
 				}
