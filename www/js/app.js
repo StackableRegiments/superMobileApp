@@ -616,7 +616,7 @@ var app = (function(){
 	var pageHistory = [];
 	var currentPage = {};
 	var dontRenderHeadersFor = function(pageName){
-		return _.some(["login","chat"],function(i){return i == pageName;});
+		return _.some(["login","news","chat"],function(i){return i == pageName;});
 	};
 
 	var renderHeaderChatCount = function(){
@@ -954,6 +954,7 @@ var app = (function(){
 					var accountItemTemplate = accountList.find(".accountItem").clone();
 					accountList.html(_.map(accounts,function(account){
 						var elem = accountItemTemplate.clone();
+						elem.addClass("accountButtonType_"+account.type);
 						elem.find(".accountName").text(account.name);
 						elem.find(".accountNumber").text(account.number);
 						elem.find(".accountBalance").text(formatCurrency(account.transactions.total));
@@ -1042,6 +1043,7 @@ var app = (function(){
 					};
 				},
 				render:function(html){
+					html.addClass("accountType_"+account.type);
 					html.find(".accountName").text(account.name);
 					html.find(".accountNumber").text(account.number);
 					html.find(".accountBalance").text(formatCurrency(transactions.total));
@@ -1156,9 +1158,11 @@ var app = (function(){
 								inputElem.show().unbind("change").on("change",function(evt){
 									var value = $(this).val();
 									account.insurance[schemeName].amount = value;
+									var auditItem = _.clone(value);
+									value.scheme = schemeName;
 									auditHistory.add({
 										action:"changedCoverage",
-										parameters:account.insurance[schemeName],
+										parameters:auditItem,
 										account:account.number,
 										result:"applied"
 									});
@@ -1175,10 +1179,13 @@ var app = (function(){
 						isCovered.on("click",function(){
 							var isChecked = $(this).is(":checked");
 							if (isChecked){
-								account.insurance[schemeName] = {amount:scheme.min,start:formatDate(Date.now())};
+								var newItem = {amount:scheme.min,start:formatDate(Date.now())};
+								account.insurance[schemeName] = newItem;
+								var auditItem = _.clone(newItem);
+								newItem.scheme = schemeName;
 								auditHistory.add({
 									action:"addCoverage",
-									parameters:account.insurance[schemeName],
+									parameters:auditItem,
 									account:account.number,
 									result:"applied"
 								});
