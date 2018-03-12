@@ -207,6 +207,24 @@ var app = (function(){
 					addMessageFunc(reply,"helpdesk");
 				},getDelayInterval());
 			}
+			if (author != "me"){
+				if ("Notification" in window){
+					Notification.requestPermission(function(permission){
+						if (permission === "granted"){
+							var notification = new Notification("new message from superMembers",{
+								tag:author,
+								body:message
+							});
+							notification.onshow = function(){
+								m.unread = false;
+							};
+							notification.onclick = function(){
+								setPageFunc("chat",[]);
+							};
+						}
+					});
+				}
+			}
 		};
 		var subscribeFunc = function(name,messageFunc){
 			subscribers[name] = messageFunc;
