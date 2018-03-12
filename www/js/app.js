@@ -866,7 +866,7 @@ var app = (function(){
 						var val = $(this).val();
 						password = val;
 					}).on("keyup",checkKeyUpForSubmit);
-					accCreds.find(".submitCredential").on("click",attemptLogin);
+					html.find(".submitCredential").on("click",attemptLogin);
 					
 					var deviceAuthContainer = html.find(".deviceAuthContainer");
 					if ("Fingerprint" in window){
