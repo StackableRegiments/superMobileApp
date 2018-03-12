@@ -1752,6 +1752,14 @@ var app = (function(){
 					var history = chat.getHistory();
 					_.forEach(history,function(cm){
 						cm.unread = false;
+						if ("notification" in cm && "close" in cm.notification){
+							try {
+								cm.notification.close();
+							} catch (e){
+								console.log("failed to close notification",cm,e);
+							}
+							delete cm.notification;
+						}
 					});
 					chatHistoryRoot.html(_.map(history,function(chatItem){
 						var chatElem = chatTemplate.clone();
