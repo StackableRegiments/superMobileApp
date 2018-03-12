@@ -6,16 +6,26 @@
 				<p>Please reauthenticate to continue using this application</p>
 			</div>
 			<div class="focusGroup manualAuth">
-				<div class="accountCredentials">
-					<div>
-						<label for="usernameInput">Username</label><input name="usernameInput" class="username" type="text"></input>
-					</div>
-					<div>
-						<label for="passwordInput">Password</label><input name="passwordInput" class="password" type="password"></input>
-					</div>
-					<div>
-						<button class="submitCredential submitCredentialButton backgroundedButton actionButton">Login</button>
-					</div>
+				<table class="accountCredentials">
+					<tr>
+						<td>
+							<label for="usernameInput">Username</label>
+						</td>
+						<td>
+							<input name="usernameInput" class="username" type="text"></input>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="passwordInput">Password</label>
+						</td>
+						<td>
+							<input name="passwordInput" class="password" type="password"></input>
+						</td>
+					</tr>
+				</table>
+				<div>
+					<button class="submitCredential submitCredentialButton backgroundedButton actionButton">Login</button>
 				</div>
 				<div class="deviceAuthContainer">
 					<button class="deviceAuth deviceAuthButton backgroundedButton actionButton">Biometric</button>
@@ -26,9 +36,15 @@
 			<div class="focusGroup">
 				<div class="accountList">
 					<button class="accountItem changePageButton backgroundedButton accountItemButton">
-						<div class="accountName"></div>
-						<div class="accountNumber"></div>
-						<div class="accountBalance"></div>
+						<div>
+							<span class="accountName"></span>
+						</div>
+						<div>
+							<span>id</span>: <span	class="accountNumber"></span>
+						</div>
+						<div>
+							<span>balance</span>: <span class="accountBalance"></span>
+						</div>
 					</button>
 				</div>
 				<button class="consolidateButton backgroundedButton changePageButton">Consolidate other account</button>
@@ -112,7 +128,7 @@
 		</div>
 		<div id="accountSummary" class="pageTemplate accountSummaryPage">
 			<div class="focusGroup">
-				<table>
+				<table class="accountDetails">
 					<tr>
 						<td class="attributeLabel">Account Name</td><td class="accountName attributeValue"></td>
 					</tr>
@@ -125,6 +141,8 @@
 					<tr>
 						<td class="attributeLabel">Latest activity</td><td	class="lastTransaction attributeValue"></td>
 					</tr>
+				</table>
+				<table>
 					<tr>
 						<td class="attributeLabel">Concessional contributions</td><td class="concessionaryContributionsTotal attributeValue"></td>
 					</tr>

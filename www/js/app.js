@@ -226,7 +226,11 @@ var app = (function(){
 
 
 	var formatCurrency = function(currency){
-		return "$"+_.round(currency,2).toString();
+		if (currency < 0){
+			return "-$"+_.round(Math.abs(currency),2).toLocaleString();
+		} else {
+			return "$"+_.round(currency,2).toLocaleString();
+		}
 	};
 
 	var formatDateTime = function(dateLong){
@@ -245,7 +249,7 @@ var app = (function(){
 	//yFunc is the extractor from datum to provide the yValue
 	//lineSelectorFunc is a function which partitions the data into separate lines, with names
 	//
-		var margin = {top: 0, right: 0, bottom: 90, left: 50};
+		var margin = {top: 0, right: 0, bottom: 25, left: 50};
 		var	width = 640 - margin.left - margin.right;
 		var	height = 480 - margin.top - margin.bottom;
 
@@ -387,7 +391,11 @@ var app = (function(){
 					.attr("text-anchor","start")
 					.attr("font-family","Verdana")
 					.attr("font-size","12")
-					.text(key);
+					.text(key)
+					.on("click",function(){
+						visible = !visible;
+						renderVisibility();
+					});
 			colourIndex++;
 
 			if (includeTrends){
@@ -454,7 +462,11 @@ var app = (function(){
 					.attr("text-anchor","start")
 					.attr("font-family","Verdana")
 					.attr("font-size","12")
-					.text(sprintf("%s trend",key));
+					.text(sprintf("%s trend",key))
+					.on("click",function(){
+						trendVisible = !trendVisible;
+						renderTrendVisibility();
+					});
 
 				colourIndex++;
 			}
@@ -831,7 +843,7 @@ var app = (function(){
 				},
 				"render":function(html){
 					var attemptLogin = function(){
-						if (username !== undefined && password !== undefined && username == "dave" && password == "test"){
+						if (username !== undefined && password !== undefined && username.toLowerCase().trim() == "dave" && password.toLowerCase().trim() == "test"){
 							logIn("password");
 						} else {
 							rejectLogin("password","incorrect credentials");
