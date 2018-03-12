@@ -27,7 +27,7 @@
 }
 
 .focusGroup {
-	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+	background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%);
 	margin:1em 1em;
 	border-radius:1em;
 	border:solid 1px lightgrey;
@@ -249,55 +249,55 @@
 	background-size:cover;
 }
 .loginPage {
-	background: radial-gradient(ellipse at center, rgba(115,1,255,0) 40%,rgba(115,1,255,1) 100%), url('img/backgrounds/login.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/login.jpg');
 }
 .accountChooserPage {
-	background: radial-gradient(ellipse at center, rgba(1,124,255,0) 40%,rgba(1,124,255,1) 100%), url('img/backgrounds/accountList.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/accountList.jpg');
 }
 .accountType_C {
-	background: radial-gradient(ellipse at center, rgba(1,255,170,0) 40%,rgba(1,255,170,1) 100%), url('img/backgrounds/contributionAccountType.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/contributionAccountType.jpg');
 }
 .accountType_P {
-	background: radial-gradient(ellipse at center, rgba(188,132,68,0) 40%,rgba(188,132,68,1) 100%), url('img/backgrounds/pensionAccountType.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/pensionAccountType.jpg');
 }
 .consolidatePage {
-	background: radial-gradient(ellipse at center, rgba(255,234,1,0) 40%,rgba(255,234,1,1) 100%), url('img/backgrounds/otherAccount.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/otherAccount.jpg');
 }
 .profilePage {
-	background: radial-gradient(ellipse at center, rgba(84,58,198,0) 40%,rgba(84,58,198,1) 100%), url('img/backgrounds/profile.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/profile.jpg');
 }
 .auditPage {
-	background: radial-gradient(ellipse at center, rgba(207,49,123,0) 40%,rgba(207,49,123,1) 100%), url('img/backgrounds/activityHistory.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/activityHistory.jpg');
 }
 .offersPage {
-	background: radial-gradient(ellipse at center, rgba(75,187,69,0) 40%,rgba(75,187,69,1) 100%), url('img/backgrounds/offers.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/offers.jpg');
 }
 .accountTransactionsGridPage {
-	background: radial-gradient(ellipse at center, rgba(69,187,148,0) 40%,rgba(69,187,148,1) 100%), url('img/backgrounds/accountTransactions.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/accountTransactions.jpg');
 }
 .newsPage {
-	background: radial-gradient(ellipse at center, rgba(255,165,0,0) 40%,rgba(255,165,0,1) 100%), url('img/backgrounds/news.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/news.jpg');
 }
 .changeEmployerPage {
-	background: radial-gradient(ellipse at center, rgba(187,171,69,0) 40%,rgba(187,171,69,1) 100%), url('img/backgrounds/employer.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/employer.jpg');
 }
 .accountInsurancePage {
-	background: radial-gradient(ellipse at center, rgba(187,103,69,0) 40%,rgba(187,103,69,1) 100%), url('img/backgrounds/insurance.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/insurance.jpg');
 }
 .accountInvestmentsPage {
-	background: radial-gradient(ellipse at center, rgba(187,69,144,0) 40%,rgba(187,69,144,1) 100%), url('img/backgrounds/investments.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/investments.jpg');
 }
 .accountAdequacyPage {
-	background: radial-gradient(ellipse at center, rgba(152,69,187,0) 40%,rgba(152,69,187,1) 100%), url('img/backgrounds/adequacy.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/adequacy.jpg');
 }
 .accountCorrespondencePage {
-	background: radial-gradient(ellipse at center, rgba(69,83,187,0) 40%,rgba(69,83,187,1) 100%), url('img/backgrounds/accountCorrespondence.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/accountCorrespondence.jpg');
 }
 .chatPage {
-	background: radial-gradient(ellipse at center, rgba(187,150,69,0) 40%,rgba(187,150,69,1) 100%), url('img/backgrounds/chat.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/chat.jpg');
 }
 .changeNominationsPage {
-	background: radial-gradient(ellipse at center, rgba(75,187,69,0) 40%,rgba(75,187,69,1) 100%), url('img/backgrounds/nominations.jpg');
+	background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 25%,rgba(255,255,255,0.65) 39%,rgba(255,255,255,0.62) 40%,rgba(255,255,255,0) 64%,rgba(255,255,255,0.94) 98%,rgba(255,255,255,1) 100%), url('img/backgrounds/nominations.jpg');
 }
 
 /*buttons*/
@@ -305,63 +305,63 @@
 }
 .submitCredentialButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/loginButton.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/loginButton.jpg');
 }
 .deviceAuthButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/fingerprint.png');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/fingerprint.png');
 }
 .accountButtonType_P {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/pensionAccountType.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/pensionAccountType.jpg');
 }
 .accountButtonType_C {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/contributionAccountType.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/contributionAccountType.jpg');
 }
 .consolidateButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/otherAccount.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/otherAccount.jpg');
 }
 .profileButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/profile.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/profile.jpg');
 }
 .offersButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/offers.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/offers.jpg');
 }
 .auditButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/activityHistory.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/activityHistory.jpg');
 }
 .correspondenceButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/accountCorrespondence.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/accountCorrespondence.jpg');
 }
 .transactionListButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/accountTransactions.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/accountTransactions.jpg');
 }
 .investmentsBreakdownButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/investments.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/investments.jpg');
 }
 .insuranceButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/insurance.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/insurance.jpg');
 }
 .adequacyButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/adequacy.jpg')
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/adequacy.jpg')
 }
 .changeNominationsButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/nominations.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/nominations.jpg');
 }
 .changeEmployerButton {
 	background-size:cover;
-	background: linear-gradient(135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.57) 20%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 65%,rgba(255,255,255,0.57) 80%,rgba(255,255,255,0) 100%), url('img/buttons/employer.jpg');
+	background: linear-gradient(45deg, rgba(255,255,255,1) 0%,rgba(255,255,255,0.4) 25%,rgba(255,255,255,0.85) 40%,rgba(255,255,255,0.4) 65%,rgba(255,255,255,0.97) 98%,rgba(255,255,255,1) 100%), url('img/buttons/employer.jpg');
 }
 
 .editButton {
