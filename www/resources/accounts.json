@@ -23,6 +23,10 @@
 		"status":"A",
 		"type":"C",
 		"number":567890,
+		"bpay":{
+			"billerId":1231212,
+			"reference":32141256423123122
+		},
 		"investmentOptions":{
 			"balanced":20,
 			"conservative":60,

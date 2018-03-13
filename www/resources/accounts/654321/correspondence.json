@@ -1,12 +1,12 @@
 [
 	{
 		"name":"2018 statement",
-		"url":"resources/accounts/2/2018-statement.html",
+		"url":"resources/accounts/654321/2018-statement.html",
 		"date":"2018-06-29"
 	},
 	{
 		"name":"2018 PAYG summary",
-		"url":"resources/accounts/2/2018-payg.html",
+		"url":"resources/accounts/654321/2018-payg.html",
 		"date":"2018-06-28"
 	}
 ]
