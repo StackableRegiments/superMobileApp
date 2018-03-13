@@ -1071,6 +1071,14 @@ var app = (function(){
 					html.find(".accountName").text(account.name);
 					html.find(".accountNumber").text(account.number);
 					html.find(".accountBalance").text(formatCurrency(transactions.total));
+					var bpayElem = html.find(".bpayDetails");
+					if ("bpay" in account){
+						bpayElem.find(".bpayBiller .attributeValue").text(account.bpay.billerId);
+						bpayElem.find(".bpayRef .attributeValue").text(account.bpay.reference);
+						bpayElem.show();
+					} else {
+						bpayElem.hide();
+					}
 					html.find(".concessionaryContributionsTotal").text(formatCurrency(transactions.concessional));
 					html.find(".nonConcessionalContributionsTotal").text(formatCurrency(transactions.nonConcessional));
 					html.find(".lastTransaction").text(formatDate(transactions.lastItem.timestamp));
