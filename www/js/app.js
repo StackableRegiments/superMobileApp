@@ -516,6 +516,7 @@ var app = (function(){
 				}
 			});
 			jsGrid.fields.alert = MyAlertField;
+
 			var MyJsonField = function(config){
 				jsGrid.Field.call(this,config);
 			};
@@ -619,15 +620,9 @@ var app = (function(){
 		}
 	};
 	_.forEach(["deviceready","load","offline","online","suspend","resume","backbutton"],function(eventName){
-		document.addEventListener(eventName,function(){
-			callFunc(eventName,[]);
+		document.addEventListener(eventName,function(args){
+			callFunc(eventName,[args]);
 		},false);
-	});
-	var initialize = _.once(function(){
-
-	});
-	bindFunc("deviceready","initializer",function(args){
-		initialize();
 	});
 
 	var mainPaneContainer,headerContainer,footerContainer,chatButton,newsButton,chatCount;
@@ -686,7 +681,6 @@ var app = (function(){
 				currentPage.messageDeferrer = createDeferredMessages(newPage.deferredMessages);
 				currentPage.messageDeferrer.start();
 			};
-			var deferredMessages = newPage.def
 			var renderFunc = function(){
 				var backToParentButton = headerContainer.find(".backToParentButton").unbind("click");
 				if ("render" in newPage){
@@ -775,10 +769,6 @@ var app = (function(){
 		bindFunc("online","reauthentication",reauth);
 		bindFunc("resume","reauthentication",reauth);
 		bindFunc("deviceready","reauthentication",reauth);
-
-		bindFunc("deviceready","startup",function(){
-			setPageFunc("login");
-		});
 	});
 	var createDeferredMessages = function(messages){
 		var currentFunc = function(){
@@ -1134,9 +1124,9 @@ var app = (function(){
 				render:function(html){
 					var gridRoot = html.find(".transactionsListGrid");
 					JsGridHelpers.readonlyGrid(gridRoot,transactions.items,[
-						{name:"adjustment",title:"adj",type:"currency",width:"15vw"},
+						{name:"adjustment",title:"adj",type:"currency",width:"25vw"},
 						{name:"timestamp",title:"when",type:"date",width:"20vw"},
-						{name:"description",title:"",type:"text",width:"35vw"},
+						{name:"description",title:"",type:"text",width:"25vw"},
 						{name:"subTotal",type:"currency",width:"25vw"}
 					]);
 					return html;
@@ -1736,13 +1726,13 @@ var app = (function(){
 			var sendCurrentMessage = function(){
 				if (currentMessage !== undefined && currentMessage != ""){
 					chat.addMessage(currentMessage,"me");
-					currentMessage = "";
 					newMessageBox.val("");
 					auditHistory.add({
 						action:"sentChatMessage",
 						parameters:currentMessage,
 						result:"sent"
 					});
+					currentMessage = "";
 					reRenderChatHistory();
 				}
 			};
@@ -1892,20 +1882,11 @@ var app = (function(){
 					return html;
 				},
 				header:function(){
-					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "audit" && i.name != "login";}));
-					if (previous !== undefined){
-						return {
-							name:"audit",
-							parent:previous.name,
-							parentArgs:previous.args
-						};
-					} else {
-						return {
-							name:"audit",
-							parent:"accountChooser",
-							parentArgs:[]
-						};
-					}
+					return {
+						name:"audit",
+						parent:"accountChooser",
+						parentArgs:[]
+					};
 				}
 			};
 		})(),
