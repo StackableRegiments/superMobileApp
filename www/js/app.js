@@ -226,7 +226,7 @@ var app = (function(){
 	var submitLoginOffer = _.once(function(){
 		offers.addOffer({
 			name:"free coffee",
-			imageUrl:"",
+			imageUrl:"resources/offers/coffee.jpg",
 			text:"thanks for logging in.  Have a free coffee, on us!",
 			expiry:formatDate(Date.now() + (30 * 24 * 60 * 60 * 1000))
 		});
@@ -1769,6 +1769,12 @@ var app = (function(){
 									action:"changedProfile",
 									parameters:profile,
 									result:"applied"
+								});
+								offers.addOffer({
+									name:"free movie ticket",
+									imageUrl:"resources/offers/film.jpg",
+									text:"thanks for updating your profile.  That's really important to us, and we'll take good care of the information.  Take care of yourself, with a free movie ticket!  (I hope you like free-domain movies)",
+									expiry:formatDate(Date.now() + (30 * 24 * 60 * 60 * 1000))
 								});
 								reRender();
 							}).show();
