@@ -173,6 +173,66 @@ var app = (function(){
 			}
 		});
 	};
+	var offers = (function(){
+		var offerCache = [];
+		withOffers(function(o){
+			offerCache = o;
+		});
+		var funcs = {};
+		var subscribeFunc = function(name,func){
+			if (_.isFunction(func)){
+				funcs[name] = func;
+			}
+		};
+		var unsubscribeFunc = function(name){
+			delete funcs[name];
+		};
+		var addOfferFunc = function(newOffer){
+			offerCache.push(newOffer);
+			if (currentPage.name != "offers"){
+				if ("Notification" in window){
+					Notification.requestPermission(function(permission){
+						if (permission === "granted"){
+							var notification = new Notification(newOffer.name,{
+								tag:newOffer.name,
+								body:newOffer.text
+							});
+							notification.onclick = function(){
+								setPageFunc("offers",[]);
+							};
+							if ("navigator" in window && "notification" in window.navigator && "beep" in window.navigator.notification){
+								window.navigator.notification.beep(1);
+							}
+						}
+					});
+				}
+			}
+			_.forEach(funcs,function(f){
+				try {
+					f(newOffer);
+				} catch(e){
+					console.log("failed to fire function on newOffer",e,newOffer);
+				}
+			});
+		};
+		return {
+			addOffer:addOfferFunc,
+			subscribe:subscribeFunc,
+			unsubscribe:unsubscribeFunc,
+			getAll:function(){return offerCache;}
+		};
+	}());
+
+	var submitLoginOffer = _.once(function(){
+		offers.addOffer({
+			name:"free coffee",
+			imageUrl:"",
+			text:"thanks for logging in.  Have a free coffee, on us!",
+			expiry:formatDate(Date.now() + (30 * 24 * 60 * 60 * 1000))
+		});
+	});
+	var onLoginOffer = _.debounce(submitLoginOffer,20 * 1000);
+
 	var idleHelpdeskTime = 15 * 1000;
 	var chat = (function(){
 		var history = [];
@@ -819,6 +879,7 @@ var app = (function(){
 					result:"successful",
 					parameters:{loginType:loginType}
 				});
+				onLoginOffer();
 				setPageFunc(lastValidPage.name,lastValidPage.args);
 			};
 			var rejectLogin = function(loginType,reason){
@@ -1899,21 +1960,12 @@ var app = (function(){
 			};
 		})(),
 		(function(){
-			var offers = [];
-			return {
-				name:"offers",
-				activate:function(args,afterFunc){
-					withOffers(function(off){
-						offers = off;
-						afterFunc();
-					});
-				},
-				deactivate:function(){
-				},
-				render:function(html){
-					var offerContainer = html.find(".offersContainer");
-					var offerTemplate = offerContainer.find(".offerItem").clone();
-					offerContainer.html(_.map(offers,function(offer){
+			var pageId = "offers_"+_.uniqueId();
+			var offerContainer = undefined;
+			var offerTemplate = undefined;
+			var reRender = function(){
+				if (offerTemplate !== undefined && offerContainer !== undefined){
+					offerContainer.html(_.map(offers.getAll(),function(offer){
 						var elem = offerTemplate.clone();
 						elem.find(".offerName").text(offer.name);
 						elem.find(".offerImage").attr("src",offer.imageUrl);
@@ -1921,6 +1973,23 @@ var app = (function(){
 						elem.find(".offerExpiry").text(offer.expiry);
 						return elem;
 					}));
+				}
+			};
+			return {
+				name:"offers",
+				activate:function(args,afterFunc){
+					offers.subscribe(pageId,function(o){
+						reRender();
+					});
+					afterFunc();
+				},
+				deactivate:function(){
+					offers.unsubscribe(pageId);
+				},
+				render:function(html){
+					offerContainer = html.find(".offersContainer");
+					offerTemplate = offerContainer.find(".offerItem").clone();
+					reRender();
 					return html;
 				},
 				header:function(){
