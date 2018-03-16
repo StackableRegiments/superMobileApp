@@ -173,6 +173,56 @@ var app = (function(){
 			}
 		});
 	};
+	var news = (function(){
+		var newsCache = [];
+		withNews(function(o){
+			newsCache = o;
+		});
+		var funcs = {};
+		var subscribeFunc = function(name,func){
+			if (_.isFunction(func)){
+				funcs[name] = func;
+			}
+		};
+		var unsubscribeFunc = function(name){
+			delete funcs[name];
+		};
+		var addNewsFunc = function(newNews){
+			newsCache.push(newNews);
+			if (currentPage.name != "news"){
+				if ("Notification" in window){
+					Notification.requestPermission(function(permission){
+						if (permission === "granted"){
+							var notification = new Notification(newNews.heading,{
+								tag:newNews.heading,
+								body:newNews.summary
+							});
+							notification.onclick = function(){
+								setPageFunc("news",[]);
+							};
+							if ("navigator" in window && "notification" in window.navigator && "beep" in window.navigator.notification){
+								window.navigator.notification.beep(1);
+							}
+						}
+					});
+				}
+			}
+			_.forEach(funcs,function(f){
+				try {
+					f(newNews);
+				} catch(e){
+					console.log("failed to fire function on newNews",e,newNews);
+				}
+			});
+		};
+		return {
+			addNews:addNewsFunc,
+			subscribe:subscribeFunc,
+			unsubscribe:unsubscribeFunc,
+			getAll:function(){return newsCache;}
+		};
+	}());
+
 	var offers = (function(){
 		var offerCache = [];
 		withOffers(function(o){
@@ -232,6 +282,16 @@ var app = (function(){
 		});
 	});
 	var onLoginOffer = _.debounce(submitLoginOffer,20 * 1000);
+
+	var submitNewsItem = _.debounce(function(){
+		news.addNews({
+			heading:"testNews",
+			timestamp:Date.now(),
+			summary:"something happened!",
+			image:"",
+			url:""
+		});
+	},30 * 1000)();
 
 	var idleHelpdeskTime = 15 * 1000;
 	var chat = (function(){
@@ -1895,14 +1955,25 @@ var app = (function(){
 			};
 		})(),
 		(function(){
-			var news = [];
+			var pageId = "news_"+_.uniqueId();
+			var reRender = function(){
+				if (newsContainer !== undefined && template !== undefined){
+					newsContainer.html(_.map(news.getAll(),function(article){
+						var newsElem = template.clone();
+						newsElem.find(".newsItemHeader").text(article.heading);
+						newsElem.find(".newsItemImage").attr("src",article.image);
+						newsElem.find(".newsItemTimestamp").text(formatDate(article.timestamp));
+						newsElem.find(".newsItemSummary").text(article.summary);
+						newsElem.find(".newsItemLink").attr("href",article.url);
+						return newsElem;
+					}));
+				}
+			};
 			return {
 				name:"news",
 				activate:function(args,afterFunc){
-					withNews(function(n){
-						news = n;
-						afterFunc();
-					});
+					afterFunc();
+					news.subscribe(pageId,reRender);
 				},
 				header:function(){
 					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "news" && i.name != "chat" && i.name != "login";}));
@@ -1920,18 +1991,13 @@ var app = (function(){
 						};
 					}
 				},
+				deactivate:function(){
+					news.unsubscribe(pageId);
+				},
 				render:function(html){
-					var newsContainer = html.find(".newsContainer");	
-					var template = newsContainer.find(".newsItem").clone();
-					newsContainer.html(_.map(news,function(article){
-						var newsElem = template.clone();
-						newsElem.find(".newsItemHeader").text(article.heading);
-						newsElem.find(".newsItemImage").attr("src",article.image);
-						newsElem.find(".newsItemTimestamp").text(formatDate(article.timestamp));
-						newsElem.find(".newsItemSummary").text(article.summary);
-						newsElem.find(".newsItemLink").attr("href",article.url);
-						return newsElem;
-					}));
+					newsContainer = html.find(".newsContainer");	
+					template = newsContainer.find(".newsItem").clone();
+					reRender();
 					return html;
 				}
 			};
