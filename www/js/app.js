@@ -851,6 +851,16 @@ var app = (function(){
 			} else {
 				renderFunc();
 			}
+			auditHistory.add({
+				action:"viewedPage",
+				result:"successful",
+				visible:false,
+				parameters:{
+					page:pageName,
+					args:args
+				}
+			});
+
 			callFunc("postPageChange",[pageName,args]);
 		}
 	};
@@ -2012,8 +2022,10 @@ var app = (function(){
 				},
 				render:function(html){
 					var gridRoot = html.find(".auditGrid");
-					var auditItems = auditHistory.getHistory();
-					JsGridHelpers.readonlyGrid(gridRoot,auditHistory.getHistory(),[
+					var items = _.filter(auditHistory.getHistory(),function(item){
+						return (!("visible" in item) || item.visible == true);
+					});
+					JsGridHelpers.readonlyGrid(gridRoot,items,[
 						{name:"when",title:"when",type:"date",width:"20vw"},
 						{name:"account",title:"acct",type:"text",width:"10vw"},
 						{name:"action",title:"action",type:"text",width:"30vw"},
@@ -2081,6 +2093,9 @@ var app = (function(){
 		on:bindFunc,
 		call:callFunc,
 		setPage:setPageFunc,
-		getPage:getPageFunc
+		getPage:getPageFunc,
+		getAuditHistory:function(){
+			return auditHistory.getHistory();
+		}
 	};
 })();
