@@ -1,4 +1,39 @@
 var app = (function(){
+
+	var events = {};
+	var bindFunc = function(eventName,subscriberName,func){
+		if (_.isFunction(func)){
+			if (!(eventName in events)){
+				events[eventName] = {};
+			}
+			events[eventName][subscriberName] = func;
+		}
+	};
+	var unbindFunc = function(eventName,subscriberName){
+		if (eventName in events){
+			var group = events[eventName];
+			if (subscriberName in group){
+				delete group.subscriberName;
+			}
+		}
+	};
+	var callFunc = function(eventName,args){
+		if (eventName in events){
+			_.forEach(events[eventName],function(func,subscriberName){
+				try {
+					func.apply(null,args);
+				} catch(e) {
+					console.log("exception thrown in event",subscriberName,eventName,args,e);
+				}
+			});
+		}
+	};
+	_.forEach(["deviceready","load","offline","online","suspend","resume","backbutton"],function(eventName){
+		document.addEventListener(eventName,function(args){
+			callFunc(eventName,[args]);
+		},false);
+	});
+
 	var withAccounts = function(accountsFunc){
 		$.ajax({
 			url:"resources/accounts.json",
@@ -178,17 +213,9 @@ var app = (function(){
 		withNews(function(o){
 			newsCache = o;
 		});
-		var funcs = {};
-		var subscribeFunc = function(name,func){
-			if (_.isFunction(func)){
-				funcs[name] = func;
-			}
-		};
-		var unsubscribeFunc = function(name){
-			delete funcs[name];
-		};
 		var addNewsFunc = function(newNews){
 			newsCache.push(newNews);
+			callFunc("news",[newNews]);
 			if (currentPage.name != "news"){
 				if ("Notification" in window){
 					Notification.requestPermission(function(permission){
@@ -207,18 +234,9 @@ var app = (function(){
 					});
 				}
 			}
-			_.forEach(funcs,function(f){
-				try {
-					f(newNews);
-				} catch(e){
-					console.log("failed to fire function on newNews",e,newNews);
-				}
-			});
 		};
 		return {
 			addNews:addNewsFunc,
-			subscribe:subscribeFunc,
-			unsubscribe:unsubscribeFunc,
 			getAll:function(){return newsCache;}
 		};
 	}());
@@ -228,17 +246,9 @@ var app = (function(){
 		withOffers(function(o){
 			offerCache = o;
 		});
-		var funcs = {};
-		var subscribeFunc = function(name,func){
-			if (_.isFunction(func)){
-				funcs[name] = func;
-			}
-		};
-		var unsubscribeFunc = function(name){
-			delete funcs[name];
-		};
 		var addOfferFunc = function(newOffer){
 			offerCache.push(newOffer);
+			callFunc("offer",[newOffer]);
 			if (currentPage.name != "offers"){
 				if ("Notification" in window){
 					Notification.requestPermission(function(permission){
@@ -257,76 +267,48 @@ var app = (function(){
 					});
 				}
 			}
-			_.forEach(funcs,function(f){
-				try {
-					f(newOffer);
-				} catch(e){
-					console.log("failed to fire function on newOffer",e,newOffer);
-				}
-			});
 		};
 		return {
 			addOffer:addOfferFunc,
-			subscribe:subscribeFunc,
-			unsubscribe:unsubscribeFunc,
 			getAll:function(){return offerCache;}
 		};
 	}());
 
-	var submitLoginOffer = _.once(function(){
-		offers.addOffer({
-			name:"free coffee",
-			imageUrl:"resources/offers/coffee.jpg",
-			text:"thanks for logging in.  Have a free coffee, on us!",
-			expiry:formatDate(Date.now() + (30 * 24 * 60 * 60 * 1000))
-		});
-	});
-	var onLoginOffer = _.debounce(submitLoginOffer,20 * 1000);
-
-	var submitNewsItem = _.debounce(function(){
-		news.addNews({
-			heading:"testNews",
-			timestamp:Date.now(),
-			summary:"something happened!",
-			image:"",
-			url:""
-		});
-	},30 * 1000)();
-
 	var idleHelpdeskTime = 15 * 1000;
 	var chat = (function(){
 		var history = [];
-		var eliza = new ElizaBot();
-		eliza.memSize = 200;
-		var elizaInitial = eliza.getInitial();
-		var getDelayInterval = function(){
-			return 1000 * _.random(1,5);
+		var readMessageFunc = function(m){
+			return _.once(function(){
+				m.unread = false;
+				auditHistory.add({
+					action:"readMessage",
+					result:"successful",
+					visible:true,
+					parameters:{
+						message:m
+					}
+				});
+				delete m.readMessage();
+			});
 		};
 		withChatHistory(function(chatHistory){
-			history = chatHistory;
+			history = _.map(chatHistory,function(m){
+				if (m.unread == true){
+					m.readMessage = readMessageFunc(m);
+				}
+				return m;
+			});
 		});
-		var subscribers = {};
 		var addMessageFunc = function(message,author){
 			var m = {
 				message:message,
 				from:author,
 				when:Date.now(),
-				unread:currentPage.name != "chat"
+				unread:true
 			};
+			m.readMessage = readMessageFunc(m);
 			history.push(m);
-			_.forEach(subscribers,function(s){
-				try {
-					s(m);
-				} catch(e){
-					console.log("attempted to fire function on message",e,s,m);
-				}
-			});
-			if (author == "me"){
-				_.delay(function(){
-					var reply = eliza.transform(message);
-					addMessageFunc(reply,"helpdesk");
-				},getDelayInterval());
-			}
+			callFunc("chat",[m]);
 			if (author != "me" && currentPage.name != "chat"){
 				if ("Notification" in window){
 					Notification.requestPermission(function(permission){
@@ -336,9 +318,7 @@ var app = (function(){
 								body:message
 							});
 							m.notification = notification;
-							notification.onshow = function(){
-								m.unread = false;
-							};
+							notification.onshow = m.readMessage;
 							notification.onclick = function(){
 								setPageFunc("chat",[]);
 							};
@@ -350,19 +330,11 @@ var app = (function(){
 				}
 			}
 		};
-		var subscribeFunc = function(name,messageFunc){
-			subscribers[name] = messageFunc;
-		};
-		var unsubscribeFunc = function(name){
-			delete subscribers[name];
-		};
 		return {
 			getHistory:function(){
 				return history;
 			},
-			addMessage:addMessageFunc,
-			subscribe:subscribeFunc,
-			unsubscribe:unsubscribeFunc
+			addMessage:addMessageFunc
 		};
 	})();
 
@@ -711,40 +683,6 @@ var app = (function(){
 		};
 	})();
 
-	var events = {};
-	var bindFunc = function(eventName,subscriberName,func){
-		if (_.isFunction(func)){
-			if (!(eventName in events)){
-				events[eventName] = {};
-			}
-			events[eventName][subscriberName] = func;
-		}
-	};
-	var unbindFunc = function(eventName,subscriberName){
-		if (eventName in events){
-			var group = events[eventName];
-			if (subscriberName in group){
-				delete group.subscriberName;
-			}
-		}
-	};
-	var callFunc = function(eventName,args){
-		if (eventName in events){
-			_.forEach(events[eventName],function(func,subscriberName){
-				try {
-					func.apply(null,args);
-				} catch(e) {
-					console.log("exception thrown in event",subscriberName,eventName,args,e);
-				}
-			});
-		}
-	};
-	_.forEach(["deviceready","load","offline","online","suspend","resume","backbutton"],function(eventName){
-		document.addEventListener(eventName,function(args){
-			callFunc(eventName,[args]);
-		},false);
-	});
-
 	var mainPaneContainer,headerContainer,footerContainer,chatButton,newsButton,chatCount;
 
 	bindFunc("backbutton","navigation",function(){
@@ -776,7 +714,7 @@ var app = (function(){
 			chatCount.text("");
 		}
 	};
-	chat.subscribe("header",function(m){
+	bindFunc("chat","header",function(m){
 		renderHeaderChatCount();
 	});
 
@@ -935,6 +873,7 @@ var app = (function(){
 			cancel:cancelFunc
 		};
 	};
+
 	var pages = _.mapKeys([
 		(function(){
 			var username = undefined;
@@ -1918,13 +1857,13 @@ var app = (function(){
 				name:"chat",
 				activate:function(args,afterFunc){
 						chatId = "chatPane_"+_.uniqueId().toString();
-						chat.subscribe(chatId,function(m){
+						bindFunc("chat",chatId,function(m){
 							reRenderChatHistory();
 						});	
 						afterFunc();
 				},
 				deactivate:function(){
-					chat.unsubscribe(chatId);
+					unbindFunc("chat",chatId);
 				},
 				header:function(){
 					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "chat"  && i.name != "news" && i.name != "login";}));
@@ -1983,7 +1922,7 @@ var app = (function(){
 				name:"news",
 				activate:function(args,afterFunc){
 					afterFunc();
-					news.subscribe(pageId,reRender);
+					bindFunc("news",pageId,reRender);
 				},
 				header:function(){
 					var previous = _.last(_.filter(pageHistory,function(i){return i.name != "news" && i.name != "chat" && i.name != "login";}));
@@ -2002,7 +1941,7 @@ var app = (function(){
 					}
 				},
 				deactivate:function(){
-					news.unsubscribe(pageId);
+					unbindFunc("news",pageId);
 				},
 				render:function(html){
 					newsContainer = html.find(".newsContainer");	
@@ -2062,13 +2001,13 @@ var app = (function(){
 			return {
 				name:"offers",
 				activate:function(args,afterFunc){
-					offers.subscribe(pageId,function(o){
+					bindFunc("offer",pageId,function(o){
 						reRender();
 					});
 					afterFunc();
 				},
 				deactivate:function(){
-					offers.unsubscribe(pageId);
+					unbindFunc("offer",pageId);
 				},
 				render:function(html){
 					offerContainer = html.find(".offersContainer");
@@ -2089,8 +2028,58 @@ var app = (function(){
 		return page.name;
 	});
 
+	/* fake events for the demo as though the server had supplied them*/
+	var submitLoginOffer = _.once(function(){
+		offers.addOffer({
+			name:"free coffee",
+			imageUrl:"resources/offers/coffee.jpg",
+			text:"thanks for logging in.  Have a free coffee, on us!",
+			expiry:formatDate(Date.now() + (30 * 24 * 60 * 60 * 1000))
+		});
+	});
+	var onLoginOffer = _.debounce(submitLoginOffer,20 * 1000);
+
+	var submitNewsItem = _.debounce(function(){
+		news.addNews({
+			heading:"testNews",
+			timestamp:Date.now(),
+			summary:"something happened!",
+			image:"",
+			url:""
+		});
+	},30 * 1000)();
+
+	var gamification = (function(){
+		var trackRecord = [];
+		bindFunc("audit","gamification",function(a){
+			console.log("gamifying",a);
+		});
+	})();
+
+	var chatBot = (function(){
+		var eliza = new ElizaBot();
+		eliza.memSize = 200;
+		var elizaInitial = eliza.getInitial();
+		var getDelayInterval = function(){
+			return 1000 * _.random(1,5);
+		};
+		bindFunc("chat","chatBot",function(m){
+			var author = m.from;
+			var message = m.message;
+			if (author == "me"){
+				_.delay(function(){
+					var reply = eliza.transform(message);
+					chat.addMessage(reply,"helpdesk");
+				},getDelayInterval());
+			}
+		});
+	})();
+
+/* end fake events */
+
 	return {
 		on:bindFunc,
+		off:unbindFunc,	
 		call:callFunc,
 		setPage:setPageFunc,
 		getPage:getPageFunc,
