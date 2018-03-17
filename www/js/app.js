@@ -1,3 +1,12 @@
+var formatDateTime = function(dateLong){
+	var d = new Date(dateLong);
+	return sprintf("%s %02d:%02d",formatDate(dateLong),d.getHours(),d.getMinutes())
+};
+var formatDate = function(dateLong){
+	var d = new Date(dateLong);
+	return sprintf("%02d/%02d/%04d",d.getDate(),d.getMonth()+1,d.getYear()+1900);
+};
+
 var app = (function(){
 
 	var events = {};
@@ -347,15 +356,6 @@ var app = (function(){
 		}
 	};
 
-	var formatDateTime = function(dateLong){
-		var d = new Date(dateLong);
-		return sprintf("%s %02d:%02d",formatDate(dateLong),d.getHours(),d.getMinutes())
-	};
-	var formatDate = function(dateLong){
-		var d = new Date(dateLong);
-		return sprintf("%02d/%02d/%04d",d.getDate(),d.getMonth()+1,d.getYear()+1900);
-	};
-	
 	var zoomableGraph = function(selector,data,xFunc,yFunc,lineSelectorFunc,xAxisLabel,yAxisLabel,includeTrends,predictionMultiplier){
 	//data is a jsonArray of datum
 	//selector is a jquery selector
@@ -883,12 +883,13 @@ var app = (function(){
 				pageHistory = _.filter(pageHistory,function(i){
 					return i.name != "login";
 				});
+				var params = {loginType:loginType};
 				auditHistory.add({
 					action:"login",
 					result:"successful",
-					parameters:{loginType:loginType}
+					parameters:params
 				});
-				onLoginOffer();
+				callFunc("login",[params]);
 				setPageFunc(lastValidPage.name,lastValidPage.args);
 			};
 			var rejectLogin = function(loginType,reason){
@@ -1813,7 +1814,10 @@ var app = (function(){
 					newMessageBox.val("");
 					auditHistory.add({
 						action:"sentChatMessage",
-						parameters:currentMessage,
+						parameters:{
+							message:currentMessage,
+							from:"me"
+						},
 						result:"sent"
 					});
 					currentMessage = "";
@@ -2028,19 +2032,35 @@ var app = (function(){
 		return page.name;
 	});
 
+	return {
+		on:bindFunc,
+		off:unbindFunc,	
+		call:callFunc,
+		setPage:setPageFunc,
+		getPage:getPageFunc,
+		getAuditHistory:function(){
+			return auditHistory.getHistory();
+		},
+		addOffer:offers.addOffer,
+		addNews:news.addNews,
+		addChat:chat.addMessage
+	};
+})();
+
+var mocker = (function(){
 	/* fake events for the demo as though the server had supplied them*/
 	var submitLoginOffer = _.once(function(){
-		offers.addOffer({
+		app.addOffer({
 			name:"free coffee",
 			imageUrl:"resources/offers/coffee.jpg",
 			text:"thanks for logging in.  Have a free coffee, on us!",
 			expiry:formatDate(Date.now() + (30 * 24 * 60 * 60 * 1000))
 		});
 	});
-	var onLoginOffer = _.debounce(submitLoginOffer,20 * 1000);
+	app.on("login","mocker",_.debounce(submitLoginOffer,20 * 1000));
 
 	var submitNewsItem = _.debounce(function(){
-		news.addNews({
+		app.addNews({
 			heading:"testNews",
 			timestamp:Date.now(),
 			summary:"something happened!",
@@ -2051,8 +2071,56 @@ var app = (function(){
 
 	var gamification = (function(){
 		var trackRecord = [];
-		bindFunc("audit","gamification",function(a){
-			console.log("gamifying",a);
+		var genCode = function(){
+			return "trophyCode_"+_.uniqueId();
+		};
+		var trophy = function(name,message,item){
+			console.log("trophy!",name,message,item);
+			var fm = message;
+			if (item !== undefined){
+				fm += sprintf("  quote this code: %s to receive %s",genCode(),item);
+			}
+			app.addOffer({
+				name:sprintf("trophy: %s",name),
+				imageUrl:"",
+				text:fm,
+				expiry:formatDate(Date.now() + (30 * 24 * 60 * 60 * 1000))
+			});
+		};
+		var initiateTrophy = _.once(function(){
+			trophy("initiate","thanks for looking around.  Looks like you're getting a sense of where everything is.","a free cookie");
+		});
+		var initiateRule = function(){
+			if (_.size(trackRecord) > 10){
+				initiateTrophy();
+			}
+		};
+		var spectatorTrophy = _.once(function(){
+			trophy("spectator","obsessed with your super?  That's a good thing!  It's important to keep an eye on your future.","a red balloon");
+		});
+		var spectatorRule = function(){
+			if (_.size(_.filter(trackRecord,function(a){
+				return a.action == "viewedPage";
+			})) > 25){
+				spectatorTrophy();
+			}
+		};
+		var chatTrophy = _.once(function(){
+			trophy("chatty","looking for a friend?  We're always happy to listen.");
+		});
+		var chattyRule = function(){
+			if (_.size(_.filter(trackRecord,function(a){
+				return a.action == "sentChatMessage";
+			})) > 5){
+				chatTrophy();
+			}
+		};
+		app.on("audit","mocker_gamification",function(a){
+			trackRecord.push(a);
+			console.log("new message",a);
+			_.forEach([initiateRule,spectatorRule,chattyRule],function(rule){
+				rule();
+			});
 		});
 	})();
 
@@ -2063,13 +2131,13 @@ var app = (function(){
 		var getDelayInterval = function(){
 			return 1000 * _.random(1,5);
 		};
-		bindFunc("chat","chatBot",function(m){
+		app.on("chat","chatBot",function(m){
 			var author = m.from;
 			var message = m.message;
 			if (author == "me"){
 				_.delay(function(){
 					var reply = eliza.transform(message);
-					chat.addMessage(reply,"helpdesk");
+					app.addChat(reply,"helpdesk");
 				},getDelayInterval());
 			}
 		});
@@ -2077,14 +2145,5 @@ var app = (function(){
 
 /* end fake events */
 
-	return {
-		on:bindFunc,
-		off:unbindFunc,	
-		call:callFunc,
-		setPage:setPageFunc,
-		getPage:getPageFunc,
-		getAuditHistory:function(){
-			return auditHistory.getHistory();
-		}
-	};
+
 })();
